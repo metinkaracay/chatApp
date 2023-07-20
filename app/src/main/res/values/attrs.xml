@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="AnimationButtonView">
+        <attr name="buttonText" format="string" localization="suggested" />
+        <attr name="android:textColor" format="color" />
+        <attr name="android:fontFamily" />
+        <attr name="android:background" format="reference" />
+        <attr name="android:textSize" />
+        <attr name="buttonAnimationFile" format="string" />
+        <attr name="buttonLeftIcon" format="integer" />
+        <attr name="buttonRightIcon" format="integer" />
+        <attr name="android:gravity" />
+    </declare-styleable>
+
+    <declare-styleable name="SelectablePhotoView">
+        <attr name="plusButtonSize" format="dimension" />
+        <attr name="loadingAnimationSize" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="VoicePlayerView">
+        <attr name="viewBackground" format="color" />
+        <attr name="playPauseBackgroundColor" format="color" />
+        <attr name="shareBackgroundColor" format="color" />
+        <attr name="seekBarProgressColor" format="color" />
+        <attr name="seekBarThumbColor" format="color" />
+        <attr name="progressTimeColor" format="color" />
+        <attr name="showShareButton" format="boolean" />
+        <attr name="showTiming" format="boolean" />
+        <attr name="viewCornerRadius" format="float" />
+        <attr name="playPauseCornerRadius" format="float" />
+        <attr name="shareCornerRadius" format="float" />
+        <attr name="shareText" format="string" />
+        <attr name="enableVisualizer" format="boolean" />
+        <attr name="timingBackgroundColor" format="color" />
+        <attr name="visualizationPlayedColor" format="color" />
+        <attr name="visualizationNotPlayedColor" format="color" />
+        <attr name="playProgressbarColor" format="color" />
+    </declare-styleable>
+</resources>

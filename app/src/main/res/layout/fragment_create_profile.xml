@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="pageViewState"
+            type="com.example.learnandroidproject.ui.welcome.createProfileFragment.CreateProfilePageViewState" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        tools:context=".ui.welcome.postTestFragment.PostTestFragment">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Profilini Doldur"
+            android:textSize="20sp"
+            android:fontFamily="@font/gotham_bold"
+            android:textColor="@color/colorPrimary"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="15dp"/>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardElevation="0dp"
+            app:cardCornerRadius="180dp"
+            android:layout_marginBottom="15dp">
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@mipmap/ic_launcher"
+                android:scaleType="centerCrop"/>
+
+        </androidx.cardview.widget.CardView>
+
+        <EditText
+            android:id="@+id/firstName"
+            android:layout_width="300dp"
+            android:layout_marginBottom="20dp"
+            android:layout_height="wrap_content"
+            android:hint="Adınız"/>
+
+        <EditText
+            android:id="@+id/lastName"
+            android:layout_width="300dp"
+            android:layout_marginBottom="20dp"
+            android:layout_height="wrap_content"
+            android:hint="Soyadınız"/>
+
+        <EditText
+            android:id="@+id/age"
+            android:layout_width="300dp"
+            android:layout_marginBottom="20dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:hint="Yaşınız"/>
+
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radioMale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="50dp"
+                android:text="Erkek"/>
+
+            <RadioButton
+                android:id="@+id/radioFemale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Kadın"/>
+        </RadioGroup>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/sendButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardElevation="0dp"
+            android:layout_marginTop="20dp"
+            app:cardCornerRadius="10dp"
+            app:cardBackgroundColor="@color/send_Button">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tamamla!"
+                android:textColor="@color/white"
+                android:padding="10dp"
+                android:textSize="15sp"/>
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+</layout>

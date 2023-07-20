@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/welcome_nav_graph"
+    app:startDestination="@id/createAccountFragment">
+
+    <fragment
+        android:id="@+id/firstFragment"
+        android:name="com.example.learnandroidproject.ui.welcome.firstFragment.FirstFragment"
+        android:label="FirstFragment" />
+
+    <fragment
+        android:id="@+id/secondFragment"
+        android:name="com.example.learnandroidproject.ui.welcome.secondFragment.SecondFragment"
+        android:label="SecondFragment" />
+    <fragment
+        android:id="@+id/testFragment"
+        android:name="com.example.learnandroidproject.ui.welcome.testFragment.TestFragment"
+        android:label="TestFragment" />
+    <fragment
+        android:id="@+id/postTestFragment"
+        android:name="com.example.learnandroidproject.ui.welcome.postTestFragment.PostTestFragment"
+        android:label="PostTestFragment" />
+    <fragment
+        android:id="@+id/signInFragment"
+        android:name="com.example.learnandroidproject.ui.welcome.signInFragment.SignInFragment"
+        android:label="SignInFragment" />
+    <fragment
+        android:id="@+id/createAccountFragment"
+        android:name="com.example.learnandroidproject.ui.welcome.createAccountFragment.CreateAccountFragment"
+        android:label="CreateAccountFragment" >
+        <argument
+            android:name="userName"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/createProfileFragment"
+        android:name="com.example.learnandroidproject.ui.welcome.createProfileFragment.CreateProfileFragment"
+        android:label="CreateProfileFragment" />
+    <fragment
+        android:id="@+id/testImageFragment"
+        android:name="com.example.learnandroidproject.ui.welcome.testImageFragment.TestImageFragment"
+        android:label="TestImageFragment" />
+</navigation>

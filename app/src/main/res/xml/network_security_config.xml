@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">fun2lite-staging-api.eu-central-1.elasticbeanstalk.com</domain>
+        <domain includeSubdomains="true">fun2lite-staging-ws.eu-central-1.elasticbeanstalk.com</domain>
+        <domain includeSubdomains="true">10.82.0.64</domain>
+    </domain-config>
+</network-security-config>
