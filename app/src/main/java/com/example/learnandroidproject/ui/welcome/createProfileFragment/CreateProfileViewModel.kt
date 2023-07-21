@@ -16,7 +16,7 @@ class CreateProfileViewModel@Inject constructor(private val datingApiRepository:
     private val _errorMessageLiveData: MutableLiveData<String> = MutableLiveData()
     val errorMessageLiveData: LiveData<String> = _errorMessageLiveData
 
-    fun checkMessage(user: User){
+    fun checkMessage(user: User): Boolean{
 
         val userFields = listOf(
             user.firstName to "Ad",
@@ -28,21 +28,22 @@ class CreateProfileViewModel@Inject constructor(private val datingApiRepository:
         for ((field, fieldName) in userFields) {
             if (field.isNullOrEmpty()) {
                 _errorMessageLiveData.value = "$fieldName Boş Bırakılamaz"
-                return
+                return false
             }
         }
 
         if (user.age!!.toInt() !in 15..100) {
             _errorMessageLiveData.value = "Geçerli Bir Yaş Giriniz"
-            return
+            return false
         }
-        postUser(user)
+        return postUser(user)
     }
 
-    fun postUser(user: User) {
+    fun postUser(user: User): Boolean {
 
         viewModelScope.launch(Dispatchers.IO) {
             datingApiRepository.register(user)
-            }
+        }
+        return true
     }
 }

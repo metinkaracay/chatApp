@@ -14,6 +14,7 @@ import com.example.learnandroidproject.data.local.model.dating.db.request.userRe
 import com.example.learnandroidproject.databinding.FragmentCreateProfileBinding
 import com.example.learnandroidproject.ui.base.BaseFragment
 import com.example.learnandroidproject.ui.welcome.WelcomeViewModel
+import com.example.learnandroidproject.ui.welcome.popUpFragment.PopUpFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -50,7 +51,18 @@ class CreateProfileFragment() : BaseFragment<FragmentCreateProfileBinding>() {
                 R.id.radioFemale -> "Kadın"
                 else -> null
             }
-            viewModel.checkMessage(user)
+            val result = viewModel.checkMessage(user)
+
+            if (result){
+                showNewPhotoDialog()
+            }
+        }
+    }
+
+    private fun showNewPhotoDialog() {
+        if (PopUpFragment.isShowing().not()) {
+            val filterNewDialogFragment: PopUpFragment = PopUpFragment.newInstance()
+            filterNewDialogFragment.show(childFragmentManager, PopUpFragment::class.java.simpleName)
         }
     }
 }

@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/welcome_nav_graph"
-    app:startDestination="@id/createAccountFragment">
+    app:startDestination="@id/mainFragment">
 
     <fragment
         android:id="@+id/firstFragment"
@@ -41,4 +41,8 @@
         android:id="@+id/testImageFragment"
         android:name="com.example.learnandroidproject.ui.welcome.testImageFragment.TestImageFragment"
         android:label="TestImageFragment" />
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.example.learnandroidproject.ui.welcome.mainFragment.MainFragment"
+        android:label="MainFragment" />
 </navigation>

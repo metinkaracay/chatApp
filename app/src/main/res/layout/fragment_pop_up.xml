@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="pageViewState"
+            type="com.example.learnandroidproject.ui.welcome.popUpFragment.PopUpPageViewState" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="#CC000000"
+        android:gravity="center"
+        tools:context=".ui.welcome.popUpFragment.PopUpFragment">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="200dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@color/white">
+
+            <TextView
+                android:id="@+id/header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{pageViewState.headerText}"
+                android:textSize="20sp"
+                android:fontFamily="@font/gotham_bold"
+                android:textColor="@color/black"
+                android:layout_marginBottom="30dp"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@{pageViewState.Image(context)}"
+                android:layout_marginBottom="20dp"/>
+
+            <TextView
+                android:id="@+id/infoText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textSize="17sp"
+                android:textColor="@color/black"
+                android:text="@{pageViewState.infoText}"
+                android:paddingHorizontal="30dp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</layout>
