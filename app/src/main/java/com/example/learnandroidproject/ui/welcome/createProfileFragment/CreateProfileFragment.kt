@@ -32,7 +32,6 @@ class CreateProfileFragment() : BaseFragment<FragmentCreateProfileBinding>() {
         }
         var user = welcomeViewModel.getUser()
 
-        Log.e("ProfileFragment", "userName: ${user.userName}, Email: ${user.email}, Şifre: ${user.password}, lastName: ${user.lastName}")
         handleViewOptions(user)
 
     }
@@ -51,9 +50,7 @@ class CreateProfileFragment() : BaseFragment<FragmentCreateProfileBinding>() {
                 R.id.radioFemale -> "Kadın"
                 else -> null
             }
-            Log.e("ProfileFragment", "userName: ${user.userName}, Email: ${user.email}, Şifre: ${user.password}, lastName: ${user.gender}")
-
-            viewModel.checkMessage2(user)
+            viewModel.checkMessage(user)
         }
     }
 }

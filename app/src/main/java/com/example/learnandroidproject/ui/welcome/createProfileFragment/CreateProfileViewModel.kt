@@ -9,7 +9,6 @@ import com.example.learnandroidproject.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
 import javax.inject.Inject
 @HiltViewModel
 class CreateProfileViewModel@Inject constructor(private val datingApiRepository: DatingApiRepository): BaseViewModel() {
@@ -17,14 +16,9 @@ class CreateProfileViewModel@Inject constructor(private val datingApiRepository:
     private val _errorMessageLiveData: MutableLiveData<String> = MutableLiveData()
     val errorMessageLiveData: LiveData<String> = _errorMessageLiveData
 
-    val user: User = User("username","email.com","147852","Metin","Karaçay","23","Erkek")
-
-    fun checkMessage2(user: User){
+    fun checkMessage(user: User){
 
         val userFields = listOf(
-            user.userName to "Kullanıcı Adı",
-            user.email to "E-posta",
-            user.password to "Şifre",
             user.firstName to "Ad",
             user.lastName to "Soyad",
             user.gender to "Cinsiyet",
@@ -38,15 +32,14 @@ class CreateProfileViewModel@Inject constructor(private val datingApiRepository:
             }
         }
 
-        if (user.age.isNullOrEmpty() || user.age!!.toInt() !in 1..100) {
+        if (user.age!!.toInt() !in 15..100) {
             _errorMessageLiveData.value = "Geçerli Bir Yaş Giriniz"
             return
         }
-
-        postUser2(user)
+        postUser(user)
     }
 
-    fun postUser2(user: User) {
+    fun postUser(user: User) {
 
         viewModelScope.launch(Dispatchers.IO) {
             datingApiRepository.register(user)

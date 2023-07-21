@@ -35,9 +35,8 @@ class CreateAccountFragment : BaseFragment<FragmentCreateAccountBinding>() {
             val email = binding.email.text.toString().trim()
             val password = binding.password.text.toString().trim()
             val userName = binding.userName.text.toString().trim()
-            // TODO email format kontrolü yapılmalı
 
-            val result = viewModel.checkFields(userName,email,password,requireContext())
+            val result = viewModel.checkFields(userName,email,password)
 
             if (result){
                 welcomeViewModel.fillUserData(userName,email,password)
