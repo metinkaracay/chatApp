@@ -1,34 +1,55 @@
 package com.example.learnandroidproject.ui.welcome.createProfileFragment
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.learnandroidproject.data.remote.model.dating.response.userResponse.UserResponse
+import androidx.lifecycle.viewModelScope
+import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
+import com.example.learnandroidproject.domain.remote.dating.DatingApiRepository
 import com.example.learnandroidproject.ui.base.BaseViewModel
-
-class CreateProfileViewModel: BaseViewModel() {
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.util.*
+import javax.inject.Inject
+@HiltViewModel
+class CreateProfileViewModel@Inject constructor(private val datingApiRepository: DatingApiRepository): BaseViewModel() {
 
     private val _errorMessageLiveData: MutableLiveData<String> = MutableLiveData()
     val errorMessageLiveData: LiveData<String> = _errorMessageLiveData
 
-    fun postUser(userName: String?,email:String?,password:String?, firstName:String?, lastName:String?){
-        val user: UserResponse = UserResponse(userName,email,password,firstName,lastName)
-        Log.e("test","$user")
+    val user: User = User("username","email.com","147852","Metin","Karaçay","23","Erkek")
+
+    fun checkMessage2(user: User){
+
+        val userFields = listOf(
+            user.userName to "Kullanıcı Adı",
+            user.email to "E-posta",
+            user.password to "Şifre",
+            user.firstName to "Ad",
+            user.lastName to "Soyad",
+            user.gender to "Cinsiyet",
+            user.age to "Yaş"
+        )
+
+        for ((field, fieldName) in userFields) {
+            if (field.isNullOrEmpty()) {
+                _errorMessageLiveData.value = "$fieldName Boş Bırakılamaz"
+                return
+            }
+        }
+
+        if (user.age.isNullOrEmpty() || user.age!!.toInt() !in 1..100) {
+            _errorMessageLiveData.value = "Geçerli Bir Yaş Giriniz"
+            return
+        }
+
+        postUser2(user)
     }
 
-    fun checkMessage(userName: String,email:String,password:String, firstName:String, lastName:String){
+    fun postUser2(user: User) {
 
-        val arrayList = arrayListOf<String>(userName,email,password,firstName,lastName)
-
-        for (i in 0 until arrayList.size){
-            Log.e("eleman","${arrayList[i]}")
-
-            if(arrayList[i].isNotEmpty() && arrayList[i].isNotBlank()){
-                postUser(userName,email,password, firstName, lastName)
-            }else{
-                _errorMessageLiveData.value = "Boş Bırakılamaz"
+        viewModelScope.launch(Dispatchers.IO) {
+            datingApiRepository.register(user)
             }
-
-        }
     }
 }

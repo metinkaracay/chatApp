@@ -6,29 +6,25 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import com.example.learnandroidproject.R
-import com.example.learnandroidproject.common.GenericResult
 import com.example.learnandroidproject.common.extensions.observeNonNull
+import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
 import com.example.learnandroidproject.databinding.FragmentTestImageBinding
 import com.example.learnandroidproject.ui.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class TestImageFragment : BaseFragment<FragmentTestImageBinding>() {
 
     private val viewModel: TestImageViewModel by viewModels()
+    val user: User = User("username","email.com","147852","Metin","Karaçay","23","Erkek")
 
     override fun getLayoutResId(): Int = R.layout.fragment_test_image
 
@@ -81,13 +77,14 @@ class TestImageFragment : BaseFragment<FragmentTestImageBinding>() {
                     secilenBitmap = ImageDecoder.decodeBitmap(source)
                     binding.imageView.setImageBitmap(secilenBitmap)
                     viewModel.postImage(selectedImage!!, requireContext())
+                    //viewModel.postMethod(selectedImage!!, requireContext(), user)
 
                 }else {
 
                     secilenBitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver,selectedImage)
                     binding.imageView.setImageBitmap(secilenBitmap)
                     viewModel.postImage(selectedImage!!, requireContext())
-
+                    //viewModel.postMethod(selectedImage!!, requireContext(), user)
                 }
 
             }

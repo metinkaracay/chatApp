@@ -6,7 +6,7 @@ class TestPageViewState(
     val payloadBaseResponse: PayloadBaseResponse
 ) {
 
-    fun getId() = payloadBaseResponse.payload.user.uId.toString()
+    fun getId() = ""//payloadBaseResponse.payload.user.uId.toString()
 
     fun getEmail() = payloadBaseResponse.payload.user.email
 }

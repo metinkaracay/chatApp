@@ -7,45 +7,53 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.example.learnandroidproject.R
+import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
 import com.example.learnandroidproject.databinding.FragmentCreateProfileBinding
 import com.example.learnandroidproject.ui.base.BaseFragment
+import com.example.learnandroidproject.ui.welcome.WelcomeViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class CreateProfileFragment() : BaseFragment<FragmentCreateProfileBinding>() {
 
     private val viewModel: CreateProfileViewModel by viewModels()
+    private val welcomeViewModel: WelcomeViewModel by activityViewModels()
 
     override fun getLayoutResId(): Int = R.layout.fragment_create_profile
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        handleViewOptions()
 
         viewModel.errorMessageLiveData.observe(viewLifecycleOwner){
             Toast.makeText(requireContext(),it,Toast.LENGTH_LONG).show()
         }
+        var user = welcomeViewModel.getUser()
+
+        Log.e("ProfileFragment", "userName: ${user.userName}, Email: ${user.email}, Şifre: ${user.password}, lastName: ${user.lastName}")
+        handleViewOptions(user)
 
     }
-    fun handleViewOptions(){
+    fun handleViewOptions(user: User){
         binding.sendButton.setOnClickListener {
-            val userName = arguments?.get("userName").toString()
-            val email = arguments?.get("email").toString()
-            val password = arguments?.get("password").toString()
-            val firstName = binding.firstName.text.toString()
-            val lastName = binding.lastName.text.toString().trim()
+            val user: User = user
+            user.firstName = binding.firstName.text.toString()
+            user.lastName = binding.lastName.text.toString().trim()
+            user.age = binding.age.text.toString()
 
             val selectedGenderId = binding.radioGroup.checkedRadioButtonId
 
             // Seçili RadioButton'ın değerine göre cinsiyeti belirle
-            val gender: String? = when (selectedGenderId) {
+            user.gender = when (selectedGenderId) {
                 R.id.radioMale -> "Erkek"
                 R.id.radioFemale -> "Kadın"
                 else -> null
             }
+            Log.e("ProfileFragment", "userName: ${user.userName}, Email: ${user.email}, Şifre: ${user.password}, lastName: ${user.gender}")
 
-            //viewModel.postUser(userName, email,password,firstName,lastName,)
-            viewModel.checkMessage(userName, email,password,firstName,lastName)
+            viewModel.checkMessage2(user)
         }
     }
 }

@@ -3,6 +3,6 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">fun2lite-staging-api.eu-central-1.elasticbeanstalk.com</domain>
         <domain includeSubdomains="true">fun2lite-staging-ws.eu-central-1.elasticbeanstalk.com</domain>
-        <domain includeSubdomains="true">10.82.0.64</domain>
+        <domain includeSubdomains="true">10.82.0.52</domain>
     </domain-config>
 </network-security-config>

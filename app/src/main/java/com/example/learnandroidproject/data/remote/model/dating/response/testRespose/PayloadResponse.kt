@@ -3,7 +3,7 @@ package com.example.learnandroidproject.data.remote.model.dating.response.testRe
 import com.google.gson.annotations.SerializedName
 
 class PayloadResponse(
-    @SerializedName("user") val user: UserResponse,
+    @SerializedName("user") val user: User,
     @SerializedName("iat") val iat: Int,
     @SerializedName("exp") val exp: Int
 ) {
