@@ -8,5 +8,5 @@ class TestPageViewState(
 
     fun getId() = ""//payloadBaseResponse.payload.user.uId.toString()
 
-    fun getEmail() = payloadBaseResponse.payload.user.email
+    fun getEmail() = ""//payloadBaseResponse.payload.user.email
 }

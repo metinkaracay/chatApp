@@ -5,6 +5,7 @@ import com.example.learnandroidproject.data.local.model.dating.db.response.NewsB
 import com.example.learnandroidproject.data.remote.model.dating.response.postResponse.BookResponse
 import com.example.learnandroidproject.data.remote.model.dating.response.testRespose.*
 import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
+import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 
@@ -14,9 +15,10 @@ interface DatingApiRepository {
 
     suspend fun payLoad(): GenericResult<PayloadBaseResponse>
 
+    suspend fun fetchUsersForChatRooms(): GenericResult<List<UserInfo>>
+
     suspend fun book(kitap1: BookResponse): GenericResult<BookResponse>
     suspend fun test(image: MultipartBody.Part): GenericResult<ResponseBody>
     suspend fun test3(user: User): GenericResult<User>
-
     suspend fun register(user: User): GenericResult<ResponseBody>
 }

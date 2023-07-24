@@ -51,7 +51,7 @@ class BaseChatRoomsFragment : BaseFragment<FragmentBaseChatRoomsBinding>() {
             binding.tabInternet.textSize = 24f
             binding.tabInternet.setTextColor(ContextCompat.getColor(requireContext(), R.color.register_title_color))
             binding.tabInternet.typeface = ResourcesCompat.getFont(requireContext(), R.font.gotham_black)
-            binding.scrollLine.x = 360f
+            binding.scrollLine.x = 350f
 
             //Diğer sekmenin özelliklerini düzeltir
             binding.tabLocal.textSize = 17f

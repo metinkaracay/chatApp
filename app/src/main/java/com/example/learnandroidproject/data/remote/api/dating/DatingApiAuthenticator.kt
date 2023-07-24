@@ -22,14 +22,14 @@ class DatingApiAuthenticator @Inject constructor(
     override fun authenticate(route: Route?, response: Response): Request? {
         val request = runBlocking {
             try {
-                val tokenUrl = "${BaseUrlDecider.getApiBaseUrl()}auth/refreshToken"
+                /*val tokenUrl = "${BaseUrlDecider.getApiBaseUrl()}auth/refreshToken"
                 val refreshTokenResponse = Fuel.post(tokenUrl)
                     .header("Content-Type" to "application/json", HEADER_DATING_TOKEN to "Bearer")
                     .awaitString()
                 val refreshTokenResponseObject = JSONObject(refreshTokenResponse)
                 //val newToken = refreshTokenResponseObject.getString("token")
-                val refreshToken = refreshTokenResponseObject.getString("refreshToken")
-                val newToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJ1c2VybmFtZSI6InRlc3QiLCJlbWFpbCI6InRlc3QifSwiaWF0IjoxNjg5OTQxODE4LCJleHAiOjE2OTAyODc0MTh9.-5lMy2Fo8jWNblgcngYkaQb1QqGqRXru0iDU89fdwE8"
+                val refreshToken = refreshTokenResponseObject.getString("refreshToken")*/
+                val newToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyMywidXNlcm5hbWUiOiJkZCIsImVtYWlsIjoidGVzdDEyMzU0QGdtYWlsLmNvbSJ9LCJpYXQiOjE2OTAxOTE0MzAsImV4cCI6MTY5MDUzNzAzMH0.7Ag7tmFBd1MDZ1f5aRCA-U1sINIWFdQYdMD5KGjYGMs"
                 response.request.newBuilder()
                     .header(HEADER_DATING_TOKEN, "Bearer $newToken")
                     .build()

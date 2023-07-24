@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/welcome_nav_graph"
-    app:startDestination="@id/baseChatRoomsFragment">
+    app:startDestination="@id/testFragment">
 
     <fragment
         android:id="@+id/firstFragment"
