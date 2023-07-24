@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/welcome_nav_graph"
-    app:startDestination="@id/testFragment">
+    app:startDestination="@id/editProfileFragment">
 
     <fragment
         android:id="@+id/firstFragment"
@@ -49,4 +49,8 @@
         android:id="@+id/baseChatRoomsFragment"
         android:name="com.example.learnandroidproject.ui.welcome.baseChatRooms.BaseChatRoomsFragment"
         android:label="BaseChatRoomsFragment" />
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.example.learnandroidproject.ui.welcome.editProfileFragment.EditProfileFragment"
+        android:label="EditProfileFragment" />
 </navigation>
