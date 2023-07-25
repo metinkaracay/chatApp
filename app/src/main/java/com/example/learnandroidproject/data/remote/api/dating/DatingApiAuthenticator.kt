@@ -2,6 +2,7 @@ package com.example.learnandroidproject.data.remote.api.dating
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import com.example.learnandroidproject.BaseUrlDecider
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitString
@@ -29,7 +30,9 @@ class DatingApiAuthenticator @Inject constructor(
                 val refreshTokenResponseObject = JSONObject(refreshTokenResponse)
                 val newToken = refreshTokenResponseObject.getString("accessToken")
                 val refreshToken = refreshTokenResponseObject.getString("refreshToken")*/
-                val newToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjo1MywidXNlcm5hbWUiOiJ0ZXN0dXNlcjEiLCJlbWFpbCI6ImFobWV0MTIyQGdtYWlsLmNvbSJ9LCJpYXQiOjE2OTAyODYzMTAsImV4cCI6MTY5MDI4NjQzMH0.t9Sa_jR7IzGcwhwXgOjKmQwPkxT1gAU7pwJG37P89yI"
+                val sharedPreferences = context.getSharedPreferences("com.example.learnandroidproject.ui.welcome.logInFragment",Context.MODE_PRIVATE)
+                val savedAccessToken = sharedPreferences.getString("accessTokenKey", "")
+                val newToken = savedAccessToken
                 response.request.newBuilder()
                     .header(HEADER_DATING_TOKEN, "Bearer $newToken")
                     .build()

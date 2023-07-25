@@ -10,7 +10,9 @@ import com.example.learnandroidproject.domain.remote.dating.DatingApiRepository
 import com.example.learnandroidproject.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
 import javax.inject.Inject
@@ -24,6 +26,11 @@ class LoginFragmentViewModel @Inject constructor(private val datingApiRepository
     private val _errorMessageLiveData: MutableLiveData<String> = MutableLiveData()
     val errorMessageLiveData: LiveData<String> = _errorMessageLiveData
 
+    private val _token: MutableLiveData<String> = MutableLiveData()
+    val token: LiveData<String> = _token
+
+    private val _uploadResponse: MutableLiveData<String> = MutableLiveData()
+    val uploadResponse: LiveData<String> = _uploadResponse
     init {
         fetchData()
     }
@@ -44,8 +51,9 @@ class LoginFragmentViewModel @Inject constructor(private val datingApiRepository
                     val jsonObject = JSONObject(responseString)
                     val refToken = jsonObject.optString("refreshToken", "")
                     val accessToken = jsonObject.optString("accessToken", "")
-                    Log.e("RefreshToken", refToken)
-                    Log.e("AccessToken", accessToken)
+
+                    _token.postValue(accessToken)
+
                 } catch (e: JSONException) {
                     Log.e("JSONParsingError", "Error parsing response JSON")
                 }
