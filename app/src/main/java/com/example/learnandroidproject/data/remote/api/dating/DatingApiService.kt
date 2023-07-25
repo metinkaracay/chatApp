@@ -1,5 +1,6 @@
 package com.example.learnandroidproject.data.remote.api.dating
 
+import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.LoginRequest
 import com.example.learnandroidproject.data.local.model.dating.db.response.NewsBaseResponse
 import com.example.learnandroidproject.data.remote.model.dating.response.postResponse.BookResponse
 import com.example.learnandroidproject.data.remote.model.dating.response.testRespose.PayloadBaseResponse
@@ -27,6 +28,10 @@ interface DatingApiService {
     @Multipart
     @POST("auth/profile/addPhoto")
     suspend fun saveProfilePhoto(@Part image: MultipartBody.Part): ResponseBody
+    @Headers("Content-Type: application/json")
+    @POST("auth/login")
+    suspend fun login(@Body user: LoginRequest): ResponseBody
+
     @Headers("Content-Type: application/json")
     @POST("books")
     suspend fun books(@Body book: BookResponse): BookResponse

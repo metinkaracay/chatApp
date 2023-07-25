@@ -1,6 +1,7 @@
 package com.example.learnandroidproject.domain.remote.dating
 
 import com.example.learnandroidproject.common.GenericResult
+import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.LoginRequest
 import com.example.learnandroidproject.data.local.model.dating.db.response.NewsBaseResponse
 import com.example.learnandroidproject.data.remote.model.dating.response.postResponse.BookResponse
 import com.example.learnandroidproject.data.remote.model.dating.response.testRespose.*
@@ -20,6 +21,8 @@ interface DatingApiRepository {
     suspend fun fetchUserData(): GenericResult<User>
 
     suspend fun saveProfilePhoto(image: MultipartBody.Part): GenericResult<ResponseBody>
+
+    suspend fun login(user: LoginRequest): GenericResult<ResponseBody>
 
     suspend fun book(kitap1: BookResponse): GenericResult<BookResponse>
 

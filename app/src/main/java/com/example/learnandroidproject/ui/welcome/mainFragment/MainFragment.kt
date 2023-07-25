@@ -39,7 +39,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         }
 
         binding.logInButton.setOnClickListener {
-            // TODO Giriş modülü bağlanacak
+            welcomeViewModel.goToLoginPage()
         }
     }
 }

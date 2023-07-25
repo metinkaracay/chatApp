@@ -39,13 +39,18 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     fun goToMainPage(){
         _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.mainFragment)
     }
-
+    fun goToCreateAccount(){
+        _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.createAccountFragment)
+    }
     fun goToCreateProfile(){
         _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.createProfileFragment)
     }
 
-    fun goToCreateAccount(){
-        _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.createAccountFragment)
+    fun goToLoginPage(){
+        _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.logInFragment)
+    }
+    fun goToBaseChatRoomsPage(){
+        _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.baseChatRoomsFragment)
     }
 
     fun navigateUp() {

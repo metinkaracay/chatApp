@@ -2,6 +2,7 @@ package com.example.learnandroidproject.domain.remote.dating
 
 import com.example.learnandroidproject.common.GenericResult
 import com.example.learnandroidproject.common.handleDatingRequest
+import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.LoginRequest
 import com.example.learnandroidproject.data.local.model.dating.db.response.NewsBaseResponse
 import com.example.learnandroidproject.data.remote.api.dating.DatingApiService
 import com.example.learnandroidproject.data.remote.model.dating.response.postResponse.BookResponse
@@ -25,6 +26,9 @@ class DatingApiRepositoryImpl @Inject constructor(
     override suspend fun fetchUserData(): GenericResult<User> = handleDatingRequest { datingApiService.fetchUserData() }
 
     override suspend fun saveProfilePhoto(image: MultipartBody.Part): GenericResult<ResponseBody> = handleDatingRequest { datingApiService.saveProfilePhoto(image) }
+
+    override suspend fun login(user: LoginRequest): GenericResult<ResponseBody> = handleDatingRequest { datingApiService.login(user) }
+
     override suspend fun book(kitap1: BookResponse): GenericResult<BookResponse> = handleDatingRequest { datingApiService.books(kitap1) }
     override suspend fun test(image: MultipartBody.Part): GenericResult<ResponseBody> = handleDatingRequest { datingApiService.test(image)}
     override suspend fun test3(user: User): GenericResult<User> = handleDatingRequest { datingApiService.test3(user)}

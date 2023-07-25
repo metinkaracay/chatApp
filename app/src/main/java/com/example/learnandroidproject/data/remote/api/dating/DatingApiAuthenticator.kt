@@ -27,9 +27,9 @@ class DatingApiAuthenticator @Inject constructor(
                     .header("Content-Type" to "application/json", HEADER_DATING_TOKEN to "Bearer")
                     .awaitString()
                 val refreshTokenResponseObject = JSONObject(refreshTokenResponse)
-                //val newToken = refreshTokenResponseObject.getString("token")
+                val newToken = refreshTokenResponseObject.getString("accessToken")
                 val refreshToken = refreshTokenResponseObject.getString("refreshToken")*/
-                val newToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjo0NiwidXNlcm5hbWUiOiJzZ3NoIiwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIn0sImlhdCI6MTY5MDI3MTU4NiwiZXhwIjoxNjkwNjE3MTg2fQ.L6IRlRIKPC9kpxAfWMDbzvbyVb3fQEOhOpAGnvPkKYs"
+                val newToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjo1MywidXNlcm5hbWUiOiJ0ZXN0dXNlcjEiLCJlbWFpbCI6ImFobWV0MTIyQGdtYWlsLmNvbSJ9LCJpYXQiOjE2OTAyODYzMTAsImV4cCI6MTY5MDI4NjQzMH0.t9Sa_jR7IzGcwhwXgOjKmQwPkxT1gAU7pwJG37P89yI"
                 response.request.newBuilder()
                     .header(HEADER_DATING_TOKEN, "Bearer $newToken")
                     .build()
