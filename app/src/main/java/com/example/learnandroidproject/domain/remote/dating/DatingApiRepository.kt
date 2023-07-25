@@ -17,8 +17,16 @@ interface DatingApiRepository {
 
     suspend fun fetchUsersForChatRooms(): GenericResult<List<UserInfo>>
 
+    suspend fun fetchUserData(): GenericResult<User>
+
+    suspend fun saveProfilePhoto(image: MultipartBody.Part): GenericResult<ResponseBody>
+
     suspend fun book(kitap1: BookResponse): GenericResult<BookResponse>
+
     suspend fun test(image: MultipartBody.Part): GenericResult<ResponseBody>
+
     suspend fun test3(user: User): GenericResult<User>
+
     suspend fun register(user: User): GenericResult<ResponseBody>
+
 }

@@ -24,7 +24,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class TestImageFragment : BaseFragment<FragmentTestImageBinding>() {
 
     private val viewModel: TestImageViewModel by viewModels()
-    val user: User = User("username","email.com","147852","Metin","Karaçay","23","Erkek")
+    val user: User = User("username","email.com","147852","Metin","Karaçay","23","Erkek",null,null)
 
     override fun getLayoutResId(): Int = R.layout.fragment_test_image
 

@@ -26,9 +26,18 @@
             app:cardElevation="0dp">
 
             <ImageView
+                android:id="@+id/defaultPhoto"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/avatar"/>
+                android:visibility="@{pageViewState.defaultPhoto}"
+                android:src="@{pageViewState.userDefaultPhoto(context)}"/>
+
+            <ImageView
+                android:id="@+id/selectedPhoto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="@{pageViewState.selectedPhoto}"
+                app:imageUrl="@{pageViewState.userPhoto}"/>
 
             <ImageView
                 android:layout_width="match_parent"
@@ -45,7 +54,8 @@
             android:layout_marginBottom="20dp"
             android:layout_height="wrap_content"
             android:inputType="number"
-            android:hint="Durum Bilgisi Giriniz"/>
+            android:hint="Durum Bilgisi Giriniz"
+            android:text="@{pageViewState.status}"/>
 
         <EditText
             android:id="@+id/firstName"
@@ -60,7 +70,8 @@
             android:layout_width="300dp"
             android:layout_marginBottom="20dp"
             android:layout_height="wrap_content"
-            android:hint="Soyadınız"/>
+            android:hint="Soyadınız"
+            android:text="@{pageViewState.lastName}"/>
 
         <EditText
             android:id="@+id/age"
@@ -68,7 +79,7 @@
             android:layout_marginBottom="20dp"
             android:layout_height="wrap_content"
             android:inputType="number"
-            android:hint="Yaşınız"/>
-
+            android:hint="Yaşınız"
+            android:text="@{pageViewState.age}"/>
     </LinearLayout>
 </layout>

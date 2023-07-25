@@ -61,7 +61,7 @@ class CreateProfileFragment() : BaseFragment<FragmentCreateProfileBinding>() {
 
     private fun showNewPhotoDialog() {
         if (PopUpFragment.isShowing().not()) {
-            val filterNewDialogFragment: PopUpFragment = PopUpFragment.newInstance()
+            val filterNewDialogFragment: PopUpFragment = PopUpFragment.newInstance(1)
             filterNewDialogFragment.show(childFragmentManager, PopUpFragment::class.java.simpleName)
         }
     }

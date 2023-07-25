@@ -9,7 +9,9 @@ class User (
     @SerializedName("firstName") var firstName: String?,
     @SerializedName("lastName") var lastName: String?,
     @SerializedName("age") var age: String?,
-    @SerializedName("gender") var gender: String?
+    @SerializedName("gender") var gender: String?,
+    @SerializedName("status") val status: String?,
+    @SerializedName("photoUrl") val photo: String?,
     ){
 
 }

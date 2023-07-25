@@ -20,7 +20,7 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     val navigateToDestinationSingleLiveEvent: LiveData<NavigationData> = _navigateToDestinationSingleLiveEvent
     val navigateUpSingleLiveEvent: LiveData<Any?> = _navigateUpSingleLiveEvent
 
-    private var user: User = User(null, null, null, null, null, null, null)
+    private var user: User = User(null, null, null, null, null, null, null,null,null)
 
     fun fillUserData(userName: String, email: String, password: String) {
         user.userName = userName

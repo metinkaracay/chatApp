@@ -22,7 +22,11 @@ interface DatingApiService {
 
     @GET("auth/mainPage")
     suspend fun fetchUsersForChatRooms(): List<UserInfo>
-
+    @GET("auth/profile")
+    suspend fun fetchUserData(): User
+    @Multipart
+    @POST("auth/profile/addPhoto")
+    suspend fun saveProfilePhoto(@Part image: MultipartBody.Part): ResponseBody
     @Headers("Content-Type: application/json")
     @POST("books")
     suspend fun books(@Body book: BookResponse): BookResponse

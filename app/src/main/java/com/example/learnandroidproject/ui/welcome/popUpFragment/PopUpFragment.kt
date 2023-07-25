@@ -1,9 +1,20 @@
 package com.example.learnandroidproject.ui.welcome.popUpFragment
 
+import android.Manifest
+import android.app.Activity
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -13,19 +24,30 @@ import com.example.learnandroidproject.databinding.FragmentPopUpBinding
 import com.example.learnandroidproject.ui.base.BaseDialogFragment
 import com.example.learnandroidproject.ui.base.BaseFragment
 import com.example.learnandroidproject.ui.welcome.WelcomeViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class PopUpFragment : BaseDialogFragment<FragmentPopUpBinding>() {
 
     private val viewModel: PopUpViewModel by viewModels()
     private val welcomeViewModel: WelcomeViewModel by activityViewModels()
+
+    private var callBackListener: ((String) -> Unit)? = null
+
+    fun setCallBackListener(listener: (String) -> Unit) {
+        callBackListener = listener
+    }
+
+    var selectedImage: Uri? = null
 
     override fun getLayoutResId(): Int = R.layout.fragment_pop_up
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         dialog!!.window!!.attributes.windowAnimations = R.style.Animation_Design_BottomSheetDialog
-        with(viewModel) {
-            popupPageViewStateLiveData.observeNonNull(viewLifecycleOwner) {
+        handleViewOption()
+        with(viewModel){
+        popupPageViewStateLiveData.observeNonNull(viewLifecycleOwner) {
                 with(binding) {
                     pageViewState = it
                     executePendingBindings()
@@ -37,7 +59,83 @@ class PopUpFragment : BaseDialogFragment<FragmentPopUpBinding>() {
                     welcomeViewModel.goToMainPage()
                 }
             }
+            uploadInProgress.observe(viewLifecycleOwner){
+                if (!it){
+                    // Yükleme süreci devame etmediğinde yani false ise kapat
+                    callBackListener?.invoke(selectedImage.toString())
+                    dismiss()
+
+                }
+            }
         }
+
+        val requestCode = arguments?.getInt(ARG_LINK)
+        viewModel.decisionToFun(requestCode!!)
+    }
+
+    fun handleViewOption(){
+        binding.userPhoto.setOnClickListener {
+            checkStoragePermission()
+        }
+        binding.saveButton.setOnClickListener {
+            viewModel.postImage(selectedImage!!, requireContext())
+        }
+    }
+
+    private fun checkStoragePermission() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(),arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),1)
+        } else {
+            //Daha önceden izin verilmiş
+            startGalleryIntent()
+
+        }
+    }
+
+    private fun startGalleryIntent() {
+
+        val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(galleryIntent, 2)
+
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == 2 && resultCode == Activity.RESULT_OK && data != null) {
+            selectedImage = data.data
+            var secilenBitmap : Bitmap? = null
+
+            if(selectedImage != null){
+
+                if(Build.VERSION.SDK_INT >= 28){
+
+                    val source = ImageDecoder.createSource(requireContext().contentResolver,selectedImage!!)
+                    secilenBitmap = ImageDecoder.decodeBitmap(source)
+                    binding.defaultUserImage.setImageBitmap(secilenBitmap)
+
+                }else {
+
+                    secilenBitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver,selectedImage)
+                    binding.defaultUserImage.setImageBitmap(secilenBitmap)
+                }
+
+            }
+
+        }
+
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray,
+    ) {
+        if (requestCode == 1) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startGalleryIntent()
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     override fun onStart() {
@@ -49,10 +147,14 @@ class PopUpFragment : BaseDialogFragment<FragmentPopUpBinding>() {
     }
 
     companion object {
+        private const val ARG_LINK = "requestCode"
+
         private var showing = false
         fun isShowing() = showing
-        fun newInstance() = PopUpFragment().apply {
-            arguments = bundleOf()
+        fun newInstance(requestCode: Int) = PopUpFragment().apply {
+            arguments = Bundle().apply {
+                putInt(ARG_LINK, requestCode)
+            }
         }
     }
 

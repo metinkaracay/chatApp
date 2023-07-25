@@ -44,7 +44,7 @@ class TestImageViewModel@Inject constructor(private val datingApiRepository: Dat
 
     fun postImage(selectedImage: Uri, context: Context) {
         val uuid = UUID.randomUUID()
-        val user: User = User("username","email.com","147852","Metin","Karaçay", "23","Erkek")
+        val user: User = User("username","email.com","147852","Metin","Karaçay", "23","Erkek",null,null)
 
         viewModelScope.launch(Dispatchers.IO) {
             selectedImage?.let { imageUri ->
