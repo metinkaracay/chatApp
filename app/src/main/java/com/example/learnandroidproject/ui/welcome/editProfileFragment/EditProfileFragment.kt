@@ -44,7 +44,6 @@ class EditProfileFragment : BaseFragment<FragmentEditProfileBinding>() {
         if (PopUpFragment.isShowing().not()) {
             val filterNewDialogFragment: PopUpFragment = PopUpFragment.newInstance(requestCode)
             filterNewDialogFragment.setCallBackListener{
-                Log.e("çalıştı","$it")
                 viewModel.updateToPhoto(it)
             }
             filterNewDialogFragment.show(childFragmentManager, PopUpFragment::class.java.simpleName)

@@ -1,5 +1,6 @@
 package com.example.learnandroidproject.ui.welcome.editProfileFragment
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -8,6 +9,7 @@ import com.example.learnandroidproject.ui.base.BaseViewModel
 import com.github.michaelbull.result.get
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -35,7 +37,12 @@ class EditProfileViewModel @Inject constructor(private val datingApiRepository: 
         }
     }
 
-    fun updateToPhoto(uri: String){
-        _editProfilePageViewStateLiveData.value = editProfilePageViewStateLiveData.value?.copy(image = uri)
+    fun updateToPhoto(link: String){
+        viewModelScope.launch(Dispatchers.IO) {
+            delay(1000L)
+            withContext(Dispatchers.Main) {
+                _editProfilePageViewStateLiveData.value = editProfilePageViewStateLiveData.value?.copy(image = link)
+            }
+        }
     }
 }

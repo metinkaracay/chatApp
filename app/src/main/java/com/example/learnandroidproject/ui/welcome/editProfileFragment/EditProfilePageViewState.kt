@@ -7,6 +7,11 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import com.example.learnandroidproject.R
 import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 data class EditProfilePageViewState(
     private val user: User,
@@ -18,8 +23,12 @@ data class EditProfilePageViewState(
 
     fun selectedPhoto() = if (user.photo != "null") View.VISIBLE else View.GONE
 
-    fun getUserPhoto() = user.photo
-    //fun getUserPhoto() = if (image != null ) Log.e("geldi","$image") else user.photo TODO Response ile image linki aldığın zaman log yerine linki ver çalışacaktır. Şuan uri geliyor
+    fun getUserPhoto() = if (image != null ){
+        Log.e("çalıştı","çalıştışimdi $image")
+        image
+    }else{
+        user.photo
+    }
     fun getStatus() = if (user.status.isNullOrEmpty()) "" else user.status
 
     fun getFirstName() = if (user.firstName.isNullOrEmpty()) "" else user.firstName

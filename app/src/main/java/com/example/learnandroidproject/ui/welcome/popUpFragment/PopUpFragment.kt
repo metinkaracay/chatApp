@@ -25,6 +25,7 @@ import com.example.learnandroidproject.ui.base.BaseDialogFragment
 import com.example.learnandroidproject.ui.base.BaseFragment
 import com.example.learnandroidproject.ui.welcome.WelcomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlin.math.log
 
 @AndroidEntryPoint
 class PopUpFragment : BaseDialogFragment<FragmentPopUpBinding>() {
@@ -59,13 +60,9 @@ class PopUpFragment : BaseDialogFragment<FragmentPopUpBinding>() {
                     welcomeViewModel.goToMainPage()
                 }
             }
-            uploadInProgress.observe(viewLifecycleOwner){
-                if (!it){
-                    // Yükleme süreci devame etmediğinde yani false ise kapat
-                    callBackListener?.invoke(selectedImage.toString())
-                    dismiss()
-
-                }
+            uploadResponse.observe(viewLifecycleOwner){
+                callBackListener?.invoke(it)
+                dismiss()
             }
         }
 
@@ -79,6 +76,7 @@ class PopUpFragment : BaseDialogFragment<FragmentPopUpBinding>() {
         }
         binding.saveButton.setOnClickListener {
             viewModel.postImage(selectedImage!!, requireContext())
+
         }
     }
 
@@ -88,40 +86,34 @@ class PopUpFragment : BaseDialogFragment<FragmentPopUpBinding>() {
         } else {
             //Daha önceden izin verilmiş
             startGalleryIntent()
-
         }
     }
 
     private fun startGalleryIntent() {
-
         val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(galleryIntent, 2)
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == 2 && resultCode == Activity.RESULT_OK && data != null) {
             selectedImage = data.data
-            var secilenBitmap : Bitmap? = null
+            var selectedBitmap : Bitmap? = null
 
             if(selectedImage != null){
 
                 if(Build.VERSION.SDK_INT >= 28){
 
                     val source = ImageDecoder.createSource(requireContext().contentResolver,selectedImage!!)
-                    secilenBitmap = ImageDecoder.decodeBitmap(source)
-                    binding.defaultUserImage.setImageBitmap(secilenBitmap)
+                    selectedBitmap = ImageDecoder.decodeBitmap(source)
+                    binding.defaultUserImage.setImageBitmap(selectedBitmap)
 
                 }else {
 
-                    secilenBitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver,selectedImage)
-                    binding.defaultUserImage.setImageBitmap(secilenBitmap)
+                    selectedBitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver,selectedImage)
+                    binding.defaultUserImage.setImageBitmap(selectedBitmap)
                 }
-
             }
-
         }
-
         super.onActivityResult(requestCode, resultCode, data)
     }
 

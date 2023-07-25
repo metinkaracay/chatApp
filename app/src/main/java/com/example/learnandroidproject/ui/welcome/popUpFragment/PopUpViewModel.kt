@@ -7,8 +7,8 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.learnandroidproject.common.GenericResult
 import com.example.learnandroidproject.common.isSuccess
-import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
 import com.example.learnandroidproject.domain.remote.dating.DatingApiRepository
 import com.example.learnandroidproject.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +17,8 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONException
+import org.json.JSONObject
 import java.util.*
 import javax.inject.Inject
 @HiltViewModel
@@ -28,11 +30,8 @@ class PopUpViewModel @Inject constructor(private val datingApiRepository: Dating
     private val _popUpCountDownTimer: MutableLiveData<Int> = MutableLiveData()
     val popUpCountDownTimer: LiveData<Int> = _popUpCountDownTimer
 
-    private val _uploadInProgress: MutableLiveData<Boolean> = MutableLiveData()
-    val uploadInProgress: LiveData<Boolean> = _uploadInProgress
-
-    private val _uploadMessage: MutableLiveData<String> = MutableLiveData()
-    val uploadMessage: LiveData<String> = _uploadMessage
+    private val _uploadResponse: MutableLiveData<String> = MutableLiveData()
+    val uploadResponse: LiveData<String> = _uploadResponse
 
     fun decisionToFun(requestCode: Int){
 
@@ -64,12 +63,12 @@ class PopUpViewModel @Inject constructor(private val datingApiRepository: Dating
         _popUpPageViewStateLiveData.value = PopUpPageViewState(true)
     }
 
-    fun postImage(selectedImage: Uri, context: Context) {
+    fun postImage(selectedImage: Uri, context: Context){
         val uuid = UUID.randomUUID()
+        val resultLiveData = MutableLiveData<GenericResult<String>>()
 
         viewModelScope.launch(Dispatchers.IO) {
             selectedImage?.let { imageUri ->
-                _uploadInProgress.postValue(true) // Yükleme başladı, true değeri gönderiliyor
                 val imageStream = context.contentResolver.openInputStream(imageUri)
                 imageStream?.use {
                     val byteArray = it.readBytes()
@@ -79,16 +78,33 @@ class PopUpViewModel @Inject constructor(private val datingApiRepository: Dating
                     // Yükleme işlemini gerçekleştir
                     val uploadResult = datingApiRepository.saveProfilePhoto(imagePart)
 
-                    // Yükleme tamamlandı, false değeri gönderiliyor
-                    _uploadInProgress.postValue(false)
-
-                    // Uyarı mesajını belirle
+                    /*// Uyarı mesajını belirle
                     if (uploadResult.isSuccess()) {
-                        Log.e("yükleme durumu","başarılı")
-                        _uploadMessage.postValue("Yükleme tamamlandı!") // Başarılı durum
+                        val responseString = uploadResult.component1()?.string() ?: ""
+                        //Log.e("yükleme durumu","başarılı")
+                        Log.e("responseString","$responseString")
+                        _uploadMessage.postValue(responseString)
+                    //_uploadMessage.postValue("Yükleme tamamlandı!") // Başarılı durum
                     } else {
                         Log.e("yükleme durumu","başarısız")
                         _uploadMessage.postValue("Yükleme başarısız oldu.") // Başarısız durum
+                    }*/
+
+                    if (uploadResult.isSuccess()) {
+                        val responseString = uploadResult.component1()?.string() ?: ""
+                        Log.e("responseString", responseString)
+
+                        // Parse the JSON response to extract the URL
+                        try {
+                            val jsonObject = JSONObject(responseString)
+                            val url = jsonObject.optString("url", "")
+                            Log.e("imageURL", url)
+                            _uploadResponse.postValue(url)
+                        } catch (e: JSONException) {
+                            Log.e("JSONParsingError", "Error parsing response JSON")
+                        }
+                    } else {
+                        Log.e("yükleme durumu", "başarısız")
                     }
                 }
             }

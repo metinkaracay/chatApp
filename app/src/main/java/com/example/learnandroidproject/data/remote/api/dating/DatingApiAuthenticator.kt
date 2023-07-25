@@ -29,7 +29,7 @@ class DatingApiAuthenticator @Inject constructor(
                 val refreshTokenResponseObject = JSONObject(refreshTokenResponse)
                 //val newToken = refreshTokenResponseObject.getString("token")
                 val refreshToken = refreshTokenResponseObject.getString("refreshToken")*/
-                val newToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJ1c2VybmFtZSI6InRlc3QiLCJlbWFpbCI6InRlc3RAdGVzdC5jb20ifSwiaWF0IjoxNjkwMjY2ODkzLCJleHAiOjE2OTA2MTI0OTN9.DVzZTaAywFoe2qXAVHTeCmzgwPQorOdCqjckZRsOK0I"
+                val newToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjo0NiwidXNlcm5hbWUiOiJzZ3NoIiwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIn0sImlhdCI6MTY5MDI3MTU4NiwiZXhwIjoxNjkwNjE3MTg2fQ.L6IRlRIKPC9kpxAfWMDbzvbyVb3fQEOhOpAGnvPkKYs"
                 response.request.newBuilder()
                     .header(HEADER_DATING_TOKEN, "Bearer $newToken")
                     .build()
