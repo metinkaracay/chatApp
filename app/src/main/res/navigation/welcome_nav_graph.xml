@@ -57,4 +57,8 @@
         android:id="@+id/logInFragment"
         android:name="com.example.learnandroidproject.ui.welcome.logInFragment.LogInFragment"
         android:label="LogInFragment" />
+    <fragment
+        android:id="@+id/chattingFragment"
+        android:name="com.example.learnandroidproject.ui.welcome.chattingFragment.ChattingFragment"
+        android:label="ChattingFragment" />
 </navigation>

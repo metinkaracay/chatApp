@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.learnandroidproject.R
+import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
 import com.example.learnandroidproject.databinding.UsersItemBinding
 
@@ -13,9 +14,9 @@ class GeneralUsersAdapter : RecyclerView.Adapter<GeneralUsersAdapter.UsersItemVi
 
     private var list: List<UserInfo> = emptyList()
 
-    private var itemClickListener: ((String, String) -> Unit)? = null
+    private var itemClickListener: ((UserInfo) -> Unit)? = null
 
-    fun setItemClickListener(listener: (String, String) -> Unit) {
+    fun setItemClickListener(listener: (UserInfo) -> Unit) {
         itemClickListener = listener
     }
 
@@ -47,6 +48,7 @@ class GeneralUsersAdapter : RecyclerView.Adapter<GeneralUsersAdapter.UsersItemVi
         val user = list[position]
 
         holder.bind(user)
+        holder.itemSelect(position)
     }
 
     inner class UsersItemViewHolder(private var binding: UsersItemBinding) : RecyclerView.ViewHolder(binding.root){
@@ -57,12 +59,11 @@ class GeneralUsersAdapter : RecyclerView.Adapter<GeneralUsersAdapter.UsersItemVi
             }
         }
 
-        /*fun itemSelect(position: Int){
-            binding.audioMessageBubble.setOnClickListener {
-                itemClickListener?.invoke(list[position].audioUri.toString(), "audio")
-                posi = position
-                Log.e("pos","$posi")
-                addClickedPosition(position)
-            }*/
+        fun itemSelect(position: Int) {
+            binding.userItem.setOnClickListener {
+                val user = UserInfo(list[position].uId,list[position].uName,list[position].uStatu,list[position].uPhoto)
+                itemClickListener?.invoke(user)
+            }
+        }
     }
 }

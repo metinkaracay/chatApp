@@ -3,9 +3,9 @@ package com.example.learnandroidproject.data.local.model.dating.db.response.User
 import com.google.gson.annotations.SerializedName
 
 data class UserInfo(
-    @SerializedName("id") val uId: Int,
-    @SerializedName("username") val uName: String,
-    @SerializedName("status") val uStatu: String,
-    @SerializedName("url") val uPhoto: String
+    @SerializedName("id") var uId: Int,
+    @SerializedName("username") var uName: String,
+    @SerializedName("status") var uStatu: String,
+    @SerializedName("url") var uPhoto: String
 ) {
 }

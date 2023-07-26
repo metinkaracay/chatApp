@@ -66,10 +66,10 @@ class LoginFragmentViewModel @Inject constructor(private val datingApiRepository
     fun checkFields(userName: String, password: String) : Boolean {
         val userNamePattern = Regex("^[a-zA-Z0-9._%+-]+$")
 
-        if (userNamePattern.matches(userName)){
+        /*if (userNamePattern.matches(userName)){
             _errorMessageLiveData.value = "Kullanıcı Adı Özel Karakter İçeremez"
-            return false
-        }else if(userName.contains(" ")){
+            return false //TODO username filtresini düzelt
+        }else */if(userName.contains(" ")){
             _errorMessageLiveData.value = "Kullanıcı Adı Boşluk İçeremez"
             return false
         }else if (userName.isNullOrEmpty()) {

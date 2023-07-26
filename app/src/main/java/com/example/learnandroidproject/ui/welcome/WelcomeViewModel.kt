@@ -1,10 +1,12 @@
 package com.example.learnandroidproject.ui.welcome
 
+import android.os.Bundle
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.example.learnandroidproject.R
 import com.example.learnandroidproject.common.SingleLiveEvent
 import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
+import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
 import com.example.learnandroidproject.ui.common.navigation.NavigationData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -21,11 +23,21 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     val navigateUpSingleLiveEvent: LiveData<Any?> = _navigateUpSingleLiveEvent
 
     private var user: User = User(null, null, null, null, null, null, null,null,null)
+    private var userInfo = UserInfo(0,"null","null","null")
 
     fun fillUserData(userName: String, email: String, password: String) {
         user.userName = userName
         user.email = email
         user.password = password
+    }
+    fun fillUserInfoData(id: Int,name: String, statu: String, photo: String) {
+        userInfo.uId = id
+        userInfo.uName = name
+        userInfo.uStatu = statu
+        userInfo.uPhoto = photo
+    }
+    fun getUserInfo(): UserInfo {
+        return userInfo
     }
 
     fun getUser(): User {
@@ -45,7 +57,6 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     fun goToCreateProfile(){
         _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.createProfileFragment)
     }
-
     fun goToLoginPage(){
         _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.logInFragment)
     }
@@ -54,6 +65,12 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     }
     fun goToProfilePage(){
         _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.editProfileFragment)
+    }
+    fun goToChattingPage(){
+        val bundle = Bundle()
+        /*bundle.putString("userPhoto", userPhoto)
+        bundle.putInt("id",id)*/
+        _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.chattingFragment)
     }
 
     fun navigateUp() {
