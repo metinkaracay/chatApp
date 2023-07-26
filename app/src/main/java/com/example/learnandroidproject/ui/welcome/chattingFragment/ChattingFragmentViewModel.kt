@@ -4,11 +4,14 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.learnandroidproject.common.isSuccess
+import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.SendingMessage
 import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
 import com.example.learnandroidproject.domain.remote.dating.DatingApiRepository
 import com.example.learnandroidproject.ui.base.BaseViewModel
 import com.example.learnandroidproject.ui.welcome.generalChatUsersFragment.GeneralChatUsersPageViewState
+import com.github.michaelbull.result.fold
 import com.github.michaelbull.result.get
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +28,6 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
     val userLiveData: LiveData<ChattingFragmentPageViewState> = _userLiveData
 
     var nullUser: UserInfo = UserInfo(0,"","","null")
-
     fun getUserInfo(user: UserInfo){
         nullUser = user
         _userLiveData.value = userLiveData.value?.copy(userInfo = user)
@@ -37,6 +39,19 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
                 withContext(Dispatchers.Main){
                     _chattingPageViewStateLiveData.value = ChattingFragmentPageViewState(nullUser,it)
                 }
+            }
+        }
+    }
+
+    fun sendMessage(message: String, user: UserInfo){
+        Log.e("mesaj","$message")
+        viewModelScope.launch(Dispatchers.IO){
+        val result = datingApiRepository.sendMessage(user.uId.toString(),SendingMessage(message))
+
+            if (result.isSuccess()){
+                Log.e("postSonuç","mesaj Gönderildi")
+            }else{
+                Log.e("postSonuç","Hata")
             }
         }
     }

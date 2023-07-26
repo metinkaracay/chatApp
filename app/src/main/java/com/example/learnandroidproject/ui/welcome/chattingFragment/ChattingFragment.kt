@@ -12,11 +12,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.learnandroidproject.R
 import com.example.learnandroidproject.common.extensions.observeNonNull
+import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
+import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
 import com.example.learnandroidproject.databinding.FragmentChattingBinding
 import com.example.learnandroidproject.ui.base.BaseFragment
 import com.example.learnandroidproject.ui.welcome.WelcomeViewModel
 import com.example.learnandroidproject.ui.welcome.chattingFragment.adapter.ChattingMessagesAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -31,9 +38,9 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        handleViewOption()
         val user = welcomeViewModel.getUserInfo()
         viewModel.getUserInfo(user)
+        handleViewOption(user)
         initResultsItemsRecyclerView()
         with(viewModel){
             chattingPageViewStateLiveData.observeNonNull(viewLifecycleOwner){
@@ -42,15 +49,33 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
                     executePendingBindings()
                 }
                 chattingMessagesAdapter.setItems(it.messages,it.userInfo.uId)
+                scrollToBottom(it.messages)
                 Log.e("fragmentit","${it.messages}")
             }
         }
         viewModel.getAllMessages(user)
     }
 
-    fun handleViewOption(){
+    fun handleViewOption(user: UserInfo){
         binding.backArrow.setOnClickListener {
             welcomeViewModel.navigateUp()
+        }
+        binding.sendButton.setOnClickListener {
+            val message = binding.editText.text.toString()
+            viewModel.sendMessage(message,user)
+            binding.editText.text.clear()
+        }
+    }
+    fun scrollToBottom(list: List<MessageItem>) {
+        // UI'a erişebilmesi için Main thread kullandık
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(TimeUnit.MILLISECONDS.toMillis(100))
+            binding.recyclerView?.let {
+                val itemCount = list.size
+                if (itemCount > 0) {
+                    it.scrollToPosition(itemCount - 1)
+                }
+            }
         }
     }
 

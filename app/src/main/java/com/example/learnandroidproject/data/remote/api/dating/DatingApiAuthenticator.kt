@@ -33,6 +33,7 @@ class DatingApiAuthenticator @Inject constructor(
                 val sharedPreferences = context.getSharedPreferences("com.example.learnandroidproject.ui.welcome.logInFragment",Context.MODE_PRIVATE)
                 val savedAccessToken = sharedPreferences.getString("accessTokenKey", "")
                 val newToken = savedAccessToken
+                Log.e("eldekiaccessToken","$newToken")
                 response.request.newBuilder()
                     .header(HEADER_DATING_TOKEN, "Bearer $newToken")
                     .build()

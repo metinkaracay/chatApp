@@ -45,10 +45,10 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>() {
                 Log.e("test","$it")
             }
             token.observe(viewLifecycleOwner){
-                Log.e("test3","${requireContext().getPackageName()}")
-                val sharedPreferences = requireContext().getSharedPreferences("com.example.learnandroidproject.ui.welcome.logInFragment",Context.MODE_PRIVATE)
-                sharedPreferences.edit().putString("accessTokenKey", it).apply()
-
+                Log.e("test3","$it")
+                /*val sharedPreferences = requireContext().getSharedPreferences("com.example.learnandroidproject.ui.welcome.logInFragment",Context.MODE_PRIVATE)
+                sharedPreferences.edit().remove("accessTokenKey").apply()
+                //sharedPreferences.edit().putString("accessTokenKey", it).apply()*/
             }
         }
     }
@@ -58,7 +58,7 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>() {
             val userName = binding.userName.text.toString()
             val password = binding.password.text.toString()
 
-            val result = viewModel.checkFields(userName,password)
+            val result = viewModel.checkFields(userName,password,requireContext())
 
             if (result) {
                 viewModel.viewModelScope.launch {

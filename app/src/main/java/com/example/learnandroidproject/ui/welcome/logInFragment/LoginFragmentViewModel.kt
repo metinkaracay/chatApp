@@ -1,5 +1,6 @@
 package com.example.learnandroidproject.ui.welcome.logInFragment
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -37,10 +38,13 @@ class LoginFragmentViewModel @Inject constructor(private val datingApiRepository
         _logInPageViewStateLiveData.value = LogInPageViewState()
     }
 
-    fun postUserParams(user: LoginRequest): Boolean{
+    fun postUserParams(user: LoginRequest,context: Context): Boolean{
         viewModelScope.launch(Dispatchers.IO){
             val uploadResult = datingApiRepository.login(user)
             val responseString = uploadResult.component1()?.string() ?: ""
+            val sharedPreferences = context.getSharedPreferences("com.example.learnandroidproject.ui.welcome.logInFragment", Context.MODE_PRIVATE)
+            sharedPreferences.edit().remove("accessTokenKey").apply()
+
 
             if (uploadResult.isSuccess()) {
 
@@ -50,6 +54,8 @@ class LoginFragmentViewModel @Inject constructor(private val datingApiRepository
                     val refToken = jsonObject.optString("refreshToken", "")
                     val accessToken = jsonObject.optString("accessToken", "")
 
+                    Log.e("gelenaccessToken","$accessToken")
+                    sharedPreferences.edit().putString("accessTokenKey", accessToken).apply()
                     _token.postValue(accessToken)
 
                 } catch (e: JSONException) {
@@ -63,7 +69,7 @@ class LoginFragmentViewModel @Inject constructor(private val datingApiRepository
         return true
     }
 
-    fun checkFields(userName: String, password: String) : Boolean {
+    fun checkFields(userName: String, password: String,context: Context) : Boolean {
         val userNamePattern = Regex("^[a-zA-Z0-9._%+-]+$")
 
         /*if (userNamePattern.matches(userName)){
@@ -83,6 +89,6 @@ class LoginFragmentViewModel @Inject constructor(private val datingApiRepository
             return false
         }
         val user = LoginRequest(userName,password)
-        return postUserParams(user)
+        return postUserParams(user,context)
     }
 }
