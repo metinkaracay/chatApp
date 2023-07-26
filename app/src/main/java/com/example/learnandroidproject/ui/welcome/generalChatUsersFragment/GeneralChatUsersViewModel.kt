@@ -29,14 +29,11 @@ class GeneralChatUsersViewModel @Inject constructor(private val datingApiReposit
     fun getAllUsers(){
 
         viewModelScope.launch(Dispatchers.IO){
-            Log.e("geldi1","gel")
             datingApiRepository.fetchUsersForChatRooms().get()?.let {
-                Log.e("geldi2","gel")
                 withContext(Dispatchers.Main){
-                    Log.e("geldi3","gel")
                     _generalChatUsersPageViewStateLiveData.value = GeneralChatUsersPageViewState(it)
                 }
-                Log.e("userfet","${it[0].email}")
+                Log.e("userfet","${it[0].uPhoto}")
             }
         }
     }

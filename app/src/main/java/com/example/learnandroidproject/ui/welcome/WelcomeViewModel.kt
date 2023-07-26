@@ -52,6 +52,9 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     fun goToBaseChatRoomsPage(){
         _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.baseChatRoomsFragment)
     }
+    fun goToProfilePage(){
+        _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.editProfileFragment)
+    }
 
     fun navigateUp() {
         _navigateUpSingleLiveEvent.call()

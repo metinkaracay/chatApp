@@ -7,22 +7,26 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.example.learnandroidproject.R
 import com.example.learnandroidproject.common.extensions.observeNonNull
 import com.example.learnandroidproject.databinding.FragmentBaseChatRoomsBinding
 import com.example.learnandroidproject.ui.base.BaseFragment
+import com.example.learnandroidproject.ui.welcome.WelcomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class BaseChatRoomsFragment : BaseFragment<FragmentBaseChatRoomsBinding>() {
 
     private val viewModel: BaseChatRoomsViewModel by viewModels()
+    private val welcomeViewModel: WelcomeViewModel by activityViewModels()
     override fun getLayoutResId(): Int = R.layout.fragment_base_chat_rooms
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        handleViewOption()
         with(viewModel){
             baseChatRoomsPageViewStateLiveData.observeNonNull(viewLifecycleOwner){
                 with(binding){
@@ -56,6 +60,12 @@ class BaseChatRoomsFragment : BaseFragment<FragmentBaseChatRoomsBinding>() {
             }
         })
 
+    }
+
+    fun handleViewOption(){
+        binding.profile.setOnClickListener {
+            welcomeViewModel.goToProfilePage()
+        }
     }
 
     fun selectedTab(tabId : Int){

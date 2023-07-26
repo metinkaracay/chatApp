@@ -29,8 +29,6 @@ class LoginFragmentViewModel @Inject constructor(private val datingApiRepository
     private val _token: MutableLiveData<String> = MutableLiveData()
     val token: LiveData<String> = _token
 
-    private val _uploadResponse: MutableLiveData<String> = MutableLiveData()
-    val uploadResponse: LiveData<String> = _uploadResponse
     init {
         fetchData()
     }
@@ -43,7 +41,7 @@ class LoginFragmentViewModel @Inject constructor(private val datingApiRepository
         viewModelScope.launch(Dispatchers.IO){
             val uploadResult = datingApiRepository.login(user)
             val responseString = uploadResult.component1()?.string() ?: ""
-            Log.e("responseString", responseString)
+
             if (uploadResult.isSuccess()) {
 
                 // Parse the JSON response to extract the URL
@@ -66,10 +64,13 @@ class LoginFragmentViewModel @Inject constructor(private val datingApiRepository
     }
 
     fun checkFields(userName: String, password: String) : Boolean {
-        val userNamePattern = Regex("[a-zA-Z0-9._%+-]")
+        val userNamePattern = Regex("^[a-zA-Z0-9._%+-]+$")
 
         if (userNamePattern.matches(userName)){
             _errorMessageLiveData.value = "Kullanıcı Adı Özel Karakter İçeremez"
+            return false
+        }else if(userName.contains(" ")){
+            _errorMessageLiveData.value = "Kullanıcı Adı Boşluk İçeremez"
             return false
         }else if (userName.isNullOrEmpty()) {
             _errorMessageLiveData.value = "Kullanıcı Adı Boş Bırakılamaz"
