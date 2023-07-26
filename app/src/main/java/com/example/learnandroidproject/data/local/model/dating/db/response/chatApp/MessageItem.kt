@@ -1,0 +1,10 @@
+package com.example.learnandroidproject.data.local.model.dating.db.response.chatApp
+
+import com.google.gson.annotations.SerializedName
+
+data class MessageItem(
+    @SerializedName("message") val message: String,
+    @SerializedName("senderId") val senderUser: String,
+    @SerializedName("receiverId") val receiverUser: String
+) {
+}

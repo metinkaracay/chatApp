@@ -7,8 +7,11 @@ import com.example.learnandroidproject.data.remote.model.dating.response.postRes
 import com.example.learnandroidproject.data.remote.model.dating.response.testRespose.*
 import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
+import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
+import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.Messages
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
+import retrofit2.http.Path
 
 interface DatingApiRepository {
     // as single form
@@ -19,6 +22,8 @@ interface DatingApiRepository {
     suspend fun fetchUsersForChatRooms(): GenericResult<List<UserInfo>>
 
     suspend fun fetchUserData(): GenericResult<User>
+
+    suspend fun getMessages(id: String): GenericResult<List<MessageItem>>
 
     suspend fun saveProfilePhoto(image: MultipartBody.Part): GenericResult<ResponseBody>
 

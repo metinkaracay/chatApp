@@ -9,8 +9,11 @@ import com.example.learnandroidproject.data.remote.model.dating.response.postRes
 import com.example.learnandroidproject.data.remote.model.dating.response.testRespose.PayloadBaseResponse
 import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
+import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
+import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.Messages
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
+import retrofit2.http.Path
 import javax.inject.Inject
 
 class DatingApiRepositoryImpl @Inject constructor(
@@ -24,6 +27,8 @@ class DatingApiRepositoryImpl @Inject constructor(
     override suspend fun fetchUsersForChatRooms(): GenericResult<List<UserInfo>> = handleDatingRequest { datingApiService.fetchUsersForChatRooms() }
 
     override suspend fun fetchUserData(): GenericResult<User> = handleDatingRequest { datingApiService.fetchUserData() }
+
+    override suspend fun getMessages(id: String): GenericResult<List<MessageItem>> = handleDatingRequest { datingApiService.getMessages(id) }
 
     override suspend fun saveProfilePhoto(image: MultipartBody.Part): GenericResult<ResponseBody> = handleDatingRequest { datingApiService.saveProfilePhoto(image) }
 

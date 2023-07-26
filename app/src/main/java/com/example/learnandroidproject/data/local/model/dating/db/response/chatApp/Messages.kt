@@ -1,0 +1,6 @@
+package com.example.learnandroidproject.data.local.model.dating.db.response.chatApp
+
+data class Messages(
+    val messageItem: List<MessageItem>
+) {
+}

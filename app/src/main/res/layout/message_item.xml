@@ -25,7 +25,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:visibility="@{pageViewState.textBubble}"
+                android:visibility="@{pageViewState.textBubbleVisibility}"
                 android:background="@{pageViewState.messageBackground(context)}">
 
                 <androidx.appcompat.widget.AppCompatTextView
