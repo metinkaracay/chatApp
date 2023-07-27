@@ -26,6 +26,7 @@
     <color name="whiteAlpha">#80ffffff</color>
 
     <color name="send_Button">#F62354</color>
+    <color name="toolbar_color">#F4EDDA</color>
 
     <!-- Register -->
     <color name="register_title_color">#313154</color>

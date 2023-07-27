@@ -1,5 +1,7 @@
 package com.example.learnandroidproject.ui.welcome.baseChatRooms
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -65,6 +67,11 @@ class BaseChatRoomsFragment : BaseFragment<FragmentBaseChatRoomsBinding>() {
     fun handleViewOption(){
         binding.profile.setOnClickListener {
             welcomeViewModel.goToProfilePage()
+        }
+        binding.exitButton.setOnClickListener {
+            val sharedPreferences = requireContext().getSharedPreferences(requireContext().packageName,Context.MODE_PRIVATE)
+            sharedPreferences.edit().remove("accessTokenKey").apply()
+            welcomeViewModel.goToMainPage()
         }
     }
 

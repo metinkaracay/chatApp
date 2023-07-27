@@ -19,10 +19,6 @@ class BaseChatRoomsViewModel @Inject constructor(private val datingApiRepository
     private val _baseChatRoomsPageViewStateLiveData: MutableLiveData<BaseChatRoomsPageViewState> = MutableLiveData()
     val baseChatRoomsPageViewStateLiveData: LiveData<BaseChatRoomsPageViewState> = _baseChatRoomsPageViewStateLiveData
 
-    fun fetchData(){
-
-    }
-
     fun getLoggedUser(){
         viewModelScope.launch(Dispatchers.IO){
             datingApiRepository.fetchUserData().get()?.let {
