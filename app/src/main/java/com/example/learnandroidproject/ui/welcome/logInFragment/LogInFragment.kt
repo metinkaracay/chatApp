@@ -13,9 +13,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.viewModelScope
 import com.example.learnandroidproject.R
 import com.example.learnandroidproject.common.extensions.observeNonNull
+import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.LoginRequest
 import com.example.learnandroidproject.databinding.FragmentLogInBinding
 import com.example.learnandroidproject.ui.base.BaseFragment
 import com.example.learnandroidproject.ui.welcome.WelcomeViewModel
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -42,17 +44,14 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>() {
             }
             errorMessageLiveData.observe(viewLifecycleOwner){
                 Toast.makeText(requireContext(),it,Toast.LENGTH_LONG).show()
-                Log.e("test","$it")
             }
-            token.observe(viewLifecycleOwner){
-                Log.e("test3","$it")
-                /*val sharedPreferences = requireContext().getSharedPreferences("com.example.learnandroidproject.ui.welcome.logInFragment",Context.MODE_PRIVATE)
-                sharedPreferences.edit().remove("accessTokenKey").apply()
-                //sharedPreferences.edit().putString("accessTokenKey", it).apply()*/
+            loginStateLiveData.observe(viewLifecycleOwner){
+                if (it){
+                    welcomeViewModel.goToBaseChatRoomsPage()
+                }
             }
         }
     }
-
     fun handleViewOption(){
         binding.loginButton.setOnClickListener {
             val userName = binding.userName.text.toString()
@@ -61,12 +60,7 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>() {
             val result = viewModel.checkFields(userName,password,requireContext())
 
             if (result) {
-                viewModel.viewModelScope.launch {
-                    delay(1000)
-
-                    welcomeViewModel.goToBaseChatRoomsPage()
-                    Log.e("test2", "Giriş Başarılı")
-                }
+                viewModel.postUserParams(LoginRequest(userName,password),requireContext())
             }
         }
         binding.signInButton.setOnClickListener {

@@ -7,26 +7,18 @@ import androidx.core.content.ContextCompat
 import com.example.learnandroidproject.R
 
 data class PopUpPageViewState(
-    val photoPick: Boolean
+    private val type: PopUpType
 ) {
-
-    fun defaultUserPhotoVisibility() = if (photoPick) View.VISIBLE else View.GONE
-
-    //fun selectedUserPhotoVisibility() = if (photoPick && photo != null) View.VISIBLE else View.GONE TODO daha önceden seçilen fotoyu açılan popupta göstermek için gerekir
-
-    //fun selectedUserPhoto() = photo
-
-    //fun getUserPhoto(context: Context) : Drawable? =
-    fun userPhotoSaveButton() = if (photoPick) View.VISIBLE else View.GONE
-
-    fun headerTextVisibility() = if (!photoPick) View.VISIBLE else View.GONE
+    enum class PopUpType{
+        SIGNIN,
+        SELECTPHOTO
+    }
+    fun defaultUserPhotoVisibility() = if (type == PopUpType.SELECTPHOTO) View.VISIBLE else View.GONE
+    fun userPhotoSaveButton() = if (type == PopUpType.SELECTPHOTO) View.VISIBLE else View.GONE
+    fun headerTextVisibility() = if (type == PopUpType.SIGNIN) View.VISIBLE else View.GONE
     fun getHeaderText() = "Kayıt Başarılı!"
-
-    fun imageVisibility() = if (!photoPick) View.VISIBLE else View.GONE
-
+    fun imageVisibility() = if (type == PopUpType.SIGNIN) View.VISIBLE else View.GONE
     fun Image(context: Context): Drawable? = ContextCompat.getDrawable(context, R.drawable.check_mark)
-
-    fun infoTextVisibility() = if (!photoPick) View.VISIBLE else View.GONE
-
+    fun infoTextVisibility() = if (type == PopUpType.SIGNIN) View.VISIBLE else View.GONE
     fun getInfoText() = "Anasayfaya yönlendiriliyorsunuz"
 }

@@ -9,6 +9,7 @@ import com.example.learnandroidproject.common.isSuccess
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.LoginRequest
 import com.example.learnandroidproject.domain.remote.dating.DatingApiRepository
 import com.example.learnandroidproject.ui.base.BaseViewModel
+import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -27,8 +28,8 @@ class LoginFragmentViewModel @Inject constructor(private val datingApiRepository
     private val _errorMessageLiveData: MutableLiveData<String> = MutableLiveData()
     val errorMessageLiveData: LiveData<String> = _errorMessageLiveData
 
-    private val _token: MutableLiveData<String> = MutableLiveData()
-    val token: LiveData<String> = _token
+    private val _loginStateLiveData: MutableLiveData<Boolean> = MutableLiveData()
+    val loginStateLiveData: LiveData<Boolean> = _loginStateLiveData
 
     init {
         fetchData()
@@ -37,38 +38,43 @@ class LoginFragmentViewModel @Inject constructor(private val datingApiRepository
     fun fetchData(){
         _logInPageViewStateLiveData.value = LogInPageViewState()
     }
-
-    fun postUserParams(user: LoginRequest,context: Context): Boolean{
+    fun postUserParams(user: LoginRequest,context: Context){
         viewModelScope.launch(Dispatchers.IO){
             val uploadResult = datingApiRepository.login(user)
             val responseString = uploadResult.component1()?.string() ?: ""
-            val sharedPreferences = context.getSharedPreferences("com.example.learnandroidproject.ui.welcome.logInFragment", Context.MODE_PRIVATE)
+            val sharedPreferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
             sharedPreferences.edit().remove("accessTokenKey").apply()
 
-
             if (uploadResult.isSuccess()) {
-
                 // Parse the JSON response to extract the URL
                 try {
                     val jsonObject = JSONObject(responseString)
                     val refToken = jsonObject.optString("refreshToken", "")
                     val accessToken = jsonObject.optString("accessToken", "")
 
-                    Log.e("gelenaccessToken","$accessToken")
                     sharedPreferences.edit().putString("accessTokenKey", accessToken).apply()
-                    _token.postValue(accessToken)
+
+                    _loginStateLiveData.postValue(true)
 
                 } catch (e: JSONException) {
-                    Log.e("JSONParsingError", "Error parsing response JSON")
+                    Log.e("JSONParsingError", "Hata Json Response'u Bölünemedi")
+                    _loginStateLiveData.postValue(false)
                 }
             } else {
-                Log.e("yükleme durumu", "başarısız")
+                val error = uploadResult.component2()
+                if (error != null && error is retrofit2.HttpException) {
+                    if (error.code() == 401) {
+                        _errorMessageLiveData.postValue("Giriş Başarısız. Kullanıcı Adı veya Şifre Hatalı.")
+                    } else {
+                        _errorMessageLiveData.postValue("Giriş Başarısız. Lütfen tekrar deneyin.")
+                    }
+                } else {
+                    _errorMessageLiveData.postValue("Giriş Başarısız. Lütfen tekrar deneyin.")
+                }
+                _loginStateLiveData.postValue(false)
             }
-
         }
-        return true
     }
-
     fun checkFields(userName: String, password: String,context: Context) : Boolean {
         val userNamePattern = Regex("^[a-zA-Z0-9._%+-]+$")
 
@@ -88,7 +94,6 @@ class LoginFragmentViewModel @Inject constructor(private val datingApiRepository
             _errorMessageLiveData.value = "Şifre En Az 6 Haneli Olabilir"
             return false
         }
-        val user = LoginRequest(userName,password)
-        return postUserParams(user,context)
+        return true
     }
 }

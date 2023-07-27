@@ -39,8 +39,9 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val user = welcomeViewModel.getUserInfo()
-        viewModel.getUserInfo(user)
-        handleViewOption(user)
+        viewModel.user = user
+        viewModel.getUserInfo()
+        handleViewOption()
         initResultsItemsRecyclerView()
         with(viewModel){
             chattingPageViewStateLiveData.observeNonNull(viewLifecycleOwner){
@@ -53,16 +54,16 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
                 Log.e("fragmentit","${it.messages}")
             }
         }
-        viewModel.getAllMessages(user)
+        viewModel.startFetchingMessagesPeriodically()
     }
 
-    fun handleViewOption(user: UserInfo){
+    fun handleViewOption(){
         binding.backArrow.setOnClickListener {
             welcomeViewModel.navigateUp()
         }
         binding.sendButton.setOnClickListener {
             val message = binding.editText.text.toString()
-            viewModel.sendMessage(message,user)
+            viewModel.sendMessage(message)
             binding.editText.text.clear()
         }
     }

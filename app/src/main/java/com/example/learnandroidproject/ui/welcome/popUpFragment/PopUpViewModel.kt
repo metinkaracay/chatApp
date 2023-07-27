@@ -34,7 +34,6 @@ class PopUpViewModel @Inject constructor(private val datingApiRepository: Dating
     val uploadResponse: LiveData<String> = _uploadResponse
 
     fun decisionToFun(requestCode: Int){
-
         if (requestCode == 1){
             countDownTimer()
         }else if(requestCode == 2){
@@ -43,7 +42,7 @@ class PopUpViewModel @Inject constructor(private val datingApiRepository: Dating
     }
 
     fun countDownTimer(){
-        _popUpPageViewStateLiveData.value = PopUpPageViewState(false)
+        _popUpPageViewStateLiveData.value = PopUpPageViewState(PopUpPageViewState.PopUpType.SIGNIN)
         val timer: Long = 4
         val countDownInterval: Long = 1000
 
@@ -60,7 +59,7 @@ class PopUpViewModel @Inject constructor(private val datingApiRepository: Dating
     }
 
     fun photoPicker(){
-        _popUpPageViewStateLiveData.value = PopUpPageViewState(true)
+        _popUpPageViewStateLiveData.value = PopUpPageViewState(PopUpPageViewState.PopUpType.SELECTPHOTO)
     }
 
     fun postImage(selectedImage: Uri, context: Context){

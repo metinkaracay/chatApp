@@ -29,7 +29,6 @@ class BaseChatRoomsViewModel @Inject constructor(private val datingApiRepository
                 withContext(Dispatchers.Main){
                     _baseChatRoomsPageViewStateLiveData.value = BaseChatRoomsPageViewState(it.photo!!)
                 }
-                Log.e("test","${it.photo}")
             }
         }
     }

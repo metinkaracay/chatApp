@@ -15,8 +15,10 @@ import com.github.michaelbull.result.fold
 import com.github.michaelbull.result.get
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 @HiltViewModel
 class ChattingFragmentViewModel @Inject constructor(private val datingApiRepository: DatingApiRepository): BaseViewModel(){
@@ -27,26 +29,32 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
     private val _userLiveData: MutableLiveData<ChattingFragmentPageViewState> = MutableLiveData()
     val userLiveData: LiveData<ChattingFragmentPageViewState> = _userLiveData
 
-    var nullUser: UserInfo = UserInfo(0,"","","null")
-    fun getUserInfo(user: UserInfo){
-        nullUser = user
+    var user: UserInfo = UserInfo(0,"","","null")
+
+    fun getUserInfo(){
         _userLiveData.value = userLiveData.value?.copy(userInfo = user)
     }
-
-    fun getAllMessages(user: UserInfo){
+    fun startFetchingMessagesPeriodically() {
+        viewModelScope.launch {
+            while (true) {
+                getAllMessages()
+                delay(TimeUnit.SECONDS.toMillis(5))
+            }
+        }
+    }
+    fun getAllMessages(){
         viewModelScope.launch(Dispatchers.IO){
             datingApiRepository.getMessages(user.uId.toString()).get()?.let {
                 withContext(Dispatchers.Main){
-                    _chattingPageViewStateLiveData.value = ChattingFragmentPageViewState(nullUser,it)
+                    _chattingPageViewStateLiveData.value = ChattingFragmentPageViewState(user,it)
                 }
             }
         }
     }
-
-    fun sendMessage(message: String, user: UserInfo){
+    fun sendMessage(message: String){
         Log.e("mesaj","$message")
         viewModelScope.launch(Dispatchers.IO){
-        val result = datingApiRepository.sendMessage(user.uId.toString(),SendingMessage(message))
+            val result = datingApiRepository.sendMessage(user.uId.toString(),SendingMessage(message))
 
             if (result.isSuccess()){
                 Log.e("postSonuç","mesaj Gönderildi")
