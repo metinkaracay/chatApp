@@ -1,6 +1,7 @@
 package com.example.learnandroidproject.ui.welcome.popUpFragment
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -11,6 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
@@ -34,6 +36,7 @@ class PopUpFragment : BaseDialogFragment<FragmentPopUpBinding>() {
     private val welcomeViewModel: WelcomeViewModel by activityViewModels()
 
     private var callBackListener: ((String) -> Unit)? = null
+    var startY: Float? = null
 
     fun setCallBackListener(listener: (String) -> Unit) {
         callBackListener = listener
@@ -43,10 +46,11 @@ class PopUpFragment : BaseDialogFragment<FragmentPopUpBinding>() {
 
     override fun getLayoutResId(): Int = R.layout.fragment_pop_up
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         dialog!!.window!!.attributes.windowAnimations = R.style.Animation_Design_BottomSheetDialog
-        handleViewOption()
+
         with(viewModel){
         popupPageViewStateLiveData.observeNonNull(viewLifecycleOwner) {
                 with(binding) {
@@ -65,14 +69,18 @@ class PopUpFragment : BaseDialogFragment<FragmentPopUpBinding>() {
                 dismiss()
             }
         }
-
+        val selectedPhoto = welcomeViewModel.getClickedUserPhoto()
         val requestCode = arguments?.getInt(ARG_LINK)
-        viewModel.decisionToFun(requestCode!!)
+        viewModel.decisionToFun(requestCode!!,selectedPhoto)
+        handleViewOption(requestCode)
+        binding.baseLinear.setOnTouchListener(onTouchListener)
     }
 
-    fun handleViewOption(){
-        binding.userPhoto.setOnClickListener {
-            checkStoragePermission()
+    fun handleViewOption(requestCode: Int){
+        if (requestCode == 2){
+            binding.userPhoto.setOnClickListener {
+                checkStoragePermission()
+            }
         }
         binding.saveButton.setOnClickListener {
             viewModel.postImage(selectedImage!!, requireContext())
@@ -137,7 +145,26 @@ class PopUpFragment : BaseDialogFragment<FragmentPopUpBinding>() {
             ViewGroup.LayoutParams.MATCH_PARENT
         )
     }
+    @SuppressLint("ClickableViewAccessibility")
+    private val onTouchListener = View.OnTouchListener { View, event ->
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                // Parmağın dokunduğu anı takip etmek için başlangıç noktasını kaydet
+                startY = event.rawY
+            }
+            MotionEvent.ACTION_UP -> {
+                // Parmağın kalktığı anı takip etmek için bitiş noktasını kaydet
+                val endY = event.rawY
+                val distance = endY - startY!!
 
+                // Parmağın aşağı doğru sürüklendiği yeterli mesafeye ulaşmışsa fragment'ı kapat
+                if (distance > 300) {
+                    dismiss()
+                }
+            }
+        }
+        true
+    }
     companion object {
         private const val ARG_LINK = "requestCode"
 

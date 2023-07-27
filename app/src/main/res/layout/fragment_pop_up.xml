@@ -19,6 +19,7 @@
         tools:context=".ui.welcome.popUpFragment.PopUpFragment">
 
         <LinearLayout
+            android:id="@+id/baseLinear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -36,6 +37,14 @@
                     android:layout_height="300dp"
                     android:src="@drawable/avatar"
                     android:visibility="@{pageViewState.defaultUserPhotoVisibility}"/>
+
+                <ImageView
+                    android:id="@+id/selectedUserImage"
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:src="@drawable/avatar"
+                    imageUrl="@{pageViewState.selectedUserPhotoUrl}"
+                    android:visibility="@{pageViewState.selectedUserPhotoVisibility}"/>
             </LinearLayout>
 
             <Button

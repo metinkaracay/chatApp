@@ -24,6 +24,7 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
 
     private var user: User = User(null, null, null, null, null, null, null,null,null)
     private var userInfo = UserInfo(0,"null","null","null")
+    private var clickedUserPhoto: String? = null
 
     fun fillUserData(userName: String, email: String, password: String) {
         user.userName = userName
@@ -39,9 +40,14 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     fun getUserInfo(): UserInfo {
         return userInfo
     }
-
     fun getUser(): User {
         return user
+    }
+    fun fillClickedUserPhoto(photo: String){
+        clickedUserPhoto = photo
+    }
+    fun getClickedUserPhoto(): String? {
+        return clickedUserPhoto
     }
 
     fun onSecondFragmentClicked() {

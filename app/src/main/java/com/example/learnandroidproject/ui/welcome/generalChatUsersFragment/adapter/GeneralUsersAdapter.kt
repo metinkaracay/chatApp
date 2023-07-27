@@ -15,11 +15,14 @@ class GeneralUsersAdapter : RecyclerView.Adapter<GeneralUsersAdapter.UsersItemVi
     private var list: List<UserInfo> = emptyList()
 
     private var itemClickListener: ((UserInfo) -> Unit)? = null
+    private var photoIemClickListener: ((String) -> Unit)? = null
 
     fun setItemClickListener(listener: (UserInfo) -> Unit) {
         itemClickListener = listener
     }
-
+    fun setPhotoItemClickListener(listener: (String) -> Unit) {
+        photoIemClickListener = listener
+    }
     fun setItems(page: List<UserInfo>) {
         // Yeni mesajı göndermeden önceki ve gönderdikte sonraki liste boyutlarını aldık
         val previousItemCount = list.size
@@ -63,6 +66,9 @@ class GeneralUsersAdapter : RecyclerView.Adapter<GeneralUsersAdapter.UsersItemVi
             binding.userItem.setOnClickListener {
                 val user = UserInfo(list[position].uId,list[position].uName,list[position].uStatu,list[position].uPhoto)
                 itemClickListener?.invoke(user)
+            }
+            binding.userPhoto.setOnClickListener {
+                photoIemClickListener?.invoke(list[position].uPhoto)
             }
         }
     }

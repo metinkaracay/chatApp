@@ -1,6 +1,7 @@
 package com.example.learnandroidproject.ui.welcome.chattingFragment
 
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -29,6 +30,9 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
     private val _userLiveData: MutableLiveData<ChattingFragmentPageViewState> = MutableLiveData()
     val userLiveData: LiveData<ChattingFragmentPageViewState> = _userLiveData
 
+    private val _errorMessageLiveData: MutableLiveData<String> = MutableLiveData()
+    val errorMessageLiveData: LiveData<String> = _errorMessageLiveData
+
     var user: UserInfo = UserInfo(0,"","","null")
 
     fun getUserInfo(){
@@ -53,14 +57,18 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
     }
     fun sendMessage(message: String){
         Log.e("mesaj","$message")
-        viewModelScope.launch(Dispatchers.IO){
-            val result = datingApiRepository.sendMessage(user.uId.toString(),SendingMessage(message))
+        if (message.isNotEmpty() && message.isNotBlank()){
+            viewModelScope.launch(Dispatchers.IO){
+                val result = datingApiRepository.sendMessage(user.uId.toString(),SendingMessage(message))
 
-            if (result.isSuccess()){
-                Log.e("postSonuç","mesaj Gönderildi")
-            }else{
-                Log.e("postSonuç","Hata")
+                if (result.isSuccess()){
+                    Log.e("postSonuç","mesaj Gönderildi")
+                }else{
+                    Log.e("postSonuç","Hata")
+                }
             }
+        }else{
+            _errorMessageLiveData.postValue("Lütfen Bir Mesaj Girin")
         }
     }
 }

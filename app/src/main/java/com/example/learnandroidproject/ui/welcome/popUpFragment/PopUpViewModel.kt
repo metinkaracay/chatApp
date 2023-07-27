@@ -33,16 +33,18 @@ class PopUpViewModel @Inject constructor(private val datingApiRepository: Dating
     private val _uploadResponse: MutableLiveData<String> = MutableLiveData()
     val uploadResponse: LiveData<String> = _uploadResponse
 
-    fun decisionToFun(requestCode: Int){
+    fun decisionToFun(requestCode: Int,imageUrl: String?){
         if (requestCode == 1){
             countDownTimer()
         }else if(requestCode == 2){
-            photoPicker()
+            photoPicker(imageUrl)
+        }else if(requestCode == 3){
+            showUserPhoto(imageUrl)
         }
     }
 
     fun countDownTimer(){
-        _popUpPageViewStateLiveData.value = PopUpPageViewState(PopUpPageViewState.PopUpType.SIGNIN)
+        _popUpPageViewStateLiveData.value = PopUpPageViewState(PopUpPageViewState.PopUpType.SIGNIN,null)
         val timer: Long = 4
         val countDownInterval: Long = 1000
 
@@ -58,10 +60,12 @@ class PopUpViewModel @Inject constructor(private val datingApiRepository: Dating
         }.start()
     }
 
-    fun photoPicker(){
-        _popUpPageViewStateLiveData.value = PopUpPageViewState(PopUpPageViewState.PopUpType.SELECTPHOTO)
+    fun photoPicker(imageUrl: String?){
+        _popUpPageViewStateLiveData.value = PopUpPageViewState(PopUpPageViewState.PopUpType.SELECTPHOTO,imageUrl)
     }
-
+    fun showUserPhoto(imageUrl: String?){
+        _popUpPageViewStateLiveData.value = PopUpPageViewState(PopUpPageViewState.PopUpType.SHOWUSERPHOTO,imageUrl)
+    }
     fun postImage(selectedImage: Uri, context: Context){
         val uuid = UUID.randomUUID()
         val resultLiveData = MutableLiveData<GenericResult<String>>()

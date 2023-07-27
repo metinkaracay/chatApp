@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -51,8 +52,10 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
                 }
                 chattingMessagesAdapter.setItems(it.messages,it.userInfo.uId)
                 scrollToBottom(it.messages)
-                Log.e("fragmentit","${it.messages}")
             }
+        }
+        viewModel.errorMessageLiveData.observe(viewLifecycleOwner){
+            Toast.makeText(requireContext(),it,Toast.LENGTH_SHORT).show()
         }
         viewModel.startFetchingMessagesPeriodically()
     }

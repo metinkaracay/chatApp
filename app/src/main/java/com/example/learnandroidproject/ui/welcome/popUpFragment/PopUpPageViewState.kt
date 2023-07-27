@@ -7,13 +7,17 @@ import androidx.core.content.ContextCompat
 import com.example.learnandroidproject.R
 
 data class PopUpPageViewState(
-    private val type: PopUpType
+    private val type: PopUpType,
+    val photoUrl: String?
 ) {
     enum class PopUpType{
         SIGNIN,
-        SELECTPHOTO
+        SELECTPHOTO,
+        SHOWUSERPHOTO
     }
-    fun defaultUserPhotoVisibility() = if (type == PopUpType.SELECTPHOTO) View.VISIBLE else View.GONE
+    fun defaultUserPhotoVisibility() = if (type == PopUpType.SELECTPHOTO || photoUrl == "null") View.VISIBLE else View.GONE
+    fun selectedUserPhotoVisibility() = if (type == PopUpType.SHOWUSERPHOTO && photoUrl != "null") View.VISIBLE else View.GONE
+    fun selectedUserPhotoUrl() = photoUrl
     fun userPhotoSaveButton() = if (type == PopUpType.SELECTPHOTO) View.VISIBLE else View.GONE
     fun headerTextVisibility() = if (type == PopUpType.SIGNIN) View.VISIBLE else View.GONE
     fun getHeaderText() = "Kayıt Başarılı!"

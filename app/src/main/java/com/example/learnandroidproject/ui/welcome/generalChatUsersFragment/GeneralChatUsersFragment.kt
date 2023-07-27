@@ -13,6 +13,7 @@ import com.example.learnandroidproject.databinding.FragmentGeneralChatUsersBindi
 import com.example.learnandroidproject.ui.base.BaseFragment
 import com.example.learnandroidproject.ui.welcome.WelcomeViewModel
 import com.example.learnandroidproject.ui.welcome.generalChatUsersFragment.adapter.GeneralUsersAdapter
+import com.example.learnandroidproject.ui.welcome.popUpFragment.PopUpFragment
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 @AndroidEntryPoint
@@ -42,6 +43,11 @@ class GeneralChatUsersFragment : BaseFragment<FragmentGeneralChatUsersBinding>()
             welcomeViewModel.fillUserInfoData(it.uId,it.uName,it.uStatu,it.uPhoto)
             welcomeViewModel.goToChattingPage()
         }
+        recyclerAdapter.setPhotoItemClickListener {
+            welcomeViewModel.fillClickedUserPhoto(it)
+            Log.e("deffoto","$it")
+            showUserProfilePhotoDialog(3)
+        }
     }
 
     private fun initResultsItemsRecyclerView() {
@@ -50,6 +56,12 @@ class GeneralChatUsersFragment : BaseFragment<FragmentGeneralChatUsersBinding>()
                 orientation = RecyclerView.VERTICAL
             }
             adapter = recyclerAdapter
+        }
+    }
+    private fun showUserProfilePhotoDialog(requestCode: Int) {
+        if (PopUpFragment.isShowing().not()) {
+            val filterNewDialogFragment: PopUpFragment = PopUpFragment.newInstance(requestCode)
+            filterNewDialogFragment.show(childFragmentManager, PopUpFragment::class.java.simpleName)
         }
     }
 }
