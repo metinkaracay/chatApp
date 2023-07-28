@@ -15,10 +15,13 @@ data class PopUpPageViewState(
         SELECTPHOTO,
         SHOWUSERPHOTO
     }
-    fun defaultUserPhotoVisibility() = if (type == PopUpType.SELECTPHOTO || photoUrl == "null") View.VISIBLE else View.GONE
-    fun selectedUserPhotoVisibility() = if (type == PopUpType.SHOWUSERPHOTO && photoUrl != "null") View.VISIBLE else View.GONE
+    fun defaultUserPhotoVisibility() = if ((type == PopUpType.SELECTPHOTO && photoUrl == "null") || (type == PopUpType.SHOWUSERPHOTO && photoUrl == "null")) View.VISIBLE else View.GONE
+    fun selectedUserPhotoVisibility() = if ((type == PopUpType.SELECTPHOTO && photoUrl != "null") || (type == PopUpType.SHOWUSERPHOTO && photoUrl != "null")) View.VISIBLE else View.GONE
     fun selectedUserPhotoUrl() = photoUrl
     fun userPhotoSaveButton() = if (type == PopUpType.SELECTPHOTO) View.VISIBLE else View.GONE
+    fun getSaveButtonText() = "Kaydet"
+    fun popUpCloseButton() = if (type == PopUpType.SELECTPHOTO) View.VISIBLE else View.GONE
+    fun getCloseButtonText() = "Kapat"
     fun headerTextVisibility() = if (type == PopUpType.SIGNIN) View.VISIBLE else View.GONE
     fun getHeaderText() = "Kayıt Başarılı!"
     fun imageVisibility() = if (type == PopUpType.SIGNIN) View.VISIBLE else View.GONE

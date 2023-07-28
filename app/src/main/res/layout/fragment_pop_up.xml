@@ -47,13 +47,27 @@
                     android:visibility="@{pageViewState.selectedUserPhotoVisibility}"/>
             </LinearLayout>
 
-            <Button
-                android:id="@+id/saveButton"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Kaydet"
-                android:visibility="@{pageViewState.userPhotoSaveButton}"/>
+                android:orientation="horizontal"
+                android:gravity="center">
 
+                <Button
+                    android:id="@+id/saveButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{pageViewState.saveButtonText}"
+                    android:visibility="@{pageViewState.userPhotoSaveButton}"/>
+
+                <Button
+                    android:id="@+id/closeButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="50dp"
+                    android:text="@{pageViewState.closeButtonText}"
+                    android:visibility="@{pageViewState.popUpCloseButton}"/>
+            </LinearLayout>
             <TextView
                 android:id="@+id/header"
                 android:layout_width="wrap_content"

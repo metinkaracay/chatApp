@@ -21,11 +21,11 @@ class EditProfileViewModel @Inject constructor(private val datingApiRepository: 
     private val _editProfilePageViewStateLiveData: MutableLiveData<EditProfilePageViewState> = MutableLiveData()
     val editProfilePageViewStateLiveData: LiveData<EditProfilePageViewState> = _editProfilePageViewStateLiveData
 
-    private val _updateProfilePhotoLiveData: MutableLiveData<String> = MutableLiveData()
-    val updateProfilePhotoLiveData: LiveData<String> = _updateProfilePhotoLiveData
-
     private val _errorMessageLiveData: MutableLiveData<String> = MutableLiveData()
     val errorMessageLiveData: LiveData<String> = _errorMessageLiveData
+
+    private val _userPhotoLiveData: MutableLiveData<String> = MutableLiveData()
+    val userPhotoLiveData: LiveData<String> = _userPhotoLiveData
 
     init {
         fetchUserData()
@@ -36,6 +36,11 @@ class EditProfileViewModel @Inject constructor(private val datingApiRepository: 
             datingApiRepository.fetchUserData().get()?.let {
                 withContext(Dispatchers.Main){
                     _editProfilePageViewStateLiveData.value = EditProfilePageViewState(it,null,false)
+                    if (it.photo != null){
+                        _userPhotoLiveData.value = it.photo!!
+                    }else{
+                        _userPhotoLiveData.value = "null"
+                    }
                 }
             }
         }
@@ -45,6 +50,7 @@ class EditProfileViewModel @Inject constructor(private val datingApiRepository: 
         viewModelScope.launch(Dispatchers.IO) {
             delay(1000L)
             withContext(Dispatchers.Main) {
+                _userPhotoLiveData.value = link
                 _editProfilePageViewStateLiveData.value = editProfilePageViewStateLiveData.value?.copy(image = link)
             }
         }

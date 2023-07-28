@@ -86,6 +86,9 @@ class PopUpFragment : BaseDialogFragment<FragmentPopUpBinding>() {
             viewModel.postImage(selectedImage!!, requireContext())
 
         }
+        binding.closeButton.setOnClickListener {
+            dismiss()
+        }
     }
 
     private fun checkStoragePermission() {
@@ -113,12 +116,14 @@ class PopUpFragment : BaseDialogFragment<FragmentPopUpBinding>() {
 
                     val source = ImageDecoder.createSource(requireContext().contentResolver,selectedImage!!)
                     selectedBitmap = ImageDecoder.decodeBitmap(source)
-                    binding.defaultUserImage.setImageBitmap(selectedBitmap)
+                    //binding.defaultUserImage.setImageBitmap(selectedBitmap)
+                    binding.selectedUserImage.setImageBitmap(selectedBitmap)
 
                 }else {
 
                     selectedBitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver,selectedImage)
-                    binding.defaultUserImage.setImageBitmap(selectedBitmap)
+                    //binding.defaultUserImage.setImageBitmap(selectedBitmap)
+                    binding.selectedUserImage.setImageBitmap(selectedBitmap)
                 }
             }
         }

@@ -6,12 +6,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.example.learnandroidproject.R
 import com.example.learnandroidproject.common.extensions.observeNonNull
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.UpdateUser
 import com.example.learnandroidproject.databinding.FragmentEditProfileBinding
 import com.example.learnandroidproject.ui.base.BaseFragment
+import com.example.learnandroidproject.ui.welcome.WelcomeViewModel
 import com.example.learnandroidproject.ui.welcome.popUpFragment.PopUpFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -19,6 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class EditProfileFragment : BaseFragment<FragmentEditProfileBinding>() {
 
     private val viewModel: EditProfileViewModel by viewModels()
+    private val welcomeViewModel: WelcomeViewModel by activityViewModels()
 
     override fun getLayoutResId(): Int = R.layout.fragment_edit_profile
 
@@ -33,11 +37,20 @@ class EditProfileFragment : BaseFragment<FragmentEditProfileBinding>() {
                     executePendingBindings()
                 }
             }
+            errorMessageLiveData.observeNonNull(viewLifecycleOwner){
+                Toast.makeText(requireContext(),it,Toast.LENGTH_SHORT).show()
+            }
+            userPhotoLiveData.observe(viewLifecycleOwner){
+                welcomeViewModel.fillClickedUserPhoto(it)
+            }
         }
     }
 
     fun handleViewOption(){
 
+        binding.backArrow.setOnClickListener {
+            welcomeViewModel.navigateUp()
+        }
         binding.userPhoto.setOnClickListener {
             showNewPhotoPickerDialog(2)
         }
@@ -57,8 +70,8 @@ class EditProfileFragment : BaseFragment<FragmentEditProfileBinding>() {
             if (result){
                 viewModel.patchChangedUserFields(user)
                 viewModel.editButtonListener(false)
+                fieldsController(false)
             }
-            fieldsController(false)
         }
     }
 

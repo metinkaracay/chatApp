@@ -16,6 +16,31 @@
         android:gravity="center|top"
         tools:context=".ui.welcome.editProfileFragment.EditProfileFragment">
 
+        <Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/toolbar_color">
+
+            <ImageView
+                android:id="@+id/backArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@{pageViewState.backArrow(context)}"
+                android:layout_marginVertical="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_gravity="start"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{pageViewState.headerName}"
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                android:layout_gravity="center"
+                android:layout_marginStart="10dp"/>
+        </Toolbar>
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -62,6 +87,7 @@
                 android:id="@+id/selectedPhoto"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:scaleType="centerCrop"
                 android:visibility="@{pageViewState.selectedPhoto}"
                 app:imageUrl="@{pageViewState.userPhoto}"/>
 
