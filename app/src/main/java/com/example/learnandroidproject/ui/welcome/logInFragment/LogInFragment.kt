@@ -60,7 +60,7 @@ class LogInFragment : BaseFragment<FragmentLogInBinding>() {
             val result = viewModel.checkFields(userName,password,requireContext())
 
             if (result) {
-                viewModel.postUserParams(LoginRequest(userName,password),requireContext())
+                viewModel.postUserParams(LoginRequest(userName,password,null),requireContext())
             }
         }
         binding.signInButton.setOnClickListener {

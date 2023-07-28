@@ -1,5 +1,6 @@
 package com.example.learnandroidproject.ui.welcome.chattingFragment
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -42,6 +43,8 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
         val user = welcomeViewModel.getUserInfo()
         viewModel.user = user
         viewModel.getUserInfo()
+        val sharedPreferences = requireContext().getSharedPreferences("LoggedUserID",Context.MODE_PRIVATE)
+        viewModel.loggedUserId = sharedPreferences.getString("LoggedUserId","")
         handleViewOption()
         initResultsItemsRecyclerView()
         with(viewModel){
@@ -57,7 +60,7 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
         viewModel.errorMessageLiveData.observe(viewLifecycleOwner){
             Toast.makeText(requireContext(),it,Toast.LENGTH_SHORT).show()
         }
-        viewModel.startFetchingMessagesPeriodically()
+        viewModel.getMessages(SocketHandler,requireContext())
     }
 
     fun handleViewOption(){

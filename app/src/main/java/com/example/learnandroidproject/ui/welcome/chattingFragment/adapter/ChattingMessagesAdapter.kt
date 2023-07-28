@@ -17,7 +17,8 @@ class ChattingMessagesAdapter : RecyclerView.Adapter<ChattingMessagesAdapter.Mes
     fun setItems(page: List<MessageItem>,userId: Int) {
         uId = userId
         list = page
-        notifyDataSetChanged()
+        notifyItemRangeChanged(list.size,1)
+        //notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChattingMessagesAdapter.MessageItemViewHolder{

@@ -10,6 +10,8 @@ import com.example.learnandroidproject.data.local.model.dating.db.request.chatAp
 import com.example.learnandroidproject.domain.remote.dating.DatingApiRepository
 import com.example.learnandroidproject.ui.base.BaseViewModel
 import com.google.gson.JsonObject
+import com.onesignal.OSSubscriptionStateChanges
+import com.onesignal.OneSignal
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -39,11 +41,16 @@ class LoginFragmentViewModel @Inject constructor(private val datingApiRepository
         _logInPageViewStateLiveData.value = LogInPageViewState()
     }
     fun postUserParams(user: LoginRequest,context: Context){
+        val oneSignalPlayerId = OneSignal.getDeviceState()?.userId
+        Log.e("oneSignal Key","$oneSignalPlayerId")
+        val newUser = LoginRequest(user.userName,user.password,oneSignalPlayerId)
         viewModelScope.launch(Dispatchers.IO){
-            val uploadResult = datingApiRepository.login(user)
+            val uploadResult = datingApiRepository.login(newUser)
             val responseString = uploadResult.component1()?.string() ?: ""
             val sharedPreferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
+            val sharedPreferences2 = context.getSharedPreferences("LoggedUserID",Context.MODE_PRIVATE)
             sharedPreferences.edit().remove("accessTokenKey").apply()
+            sharedPreferences2.edit().remove("LoggedUserID").apply()
 
             if (uploadResult.isSuccess()) {
                 // Parse the JSON response to extract the URL
@@ -51,8 +58,10 @@ class LoginFragmentViewModel @Inject constructor(private val datingApiRepository
                     val jsonObject = JSONObject(responseString)
                     val refToken = jsonObject.optString("refreshToken", "")
                     val accessToken = jsonObject.optString("accessToken", "")
+                    val loggedUserId = jsonObject.optString("userId", "")
 
                     sharedPreferences.edit().putString("accessTokenKey", accessToken).apply()
+                    sharedPreferences2.edit().putString("LoggedUserId",loggedUserId).apply()
 
                     _loginStateLiveData.postValue(true)
 

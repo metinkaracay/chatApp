@@ -12,7 +12,8 @@ import com.example.learnandroidproject.data.local.model.dating.db.response.chatA
 data class ChattingFragmentPageViewState(
     val userInfo: UserInfo,
     val messages: List<MessageItem>
-){
+    )
+{
 
     fun backArrow(context: Context) : Drawable? = ContextCompat.getDrawable(context, R.drawable.back_arrow_icon)
     fun defaultPhotoVisibility() = if (userInfo.uPhoto == "null") View.VISIBLE else View.GONE
