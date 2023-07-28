@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.UpdateUser
 import com.example.learnandroidproject.domain.remote.dating.DatingApiRepository
 import com.example.learnandroidproject.ui.base.BaseViewModel
 import com.github.michaelbull.result.get
@@ -23,6 +24,9 @@ class EditProfileViewModel @Inject constructor(private val datingApiRepository: 
     private val _updateProfilePhotoLiveData: MutableLiveData<String> = MutableLiveData()
     val updateProfilePhotoLiveData: LiveData<String> = _updateProfilePhotoLiveData
 
+    private val _errorMessageLiveData: MutableLiveData<String> = MutableLiveData()
+    val errorMessageLiveData: LiveData<String> = _errorMessageLiveData
+
     init {
         fetchUserData()
     }
@@ -31,7 +35,7 @@ class EditProfileViewModel @Inject constructor(private val datingApiRepository: 
         viewModelScope.launch(Dispatchers.IO){
             datingApiRepository.fetchUserData().get()?.let {
                 withContext(Dispatchers.Main){
-                    _editProfilePageViewStateLiveData.value = EditProfilePageViewState(it,null)
+                    _editProfilePageViewStateLiveData.value = EditProfilePageViewState(it,null,false)
                 }
             }
         }
@@ -43,6 +47,40 @@ class EditProfileViewModel @Inject constructor(private val datingApiRepository: 
             withContext(Dispatchers.Main) {
                 _editProfilePageViewStateLiveData.value = editProfilePageViewStateLiveData.value?.copy(image = link)
             }
+        }
+    }
+
+    fun editButtonListener(isChanged: Boolean){
+        _editProfilePageViewStateLiveData.value = _editProfilePageViewStateLiveData.value?.copy(isEditting = isChanged)
+    }
+
+    fun checkFields(user: UpdateUser): Boolean{
+
+        val userFields = listOf(
+            user.uFirstName to "Ad",
+            user.uLastName to "Soyad",
+            user.uStatus to "Durum",
+            user.uAge to "Yaş"
+        )
+
+        for ((field, fieldName) in userFields) {
+            if (field.isNullOrEmpty()) {
+                _errorMessageLiveData.value = "$fieldName Boş Bırakılamaz"
+                return false
+            }
+        }
+
+        if (user.uAge!!.toInt() !in 15..100) {
+            _errorMessageLiveData.value = "Geçerli Bir Yaş Giriniz"
+            return false
+        }
+        return true
+    }
+    fun patchChangedUserFields(user: UpdateUser){
+        viewModelScope.launch(Dispatchers.IO){
+            datingApiRepository.updateProfile(user)
+
+            fetchUserData()
         }
     }
 }

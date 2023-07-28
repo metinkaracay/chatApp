@@ -16,13 +16,39 @@
         android:gravity="center|top"
         tools:context=".ui.welcome.editProfileFragment.EditProfileFragment">
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/editButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:text="@{pageViewState.editButtonText}"
+            android:layout_margin="10dp"
+            android:textSize="20sp"
+            android:textColor="@{pageViewState.editButtonColor(context)}"/>
+
+        <TextView
+            android:id="@+id/saveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_margin="10dp"
+            android:text="@{pageViewState.saveButtonText}"
+            android:textSize="20sp"
+            android:textColor="@{pageViewState.saveButtonColor(context)}"/>
+    </FrameLayout>
+
         <androidx.cardview.widget.CardView
             android:id="@+id/userPhoto"
             android:layout_width="100dp"
             android:layout_height="100dp"
             app:cardCornerRadius="90dp"
             android:layout_marginBottom="80dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="10dp"
             app:cardElevation="0dp">
 
             <ImageView
@@ -51,32 +77,34 @@
         <EditText
             android:id="@+id/status"
             android:layout_width="300dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="18dp"
             android:layout_height="wrap_content"
-            android:inputType="number"
             android:hint="Durum Bilgisi Giriniz"
-            android:text="@{pageViewState.status}"/>
+            android:text="@{pageViewState.status}"
+            android:inputType="textCapSentences"/>
 
         <EditText
             android:id="@+id/firstName"
             android:layout_width="300dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="18dp"
             android:layout_height="wrap_content"
             android:hint="Adınız"
-            android:text="@{pageViewState.firstName}"/>
+            android:text="@{pageViewState.firstName}"
+            android:inputType="textCapSentences"/>
 
         <EditText
             android:id="@+id/lastName"
             android:layout_width="300dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="18dp"
             android:layout_height="wrap_content"
             android:hint="Soyadınız"
-            android:text="@{pageViewState.lastName}"/>
+            android:text="@{pageViewState.lastName}"
+            android:inputType="textCapSentences"/>
 
         <EditText
             android:id="@+id/age"
             android:layout_width="300dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="18dp"
             android:layout_height="wrap_content"
             android:inputType="number"
             android:hint="Yaşınız"

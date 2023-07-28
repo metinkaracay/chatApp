@@ -15,9 +15,14 @@ import java.util.concurrent.TimeUnit
 
 data class EditProfilePageViewState(
     private val user: User,
-    val image: String?
+    val image: String?,
+    val isEditting: Boolean
 ) {
 
+    fun getSaveButtonText() = "Kaydet"
+    fun saveButtonColor(context: Context): Int = if (isEditting) ContextCompat.getColor(context,R.color.online_color) else ContextCompat.getColor(context, R.color.grey)
+    fun getEditButtonText() = "Düzenle"
+    fun editButtonColor(context: Context): Int = if (isEditting) ContextCompat.getColor(context,R.color.grey) else ContextCompat.getColor(context, R.color.online_color)
     fun defaultPhoto() = if (user.photo == "null") View.VISIBLE else View.GONE
     fun userDefaultPhoto(context: Context): Drawable? = ContextCompat.getDrawable(context, R.drawable.avatar)
 

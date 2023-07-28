@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -41,9 +42,19 @@ class LoginFragmentViewModel @Inject constructor(private val datingApiRepository
         _logInPageViewStateLiveData.value = LogInPageViewState()
     }
     fun postUserParams(user: LoginRequest,context: Context){
-        val oneSignalPlayerId = OneSignal.getDeviceState()?.userId
-        Log.e("oneSignal Key","$oneSignalPlayerId")
-        val newUser = LoginRequest(user.userName,user.password,oneSignalPlayerId)
+        val externalUserId = UUID.randomUUID().toString()
+        OneSignal.setExternalUserId(externalUserId, object :OneSignal.OSExternalUserIdUpdateCompletionHandler{
+            override fun onSuccess(p0: JSONObject?) {
+                Log.e("OneSignal", "External user ID ayarlandı: $externalUserId")
+            }
+
+            override fun onFailure(p0: OneSignal.ExternalIdError?) {
+                Log.e("OneSignal", "External user ID ayarlanamadı.")
+            }
+
+        } )
+
+        val newUser = LoginRequest(user.userName,user.password,externalUserId)
         viewModelScope.launch(Dispatchers.IO){
             val uploadResult = datingApiRepository.login(newUser)
             val responseString = uploadResult.component1()?.string() ?: ""

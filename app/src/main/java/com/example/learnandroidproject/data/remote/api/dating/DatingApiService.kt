@@ -2,6 +2,7 @@ package com.example.learnandroidproject.data.remote.api.dating
 
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.LoginRequest
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.SendingMessage
+import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.UpdateUser
 import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
 import com.example.learnandroidproject.data.local.model.dating.db.response.NewsBaseResponse
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
@@ -36,6 +37,8 @@ interface DatingApiService {
     suspend fun login(@Body user: LoginRequest): ResponseBody
     @POST("chat/{id}")
     suspend fun sendMessage(@Path("id") id: String, @Body message: SendingMessage): ResponseBody
+    @PATCH("auth/profile/update")
+    suspend fun updateProfile(@Body user: UpdateUser): ResponseBody
 
     @Headers("Content-Type: application/json")
     @POST("books")

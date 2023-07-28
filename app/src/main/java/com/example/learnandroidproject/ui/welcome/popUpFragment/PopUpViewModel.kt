@@ -68,7 +68,6 @@ class PopUpViewModel @Inject constructor(private val datingApiRepository: Dating
     }
     fun postImage(selectedImage: Uri, context: Context){
         val uuid = UUID.randomUUID()
-        val resultLiveData = MutableLiveData<GenericResult<String>>()
 
         viewModelScope.launch(Dispatchers.IO) {
             selectedImage?.let { imageUri ->
@@ -80,18 +79,6 @@ class PopUpViewModel @Inject constructor(private val datingApiRepository: Dating
 
                     // Yükleme işlemini gerçekleştir
                     val uploadResult = datingApiRepository.saveProfilePhoto(imagePart)
-
-                    /*// Uyarı mesajını belirle
-                    if (uploadResult.isSuccess()) {
-                        val responseString = uploadResult.component1()?.string() ?: ""
-                        //Log.e("yükleme durumu","başarılı")
-                        Log.e("responseString","$responseString")
-                        _uploadMessage.postValue(responseString)
-                    //_uploadMessage.postValue("Yükleme tamamlandı!") // Başarılı durum
-                    } else {
-                        Log.e("yükleme durumu","başarısız")
-                        _uploadMessage.postValue("Yükleme başarısız oldu.") // Başarısız durum
-                    }*/
 
                     if (uploadResult.isSuccess()) {
                         val responseString = uploadResult.component1()?.string() ?: ""
