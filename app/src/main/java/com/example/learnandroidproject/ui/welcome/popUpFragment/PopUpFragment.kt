@@ -15,6 +15,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
@@ -83,8 +84,11 @@ class PopUpFragment : BaseDialogFragment<FragmentPopUpBinding>() {
             }
         }
         binding.saveButton.setOnClickListener {
-            viewModel.postImage(selectedImage!!, requireContext())
-
+            if (selectedImage != null){
+                viewModel.postImage(selectedImage!!, requireContext())
+            }else{
+                Toast.makeText(requireContext(), "Fotoğraf Seçmediniz!",Toast.LENGTH_SHORT).show()
+            }
         }
         binding.closeButton.setOnClickListener {
             dismiss()
