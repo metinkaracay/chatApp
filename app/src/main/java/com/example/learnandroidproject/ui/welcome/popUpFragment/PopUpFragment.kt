@@ -58,7 +58,7 @@ class PopUpFragment : BaseDialogFragment<FragmentPopUpBinding>() {
             popUpCountDownTimer.observeNonNull(viewLifecycleOwner) { remainingTime ->
                 if (remainingTime == 0) {
                     dismiss()
-                    welcomeViewModel.goToMainPage()
+                    //welcomeViewModel.goToMainPage()
                 }
             }
             uploadResponse.observe(viewLifecycleOwner){

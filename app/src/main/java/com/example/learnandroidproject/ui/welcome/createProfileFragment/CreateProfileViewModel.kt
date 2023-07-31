@@ -1,20 +1,31 @@
 package com.example.learnandroidproject.ui.welcome.createProfileFragment
 
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.learnandroidproject.common.isSuccess
+import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.LoginRequest
 import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
 import com.example.learnandroidproject.domain.remote.dating.DatingApiRepository
 import com.example.learnandroidproject.ui.base.BaseViewModel
+import com.onesignal.OneSignal
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONException
+import org.json.JSONObject
+import java.util.*
 import javax.inject.Inject
 @HiltViewModel
 class CreateProfileViewModel@Inject constructor(private val datingApiRepository: DatingApiRepository): BaseViewModel() {
 
     private val _errorMessageLiveData: MutableLiveData<String> = MutableLiveData()
     val errorMessageLiveData: LiveData<String> = _errorMessageLiveData
+
+    private val _loginStateLiveData: MutableLiveData<Boolean> = MutableLiveData()
+    val loginStateLiveData: LiveData<Boolean> = _loginStateLiveData
 
     fun checkMessage(user: User): Boolean{
 
@@ -45,5 +56,50 @@ class CreateProfileViewModel@Inject constructor(private val datingApiRepository:
             datingApiRepository.register(user)
         }
         return true
+    }
+
+    fun loginChatRooms(user: User,context: Context){
+
+        val externalUserId = UUID.randomUUID().toString()
+        OneSignal.setExternalUserId(externalUserId, object : OneSignal.OSExternalUserIdUpdateCompletionHandler{
+            override fun onSuccess(p0: JSONObject?) {
+                Log.e("OneSignal", "External user ID ayarlandı: $externalUserId")
+            }
+            override fun onFailure(p0: OneSignal.ExternalIdError?) {
+                Log.e("OneSignal", "External user ID ayarlanamadı.")
+            }
+
+        } )
+
+
+        val logUser = LoginRequest(user.userName.toString(),user.password.toString(),externalUserId)
+
+        viewModelScope.launch(Dispatchers.IO){
+            val result = datingApiRepository.login(logUser)
+            val responseString = result.component1()?.string() ?: ""
+
+            val sharedPreferences = context.getSharedPreferences(context.packageName,Context.MODE_PRIVATE)
+            val sharedPreferences2 = context.getSharedPreferences("LoggedUserID",Context.MODE_PRIVATE)
+            if (result.isSuccess()) {
+                // Parse the JSON response to extract the URL
+                try {
+                    val jsonObject = JSONObject(responseString)
+                    val accessToken = jsonObject.optString("accessToken", "")
+                    val loggedUserId = jsonObject.optString("userId", "")
+
+                    sharedPreferences.edit().putString("accessTokenKey", accessToken).apply()
+                    sharedPreferences2.edit().putString("LoggedUserId",loggedUserId).apply()
+                    Log.e("userId","$loggedUserId")
+
+                    _loginStateLiveData.postValue(true)
+
+                } catch (e: JSONException) {
+                    Log.e("JSONParsingError", "Hata Json Response'u Bölünemedi")
+                    _loginStateLiveData.postValue(false)
+                }
+            } else{
+                Log.e("giriş hatası","Hataa")
+            }
+        }
     }
 }
