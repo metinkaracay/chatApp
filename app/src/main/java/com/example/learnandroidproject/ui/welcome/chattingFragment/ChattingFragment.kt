@@ -1,12 +1,7 @@
 package com.example.learnandroidproject.ui.welcome.chattingFragment
 
-import android.content.Context
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -14,7 +9,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.learnandroidproject.R
 import com.example.learnandroidproject.common.extensions.observeNonNull
-import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
 import com.example.learnandroidproject.databinding.FragmentChattingBinding
 import com.example.learnandroidproject.ui.base.BaseFragment
@@ -43,8 +37,6 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
         val user = welcomeViewModel.getUserInfo()
         viewModel.user = user
         viewModel.getUserInfo()
-        val sharedPreferences = requireContext().getSharedPreferences("LoggedUserID",Context.MODE_PRIVATE)
-        viewModel.loggedUserId = sharedPreferences.getString("LoggedUserId","")
         handleViewOption()
         initResultsItemsRecyclerView()
         with(viewModel){

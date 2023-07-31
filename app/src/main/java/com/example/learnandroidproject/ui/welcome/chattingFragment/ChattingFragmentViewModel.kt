@@ -2,29 +2,20 @@ package com.example.learnandroidproject.ui.welcome.chattingFragment
 
 import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.learnandroidproject.common.isSuccess
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.SendingMessage
-import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
 import com.example.learnandroidproject.domain.remote.dating.DatingApiRepository
 import com.example.learnandroidproject.ui.base.BaseViewModel
-import com.example.learnandroidproject.ui.welcome.generalChatUsersFragment.GeneralChatUsersPageViewState
-import com.github.michaelbull.result.fold
 import com.github.michaelbull.result.get
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import io.socket.client.IO
-import io.socket.client.Socket
-import io.socket.client.SocketIOException
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 @HiltViewModel
 class ChattingFragmentViewModel @Inject constructor(private val datingApiRepository: DatingApiRepository): BaseViewModel(){
@@ -39,7 +30,6 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
     val errorMessageLiveData: LiveData<String> = _errorMessageLiveData
 
     var user: UserInfo = UserInfo(0,"","","null")
-    var loggedUserId: String? = null
 
     var messageList: List<MessageItem> = arrayListOf()
     fun getUserInfo(){
@@ -57,13 +47,14 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
                 withContext(Dispatchers.Main){
                     messageList = it
                     fetchMessages(it)
-                    //_chattingPageViewStateLiveData.value = ChattingFragmentPageViewState(user,it) TODO eski
                 }
             }
         }
     }
 
     fun getMessages(Socket: SocketHandler, context: Context){
+        val sharedPreferences = context.getSharedPreferences("LoggedUserID",Context.MODE_PRIVATE)
+        val loggedUserId = sharedPreferences.getString("LoggedUserId","")
         Socket.setSocket(context)
         val mSocket = Socket.getSocket()
 

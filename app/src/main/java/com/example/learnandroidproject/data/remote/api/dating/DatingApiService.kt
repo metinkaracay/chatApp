@@ -39,6 +39,8 @@ interface DatingApiService {
     suspend fun sendMessage(@Path("id") id: String, @Body message: SendingMessage): ResponseBody
     @PATCH("auth/profile/update")
     suspend fun updateProfile(@Body user: UpdateUser): ResponseBody
+    @POST("auth/logout")
+    suspend fun exit(): ResponseBody
 
     @Headers("Content-Type: application/json")
     @POST("books")

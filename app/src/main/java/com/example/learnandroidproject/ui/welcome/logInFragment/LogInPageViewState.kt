@@ -7,8 +7,6 @@ import com.example.learnandroidproject.R
 class LogInPageViewState {
 
     fun getCreateAccount() = "Hesap Oluşturmak İstiyorum"
-
     fun getButtonText() = "Giriş Yap"
-
     fun buttonTextColor(context: Context): Int = ContextCompat.getColor(context,R.color.white)
 }

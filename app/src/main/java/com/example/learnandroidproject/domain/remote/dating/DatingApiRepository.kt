@@ -34,6 +34,8 @@ interface DatingApiRepository {
     suspend fun sendMessage(id: String,message: SendingMessage): GenericResult<ResponseBody>
 
     suspend fun updateProfile(user: UpdateUser): GenericResult<ResponseBody>
+
+    suspend fun exit(): GenericResult<ResponseBody>
     suspend fun book(kitap1: BookResponse): GenericResult<BookResponse>
 
     suspend fun test(image: MultipartBody.Part): GenericResult<ResponseBody>

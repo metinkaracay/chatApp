@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.activityViewModels
@@ -69,9 +70,14 @@ class BaseChatRoomsFragment : BaseFragment<FragmentBaseChatRoomsBinding>() {
             welcomeViewModel.goToProfilePage()
         }
         binding.exitButton.setOnClickListener {
-            val sharedPreferences = requireContext().getSharedPreferences(requireContext().packageName,Context.MODE_PRIVATE)
-            sharedPreferences.edit().remove("accessTokenKey").apply()
-            welcomeViewModel.goToMainPage()
+            viewModel.exitToServer(requireContext())
+            viewModel.exitResponseLiveData.observe(viewLifecycleOwner){
+                if (it){
+                    welcomeViewModel.goToMainPage()
+                }else{
+                    Toast.makeText(requireContext(),"Çıkış Başarısız Lütfen Daha Sonra Tekrar Deneyiniz",Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 

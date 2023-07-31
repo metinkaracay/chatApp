@@ -9,14 +9,10 @@ import com.example.learnandroidproject.common.isSuccess
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.LoginRequest
 import com.example.learnandroidproject.domain.remote.dating.DatingApiRepository
 import com.example.learnandroidproject.ui.base.BaseViewModel
-import com.google.gson.JsonObject
-import com.onesignal.OSSubscriptionStateChanges
 import com.onesignal.OneSignal
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.UUID

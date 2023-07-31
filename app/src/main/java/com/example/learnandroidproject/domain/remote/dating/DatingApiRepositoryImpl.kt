@@ -38,6 +38,8 @@ class DatingApiRepositoryImpl @Inject constructor(
 
     override suspend fun sendMessage(id: String,message: SendingMessage) : GenericResult<ResponseBody> = handleDatingRequest { datingApiService.sendMessage(id, message) }
 
+    override suspend fun exit(): GenericResult<ResponseBody> = handleDatingRequest { datingApiService.exit() }
+
     override suspend fun updateProfile(user: UpdateUser): GenericResult<ResponseBody> = handleDatingRequest { datingApiService.updateProfile(user) }
     override suspend fun book(kitap1: BookResponse): GenericResult<BookResponse> = handleDatingRequest { datingApiService.books(kitap1) }
     override suspend fun test(image: MultipartBody.Part): GenericResult<ResponseBody> = handleDatingRequest { datingApiService.test(image)}
