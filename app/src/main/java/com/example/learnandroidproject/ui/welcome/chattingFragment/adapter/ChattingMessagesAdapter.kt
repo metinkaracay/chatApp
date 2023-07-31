@@ -1,6 +1,5 @@
 package com.example.learnandroidproject.ui.welcome.chattingFragment.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -18,7 +17,6 @@ class ChattingMessagesAdapter : RecyclerView.Adapter<ChattingMessagesAdapter.Mes
         uId = userId
         list = page
         notifyItemRangeChanged(list.size,1)
-        //notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChattingMessagesAdapter.MessageItemViewHolder{

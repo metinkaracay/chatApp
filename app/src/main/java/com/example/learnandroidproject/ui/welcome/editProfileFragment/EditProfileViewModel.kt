@@ -1,6 +1,5 @@
 package com.example.learnandroidproject.ui.welcome.editProfileFragment
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -45,7 +44,6 @@ class EditProfileViewModel @Inject constructor(private val datingApiRepository: 
             }
         }
     }
-
     fun updateToPhoto(link: String){
         viewModelScope.launch(Dispatchers.IO) {
             delay(1000L)
@@ -55,11 +53,9 @@ class EditProfileViewModel @Inject constructor(private val datingApiRepository: 
             }
         }
     }
-
     fun editButtonListener(isChanged: Boolean){
         _editProfilePageViewStateLiveData.value = _editProfilePageViewStateLiveData.value?.copy(isEditting = isChanged)
     }
-
     fun checkFields(user: UpdateUser): Boolean{
 
         val userFields = listOf(

@@ -26,7 +26,6 @@ class CreateAccountFragment : BaseFragment<FragmentCreateAccountBinding>() {
                 Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
             }
         }
-
     }
 
     fun handleViewOptions(){

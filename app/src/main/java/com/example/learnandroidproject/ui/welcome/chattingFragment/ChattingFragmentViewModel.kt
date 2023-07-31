@@ -91,7 +91,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
         }
     }
     fun sendMessage(message: String){
-        Log.e("mesaj","$message")
+
         if (message.isNotEmpty() && message.isNotBlank()){
             viewModelScope.launch(Dispatchers.IO){
                 val result = datingApiRepository.sendMessage(user.uId.toString(),SendingMessage(message))

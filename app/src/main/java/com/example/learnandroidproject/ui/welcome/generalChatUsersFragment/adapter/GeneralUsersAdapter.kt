@@ -1,12 +1,10 @@
 package com.example.learnandroidproject.ui.welcome.generalChatUsersFragment.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.learnandroidproject.R
-import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
 import com.example.learnandroidproject.databinding.UsersItemBinding
 
@@ -61,7 +59,6 @@ class GeneralUsersAdapter : RecyclerView.Adapter<GeneralUsersAdapter.UsersItemVi
                 pageViewState = GeneralUsersItemPageViewState(users)
             }
         }
-
         fun itemSelect(position: Int) {
             binding.userItem.setOnClickListener {
                 val user = UserInfo(list[position].uId,list[position].uName,list[position].uStatu,list[position].uPhoto)

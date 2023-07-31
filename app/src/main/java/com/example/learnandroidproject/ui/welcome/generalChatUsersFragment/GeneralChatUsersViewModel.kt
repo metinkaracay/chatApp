@@ -4,9 +4,6 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.learnandroidproject.common.GenericResult
-import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
-import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
 import com.example.learnandroidproject.domain.remote.dating.DatingApiRepository
 import com.example.learnandroidproject.ui.base.BaseViewModel
 import com.github.michaelbull.result.get
@@ -33,7 +30,7 @@ class GeneralChatUsersViewModel @Inject constructor(private val datingApiReposit
                 withContext(Dispatchers.Main){
                     _generalChatUsersPageViewStateLiveData.value = GeneralChatUsersPageViewState(it)
                 }
-                Log.e("userfet","${it[0].uPhoto}")
+                Log.e("userfetphoto","${it[0].uPhoto}")
             }
         }
     }

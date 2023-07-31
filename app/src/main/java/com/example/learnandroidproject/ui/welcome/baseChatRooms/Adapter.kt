@@ -28,6 +28,5 @@ class Adapter(fragmentManager: FragmentManager, lifecycle: Lifecycle): FragmentS
                 GeneralChatUsersFragment()
             }
         }
-
     }
 }

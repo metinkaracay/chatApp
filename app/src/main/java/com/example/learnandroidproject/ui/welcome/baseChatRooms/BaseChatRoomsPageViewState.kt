@@ -12,14 +12,9 @@ class BaseChatRoomsPageViewState(
 
     fun toolbarColor(context: Context): Int = ContextCompat.getColor(context,R.color.toolbar_color)
     fun defaultPhotoVisibility() = if (url == "null") View.VISIBLE else View.GONE
-
     fun defaultProfilePhoto(context: Context): Drawable? = ContextCompat.getDrawable(context, R.drawable.avatar)
-
     fun selectedPhotoVisibility() = if (url != "null") View.VISIBLE else View.GONE
-
     fun selectedProfilePhoto() = url
-
     fun getToolbarHeader() = "Chat App"
-
     fun exitButton(context: Context): Drawable? = ContextCompat.getDrawable(context, R.drawable.exit)
 }

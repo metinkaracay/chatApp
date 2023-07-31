@@ -28,6 +28,7 @@
     <color name="send_Button">#F62354</color>
     <color name="toolbar_color">#F4EDDA</color>
     <color name="grey">#808080</color>
+    <color name="send_message_color">#38A34A</color>
 
     <!-- Register -->
     <color name="register_title_color">#313154</color>

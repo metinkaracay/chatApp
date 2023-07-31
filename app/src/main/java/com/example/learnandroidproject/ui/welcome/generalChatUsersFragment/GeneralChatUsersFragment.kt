@@ -39,6 +39,10 @@ class GeneralChatUsersFragment : BaseFragment<FragmentGeneralChatUsersBinding>()
                 recyclerAdapter.setItems(it.users)
             }
         }
+        adapterListeners()
+    }
+
+    fun adapterListeners(){
         recyclerAdapter.setItemClickListener{
             welcomeViewModel.fillUserInfoData(it.uId,it.uName,it.uStatu,it.uPhoto)
             welcomeViewModel.goToChattingPage()
@@ -49,7 +53,6 @@ class GeneralChatUsersFragment : BaseFragment<FragmentGeneralChatUsersBinding>()
             showUserProfilePhotoDialog(3)
         }
     }
-
     private fun initResultsItemsRecyclerView() {
         with(binding.recyclerView) {
             layoutManager = LinearLayoutManager(requireContext()).apply {
