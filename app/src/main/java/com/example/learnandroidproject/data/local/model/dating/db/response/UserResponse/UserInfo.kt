@@ -6,6 +6,8 @@ data class UserInfo(
     @SerializedName("id") var uId: Int,
     @SerializedName("username") var uName: String,
     @SerializedName("status") var uStatu: String,
-    @SerializedName("url") var uPhoto: String
+    @SerializedName("url") var uPhoto: String,
+    @SerializedName("lastMsg") var lastMessage: String?,
+    @SerializedName("sendTime") var elapsedTime: String?
 ) {
 }

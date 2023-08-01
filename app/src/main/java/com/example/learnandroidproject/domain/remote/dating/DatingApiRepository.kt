@@ -23,6 +23,8 @@ interface DatingApiRepository {
 
     suspend fun fetchUsersForChatRooms(): GenericResult<List<UserInfo>>
 
+    suspend fun fetchFriendsUsers(): GenericResult<List<UserInfo>>
+
     suspend fun fetchUserData(): GenericResult<User>
 
     suspend fun getMessages(id: String): GenericResult<List<MessageItem>>

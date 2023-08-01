@@ -1,4 +1,4 @@
-package com.example.learnandroidproject.ui.welcome.generalChatUsersFragment.adapter
+package com.example.learnandroidproject.ui.welcome.friendsChatUsersFragment.adapter
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,12 +7,12 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.learnandroidproject.R
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
-import com.example.learnandroidproject.databinding.UsersItemBinding
+import com.example.learnandroidproject.databinding.FriendsUsersItemBinding
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.abs
 
-class GeneralUsersAdapter : RecyclerView.Adapter<GeneralUsersAdapter.UsersItemViewHolder>() {
+class FriendsUsersAdapter : RecyclerView.Adapter<FriendsUsersAdapter.UsersItemViewHolder>() {
 
     private var list: List<UserInfo> = emptyList()
 
@@ -35,12 +35,11 @@ class GeneralUsersAdapter : RecyclerView.Adapter<GeneralUsersAdapter.UsersItemVi
         // Son mesajdan iki önceki mesajdan itibaren sondan bir önceki mesaja kadar güncelledik
         notifyItemRangeChanged(previousItemCount-1, newItemCount)
     }
+
     fun formattedDate(date: String): String{
         val dateFormat = SimpleDateFormat("dd/MM/yyyy, HH:mm:ss", Locale.getDefault())
 
-        //val gelenTarihString = "31/07/2023, 08:29:43"
         val messageDate = date
-        Log.e("tgelenarih","$date")
 
         if (date != "null"){
 
@@ -73,10 +72,10 @@ class GeneralUsersAdapter : RecyclerView.Adapter<GeneralUsersAdapter.UsersItemVi
             return "mesaj yok"
         }
     }
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GeneralUsersAdapter.UsersItemViewHolder {
-        val binding: UsersItemBinding = DataBindingUtil.inflate(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FriendsUsersAdapter.UsersItemViewHolder {
+            val binding: FriendsUsersItemBinding = DataBindingUtil.inflate(
             LayoutInflater.from(parent.context),
-            R.layout.users_item,
+            R.layout.friends_users_item,
             parent,
             false)
         return UsersItemViewHolder(binding)
@@ -86,7 +85,7 @@ class GeneralUsersAdapter : RecyclerView.Adapter<GeneralUsersAdapter.UsersItemVi
         return list.size
     }
 
-    override fun onBindViewHolder(holder: GeneralUsersAdapter.UsersItemViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: FriendsUsersAdapter.UsersItemViewHolder, position: Int) {
         val user = list[position]
 
         val elapsedTime = formattedDate(list[position].elapsedTime.toString())
@@ -94,11 +93,11 @@ class GeneralUsersAdapter : RecyclerView.Adapter<GeneralUsersAdapter.UsersItemVi
         holder.itemSelect(position)
     }
 
-    inner class UsersItemViewHolder(private var binding: UsersItemBinding) : RecyclerView.ViewHolder(binding.root){
+    inner class UsersItemViewHolder(private var binding: FriendsUsersItemBinding) : RecyclerView.ViewHolder(binding.root){
 
         fun bind(users : UserInfo,elapsedTime: String){
             with(binding){
-                pageViewState = GeneralUsersItemPageViewState(users,elapsedTime)
+                pageViewState = FriendsUsersItemPageViewState(users,elapsedTime)
             }
         }
         fun itemSelect(position: Int) {

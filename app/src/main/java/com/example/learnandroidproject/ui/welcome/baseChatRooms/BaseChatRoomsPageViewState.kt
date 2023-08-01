@@ -17,4 +17,6 @@ class BaseChatRoomsPageViewState(
     fun selectedProfilePhoto() = url
     fun getToolbarHeader() = "Chat App"
     fun exitButton(context: Context): Drawable? = ContextCompat.getDrawable(context, R.drawable.exit)
+    fun allUsersButtonBackground(context: Context): Int = ContextCompat.getColor(context, R.color.send_message_color)
+    fun allUsersLogo(context: Context): Drawable? = ContextCompat.getDrawable(context, R.drawable.users_logo)
 }

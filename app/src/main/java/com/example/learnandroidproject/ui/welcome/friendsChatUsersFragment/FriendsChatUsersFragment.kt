@@ -1,4 +1,4 @@
-package com.example.learnandroidproject.ui.welcome.generalChatUsersFragment
+package com.example.learnandroidproject.ui.welcome.friendsChatUsersFragment
 
 import android.os.Bundle
 import android.util.Log
@@ -9,31 +9,32 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.learnandroidproject.R
 import com.example.learnandroidproject.common.extensions.observeNonNull
-import com.example.learnandroidproject.databinding.FragmentGeneralChatUsersBinding
+import com.example.learnandroidproject.databinding.FragmentFriendsChatUsersBinding
 import com.example.learnandroidproject.ui.base.BaseFragment
 import com.example.learnandroidproject.ui.welcome.WelcomeViewModel
-import com.example.learnandroidproject.ui.welcome.chattingFragment.SocketHandler
+import com.example.learnandroidproject.ui.welcome.friendsChatUsersFragment.adapter.FriendsUsersAdapter
 import com.example.learnandroidproject.ui.welcome.generalChatUsersFragment.adapter.GeneralUsersAdapter
 import com.example.learnandroidproject.ui.welcome.popUpFragment.PopUpFragment
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+
 @AndroidEntryPoint
-class GeneralChatUsersFragment : BaseFragment<FragmentGeneralChatUsersBinding>() {
+class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>() {
 
     @Inject
-    lateinit var recyclerAdapter: GeneralUsersAdapter
+    lateinit var recyclerAdapter: FriendsUsersAdapter
 
-    private val viewModel: GeneralChatUsersViewModel by viewModels()
+    private val viewModel: FriendsChatUsersViewModel by viewModels()
     private val welcomeViewModel: WelcomeViewModel by activityViewModels()
-    override fun getLayoutResId(): Int = R.layout.fragment_general_chat_users
+
+    override fun getLayoutResId(): Int = R.layout.fragment_friends_chat_users
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        handleViewOptions()
-        recyclerAdapter = GeneralUsersAdapter()
+        recyclerAdapter = FriendsUsersAdapter()
         initResultsItemsRecyclerView()
         with(viewModel){
-            generalChatUsersPageViewStateLiveData.observeNonNull(viewLifecycleOwner){
+            friendsChatUsersPageViewStateLiveData.observeNonNull(viewLifecycleOwner){
                 with(binding){
                     pageViewState = it
                     executePendingBindings()
@@ -42,14 +43,7 @@ class GeneralChatUsersFragment : BaseFragment<FragmentGeneralChatUsersBinding>()
             }
         }
         adapterListeners()
-        viewModel.getAllUsersLiveData(SocketHandler,requireContext())
     }
-    fun handleViewOptions(){
-        binding.backArrow.setOnClickListener {
-            welcomeViewModel.goToBaseChatRoomsPage()
-        }
-    }
-
     fun adapterListeners(){
         recyclerAdapter.setItemClickListener{
             welcomeViewModel.fillUserInfoData(it.uId,it.uName,it.uStatu,it.uPhoto)
@@ -61,6 +55,7 @@ class GeneralChatUsersFragment : BaseFragment<FragmentGeneralChatUsersBinding>()
             showUserProfilePhotoDialog(3)
         }
     }
+
     private fun initResultsItemsRecyclerView() {
         with(binding.recyclerView) {
             layoutManager = LinearLayoutManager(requireContext()).apply {

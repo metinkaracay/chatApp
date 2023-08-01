@@ -96,9 +96,30 @@
         android:background="@drawable/tab_indicator"
         android:translationX="370px"/>
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewPager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/allUsersButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_margin="35dp"
+                    app:cardCornerRadius="45dp"
+                    app:cardBackgroundColor="@{pageViewState.allUsersButtonBackground(context)}">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@{pageViewState.allUsersLogo(context)}"
+                    android:padding="15dp"/>
+            </androidx.cardview.widget.CardView>
+        </FrameLayout>
     </LinearLayout>
 </layout>

@@ -16,14 +16,14 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
 
     private val _navigateToDestinationSingleLiveEvent: SingleLiveEvent<NavigationData> = SingleLiveEvent()
     private val _navigateUpSingleLiveEvent: SingleLiveEvent<Any?> = SingleLiveEvent()
-    private val _closePageSingleLiveEvent: SingleLiveEvent<Any?> = SingleLiveEvent()
+    private val _closePageSingleLiveEvent: SingleLiveEvent<Any?> = SingleLiveEvent() //TODO Mutable single event ile istek at sockette
 
     val closePageSingleLiveEvent: LiveData<Any?> = _closePageSingleLiveEvent
     val navigateToDestinationSingleLiveEvent: LiveData<NavigationData> = _navigateToDestinationSingleLiveEvent
     val navigateUpSingleLiveEvent: LiveData<Any?> = _navigateUpSingleLiveEvent
 
     private var user: User = User(null, null, null, null, null, null, null,null,null)
-    private var userInfo = UserInfo(0,"null","null","null")
+    private var userInfo = UserInfo(0,"null","null","null",null,null)
     private var clickedUserPhoto: String? = null
 
     fun fillUserData(userName: String, email: String, password: String) {
@@ -73,10 +73,10 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
         _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.editProfileFragment)
     }
     fun goToChattingPage(){
-        val bundle = Bundle()
-        /*bundle.putString("userPhoto", userPhoto)
-        bundle.putInt("id",id)*/
         _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.chattingFragment)
+    }
+    fun goToGenerelChatUsersFragment(){
+        _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.generalChatUsersFragment)
     }
 
     fun navigateUp() {

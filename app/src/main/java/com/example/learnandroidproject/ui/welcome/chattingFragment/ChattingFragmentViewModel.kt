@@ -29,7 +29,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
     private val _errorMessageLiveData: MutableLiveData<String> = MutableLiveData()
     val errorMessageLiveData: LiveData<String> = _errorMessageLiveData
 
-    var user: UserInfo = UserInfo(0,"","","null")
+    var user: UserInfo = UserInfo(0,"","","null",null,null)
 
     var messageList: List<MessageItem> = arrayListOf()
     fun getUserInfo(){

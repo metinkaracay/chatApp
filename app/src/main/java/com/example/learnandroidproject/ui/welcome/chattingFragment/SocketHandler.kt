@@ -15,9 +15,9 @@ object SocketHandler {
         val sharedPreferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
         val token = sharedPreferences.getString("accessTokenKey", "")
         try {
-            mSocket = IO.socket("http://10.82.0.48:3000/api/v1/chat?token=${token}")
+            mSocket = IO.socket("http://10.82.0.104:3000/api/v1/chat?token=${token}")
         } catch (e: URISyntaxException){
-            Log.e("socket Hatası","$e")
+            Log.e("Socket Hatası","$e")
         }
     }
 

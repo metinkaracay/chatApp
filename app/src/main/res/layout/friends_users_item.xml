@@ -5,7 +5,7 @@
     <data>
         <variable
             name="pageViewState"
-            type="com.example.learnandroidproject.ui.welcome.generalChatUsersFragment.adapter.GeneralUsersItemPageViewState" />
+            type="com.example.learnandroidproject.ui.welcome.friendsChatUsersFragment.adapter.FriendsUsersItemPageViewState" />
     </data>
     <LinearLayout
         android:layout_width="match_parent"
@@ -83,6 +83,6 @@
                     android:textColor="@color/black"/>
             </LinearLayout>
 
-            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 </layout>

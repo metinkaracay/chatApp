@@ -61,4 +61,12 @@
         android:id="@+id/chattingFragment"
         android:name="com.example.learnandroidproject.ui.welcome.chattingFragment.ChattingFragment"
         android:label="ChattingFragment" />
+    <fragment
+        android:id="@+id/friendsChatUsersFragment"
+        android:name="com.example.learnandroidproject.ui.welcome.friendsChatUsersFragment.FriendsChatUsersFragment"
+        android:label="FriendsChatUsersFragment" />
+    <fragment
+        android:id="@+id/generalChatUsersFragment"
+        android:name="com.example.learnandroidproject.ui.welcome.generalChatUsersFragment.GeneralChatUsersFragment"
+        android:label="GeneralChatUsersFragment" />
 </navigation>

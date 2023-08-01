@@ -25,6 +25,8 @@ interface DatingApiService {
 
     @GET("auth/mainPage")
     suspend fun fetchUsersForChatRooms(): List<UserInfo>
+    @GET("auth/friends")
+    suspend fun fetchFriendsUsers(): List<UserInfo>
     @GET("auth/profile")
     suspend fun fetchUserData(): User
     @GET("chat/{id}")

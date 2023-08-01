@@ -28,6 +28,8 @@ class DatingApiRepositoryImpl @Inject constructor(
 
     override suspend fun fetchUsersForChatRooms(): GenericResult<List<UserInfo>> = handleDatingRequest { datingApiService.fetchUsersForChatRooms() }
 
+    override suspend fun fetchFriendsUsers(): GenericResult<List<UserInfo>> = handleDatingRequest { datingApiService.fetchFriendsUsers() }
+
     override suspend fun fetchUserData(): GenericResult<User> = handleDatingRequest { datingApiService.fetchUserData() }
 
     override suspend fun getMessages(id: String): GenericResult<List<MessageItem>> = handleDatingRequest { datingApiService.getMessages(id) }

@@ -1,4 +1,4 @@
-package com.example.learnandroidproject.ui.welcome.generalChatUsersFragment.adapter
+package com.example.learnandroidproject.ui.welcome.friendsChatUsersFragment.adapter
 
 import android.content.Context
 import android.graphics.drawable.Drawable
@@ -7,7 +7,7 @@ import androidx.core.content.ContextCompat
 import com.example.learnandroidproject.R
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
 
-data class GeneralUsersItemPageViewState(
+class FriendsUsersItemPageViewState(
     private val users: UserInfo,
     val mElapsedTime: String
 ) {

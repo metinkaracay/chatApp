@@ -34,7 +34,6 @@ class BaseChatRoomsFragment : BaseFragment<FragmentBaseChatRoomsBinding>() {
             }
         }
         viewModel.getLoggedUser()
-
         val adapter = Adapter(childFragmentManager,lifecycle)
 
         binding.viewPager.adapter = adapter
@@ -57,7 +56,6 @@ class BaseChatRoomsFragment : BaseFragment<FragmentBaseChatRoomsBinding>() {
                 super.onPageScrollStateChanged(state)
             }
         })
-
     }
 
     fun handleViewOption(){
@@ -73,6 +71,9 @@ class BaseChatRoomsFragment : BaseFragment<FragmentBaseChatRoomsBinding>() {
                     Toast.makeText(requireContext(),"Çıkış Başarısız Lütfen Daha Sonra Tekrar Deneyiniz",Toast.LENGTH_SHORT).show()
                 }
             }
+        }
+        binding.allUsersButton.setOnClickListener {
+            welcomeViewModel.goToGenerelChatUsersFragment()
         }
     }
 
