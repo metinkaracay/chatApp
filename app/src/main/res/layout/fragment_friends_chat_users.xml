@@ -14,9 +14,32 @@
         android:layout_height="match_parent"
         tools:context=".ui.welcome.generalChatUsersFragment.GeneralChatUsersFragment">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="80dp"
+                android:visibility="@{pageViewState.emptyListInfoVisibility}"
+                android:text="@{pageViewState.emptyListInfo}"
+                android:fontFamily="@font/gotham_book"
+                android:textSize="14sp"
+                android:textColor="@color/black"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="@{pageViewState.emptyListLogoVisibility}"
+                android:src="@{pageViewState.emptyListLogo(context)}"/>
+        </FrameLayout>
     </LinearLayout>
 </layout>

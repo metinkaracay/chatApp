@@ -22,7 +22,5 @@ data class GeneralUsersItemPageViewState(
 
     fun selectedPhoto() = users.uPhoto
 
-    fun getLastMessage() = users.lastMessage
-
-    fun getElapsedTime() = mElapsedTime
+    fun getStatus() = users.uStatu
 }

@@ -112,6 +112,7 @@
                     android:layout_gravity="bottom|end"
                     android:layout_margin="35dp"
                     app:cardCornerRadius="45dp"
+                    app:cardElevation="0dp"
                     app:cardBackgroundColor="@{pageViewState.allUsersButtonBackground(context)}">
 
                 <ImageView

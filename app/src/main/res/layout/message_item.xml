@@ -25,10 +25,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
+                android:orientation="horizontal"
                 android:visibility="@{pageViewState.textBubbleVisibility}"
                 android:background="@{pageViewState.messageBackground(context)}">
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingBottom="16dp"
@@ -42,6 +43,15 @@
                     android:lineSpacingExtra="3sp"
                     android:layout_marginHorizontal="10dp"
                     android:layout_gravity="end"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="6dp"
+                    android:text="@{pageViewState.msgTime}"
+                    android:textColor="@{pageViewState.textColor(context)}"
+                    android:fontFamily="@font/gotham_book_italic"/>
 
             </LinearLayout>
         </LinearLayout>

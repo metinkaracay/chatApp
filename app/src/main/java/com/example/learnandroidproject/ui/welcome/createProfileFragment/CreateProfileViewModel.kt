@@ -68,7 +68,6 @@ class CreateProfileViewModel@Inject constructor(private val datingApiRepository:
             override fun onFailure(p0: OneSignal.ExternalIdError?) {
                 Log.e("OneSignal", "External user ID ayarlanamadı.")
             }
-
         } )
 
 

@@ -40,7 +40,6 @@ class GeneralChatUsersViewModel @Inject constructor(private val datingApiReposit
                     _generalChatUsersPageViewStateLiveData.value = GeneralChatUsersPageViewState(it)
                     Log.e("asdf","ilk userlist $it")
                 }
-                Log.e("userfetphoto","${it[0].uPhoto}")
             }
         }
     }

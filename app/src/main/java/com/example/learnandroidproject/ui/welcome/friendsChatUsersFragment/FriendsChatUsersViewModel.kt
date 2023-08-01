@@ -31,7 +31,6 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
                 withContext(Dispatchers.Main){
                     _friendsChatUsersPageViewStateLiveData.value = FriendsChatUsersPageViewState(it)
                 }
-                Log.e("userfetphoto","${it[0].uPhoto}")
             }
         }
     }

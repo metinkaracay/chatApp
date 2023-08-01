@@ -11,11 +11,14 @@ import com.example.learnandroidproject.data.local.model.dating.db.response.UserR
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
 import com.example.learnandroidproject.domain.remote.dating.DatingApiRepository
 import com.example.learnandroidproject.ui.base.BaseViewModel
+import com.example.learnandroidproject.ui.welcome.chattingFragment.adapter.MessageItemPageViewState
 import com.github.michaelbull.result.get
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 @HiltViewModel
 class ChattingFragmentViewModel @Inject constructor(private val datingApiRepository: DatingApiRepository): BaseViewModel(){
@@ -55,7 +58,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
     fun getMessages(Socket: SocketHandler, context: Context){
         val sharedPreferences = context.getSharedPreferences("LoggedUserID",Context.MODE_PRIVATE)
         val loggedUserId = sharedPreferences.getString("LoggedUserId","")
-        Socket.setSocket(context)
+        /*Socket.setSocket(context)
         val mSocket = Socket.getSocket()
 
         mSocket.connect()
@@ -88,11 +91,30 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
                 }
                 }
             }
-        }
+        }*/
     }
-    fun sendMessage(message: String){
+    fun sendMessage(Socket: SocketHandler,context: Context,message: String){
+        val sharedPreferences = context.getSharedPreferences("LoggedUserID",Context.MODE_PRIVATE)
+        val loggedUserId = sharedPreferences.getString("LoggedUserId","")
+
+        val dateNow = Date()
+        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+        val currentTime = timeFormat.format(dateNow)
+
+        Socket.setSocket(context)
+        val mSocket = Socket.getSocket()
+        mSocket.connect()
 
         if (message.isNotEmpty() && message.isNotBlank()){
+
+            mSocket.emit("message",user.uId,message)
+            val newMessage = MessageItem(message,loggedUserId.toString(),user.uId.toString(),currentTime.toString())
+            messageList = messageList + newMessage
+
+            fetchMessages(messageList)
+        }
+
+        /*if (message.isNotEmpty() && message.isNotBlank()){
             viewModelScope.launch(Dispatchers.IO){
                 val result = datingApiRepository.sendMessage(user.uId.toString(),SendingMessage(message))
 
@@ -104,6 +126,6 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
             }
         }else{
             _errorMessageLiveData.postValue("Lütfen Bir Mesaj Girin")
-        }
+        }*/
     }
 }

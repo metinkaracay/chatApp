@@ -9,7 +9,7 @@ import androidx.core.content.ContextCompat
 import com.example.learnandroidproject.R
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
 
-class MessageItemPageViewState(
+data class MessageItemPageViewState(
     val messages: MessageItem,
     val uId: Int?
 ) {
@@ -27,4 +27,6 @@ class MessageItemPageViewState(
     fun getText() = messages.message
 
     fun textColor(context: Context) : Int = if (messages.senderUser.toInt() == uId) ContextCompat.getColor(context, R.color.black) else ContextCompat.getColor(context, R.color.white)
+
+    fun getMsgTime() = messages.messageTime
 }

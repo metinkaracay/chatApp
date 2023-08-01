@@ -61,7 +61,7 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
         }
         binding.sendButton.setOnClickListener {
             val message = binding.editText.text.toString()
-            viewModel.sendMessage(message)
+            viewModel.sendMessage(SocketHandler,requireContext(),message)
             binding.editText.text.clear()
         }
     }

@@ -63,23 +63,11 @@
                     android:id="@+id/lastMessage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{pageViewState.lastMessage}"
+                    android:text="@{pageViewState.status}"
                     android:layout_gravity="start"
                     android:layout_marginStart="20dp"
                     android:textSize="13sp"
                     android:fontFamily="@font/montserrat_regular"
-                    android:textColor="@color/black"/>
-
-                <TextView
-                    android:id="@+id/elapsedTime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@{pageViewState.elapsedTime}"
-                    android:layout_gravity="end"
-                    android:layout_marginEnd="10dp"
-                    android:textSize="13sp"
-                    android:fontFamily="@font/montserrat_italic"
-                    android:layout_marginBottom="5dp"
                     android:textColor="@color/black"/>
             </LinearLayout>
 
