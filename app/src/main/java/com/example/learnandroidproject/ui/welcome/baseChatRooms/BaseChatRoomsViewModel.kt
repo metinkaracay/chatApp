@@ -36,7 +36,7 @@ class BaseChatRoomsViewModel @Inject constructor(private val datingApiRepository
         viewModelScope.launch(Dispatchers.IO){
             val result = datingApiRepository.exit()
             if (result.isSuccess()){
-                val sharedPreferences = context.getSharedPreferences(context.packageName,Context.MODE_PRIVATE)
+                val sharedPreferences = context.getSharedPreferences("accessTokenShared",Context.MODE_PRIVATE)
                 sharedPreferences.edit().remove("accessTokenKey").apply()
                 _exitResponseLiveData.postValue(true)
             }else{

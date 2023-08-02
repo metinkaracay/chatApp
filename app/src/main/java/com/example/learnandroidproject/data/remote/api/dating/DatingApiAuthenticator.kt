@@ -6,9 +6,7 @@ import android.util.Log
 import com.example.learnandroidproject.BaseUrlDecider
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitString
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import okhttp3.Authenticator
 import okhttp3.Request
 import okhttp3.Response
@@ -23,16 +21,18 @@ class DatingApiAuthenticator @Inject constructor(
     override fun authenticate(route: Route?, response: Response): Request? {
         val request = runBlocking {
             try {
-                /*val tokenUrl = "${BaseUrlDecider.getApiBaseUrl()}auth/refreshToken"
+                val accessTokenShared = context.getSharedPreferences("accessTokenShared",Context.MODE_PRIVATE)
+                val savedAccessToken = accessTokenShared.getString("accessTokenKey", "")
+                val refreshTokenShared = context.getSharedPreferences("RefShared",Context.MODE_PRIVATE)
+                val savedRef = refreshTokenShared.getString("ref","")
+                Log.e("reftoken","$savedRef")
+                val tokenUrl = "${BaseUrlDecider.getApiBaseUrl()}auth/refreshToken"
                 val refreshTokenResponse = Fuel.post(tokenUrl)
-                    .header("Content-Type" to "application/json", HEADER_DATING_TOKEN to "Bearer")
+                    .header("Content-Type" to "application/json", HEADER_DATING_TOKEN to "Bearer ${savedRef}")
                     .awaitString()
                 val refreshTokenResponseObject = JSONObject(refreshTokenResponse)
                 val newToken = refreshTokenResponseObject.getString("accessToken")
-                val refreshToken = refreshTokenResponseObject.getString("refreshToken")*/
-                val sharedPreferences = context.getSharedPreferences(context.packageName,Context.MODE_PRIVATE)
-                val savedAccessToken = sharedPreferences.getString("accessTokenKey", "")
-                val newToken = savedAccessToken
+                val refreshToken = refreshTokenResponseObject.getString("refreshToken")
                 response.request.newBuilder()
                     .header(HEADER_DATING_TOKEN, "Bearer $newToken")
                     .build()

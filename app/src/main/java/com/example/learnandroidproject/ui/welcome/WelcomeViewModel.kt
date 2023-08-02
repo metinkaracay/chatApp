@@ -1,6 +1,6 @@
 package com.example.learnandroidproject.ui.welcome
 
-import android.os.Bundle
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.example.learnandroidproject.R
@@ -8,6 +8,7 @@ import com.example.learnandroidproject.common.SingleLiveEvent
 import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
 import com.example.learnandroidproject.ui.common.navigation.NavigationData
+import com.example.learnandroidproject.ui.welcome.chattingFragment.SocketHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -49,7 +50,6 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     fun getClickedUserPhoto(): String? {
         return clickedUserPhoto
     }
-
     fun onSecondFragmentClicked() {
         _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.secondFragment)
     }
@@ -77,6 +77,9 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     }
     fun goToGenerelChatUsersFragment(){
         _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.generalChatUsersFragment)
+    }
+    fun goToUserProfileFragment(){
+        _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.userProfileFragment)
     }
 
     fun navigateUp() {

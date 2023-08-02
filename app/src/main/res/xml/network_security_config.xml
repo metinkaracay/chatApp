@@ -3,7 +3,7 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">fun2lite-staging-api.eu-central-1.elasticbeanstalk.com</domain>
         <domain includeSubdomains="true">fun2lite-staging-ws.eu-central-1.elasticbeanstalk.com</domain>
-        <domain includeSubdomains="true">10.82.0.104</domain>
+        <domain includeSubdomains="true">10.82.0.167</domain>
         <domain includeSubdomains="true">chat-app-vx-mb-086cef27bc23.herokuapp.com</domain>
     </domain-config>
 </network-security-config>

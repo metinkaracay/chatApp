@@ -54,10 +54,12 @@ class LoginFragmentViewModel @Inject constructor(private val datingApiRepository
         viewModelScope.launch(Dispatchers.IO){
             val uploadResult = datingApiRepository.login(newUser)
             val responseString = uploadResult.component1()?.string() ?: ""
-            val sharedPreferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
-            val sharedPreferences2 = context.getSharedPreferences("LoggedUserID",Context.MODE_PRIVATE)
-            sharedPreferences.edit().remove("accessTokenKey").apply()
-            sharedPreferences2.edit().remove("LoggedUserID").apply()
+            val accessTokenShared = context.getSharedPreferences("accessTokenShared", Context.MODE_PRIVATE)
+            val refreshTokenShared = context.getSharedPreferences("RefShared", Context.MODE_PRIVATE)
+            val loggedIdShared = context.getSharedPreferences("LoggedUserID",Context.MODE_PRIVATE)
+            accessTokenShared.edit().remove("accessTokenKey").apply()
+            refreshTokenShared.edit().remove("ref").apply()
+            loggedIdShared.edit().remove("LoggedUserID").apply()
 
             if (uploadResult.isSuccess()) {
                 // Parse the JSON response to extract the URL
@@ -67,8 +69,9 @@ class LoginFragmentViewModel @Inject constructor(private val datingApiRepository
                     val accessToken = jsonObject.optString("accessToken", "")
                     val loggedUserId = jsonObject.optString("userId", "")
 
-                    sharedPreferences.edit().putString("accessTokenKey", accessToken).apply()
-                    sharedPreferences2.edit().putString("LoggedUserId",loggedUserId).apply()
+                    accessTokenShared.edit().putString("accessTokenKey", accessToken).apply()
+                    refreshTokenShared.edit().putString("ref", refToken).apply()
+                    loggedIdShared.edit().putString("LoggedUserId",loggedUserId).apply()
 
                     _loginStateLiveData.postValue(true)
 
@@ -85,7 +88,7 @@ class LoginFragmentViewModel @Inject constructor(private val datingApiRepository
                         _errorMessageLiveData.postValue("Giriş Başarısız. Lütfen tekrar deneyin.")
                     }
                 } else {
-                    _errorMessageLiveData.postValue("Giriş Başarısız. Lütfen tekrar deneyin.")
+                    _errorMessageLiveData.postValue("Bağlantı hatası. Lütfen internetinizi kontrol edin.")
                 }
                 _loginStateLiveData.postValue(false)
             }

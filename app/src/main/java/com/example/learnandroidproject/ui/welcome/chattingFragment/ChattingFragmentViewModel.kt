@@ -56,14 +56,40 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
     }
 
     fun getMessages(Socket: SocketHandler, context: Context){
+        val dateNow = Date()
+        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+        val currentTime = timeFormat.format(dateNow)
+
         val sharedPreferences = context.getSharedPreferences("LoggedUserID",Context.MODE_PRIVATE)
         val loggedUserId = sharedPreferences.getString("LoggedUserId","")
-        /*Socket.setSocket(context)
+        Socket.setSocket(context)
         val mSocket = Socket.getSocket()
 
         mSocket.connect()
 
-        mSocket.on("newMessage:user:${user.uId}"){ args ->
+        mSocket.on("message"){ args ->
+            Log.e("socket","sockete girdi")
+            if (args[0] != null){
+                val message = mutableListOf<MessageItem>()
+                Log.e("socketOn","${args[1]}")
+                Log.e("gelenTarih","${args[2]}")
+                val newMessage = MessageItem(args[1].toString(),args[0].toString(),loggedUserId.toString(),currentTime)
+
+                if (user.uId == args[0]){
+
+                    Log.e("test","çalıştı")
+                    viewModelScope.launch(Dispatchers.Main) {
+                        messageList = messageList + newMessage
+
+                        fetchMessages(messageList)
+                    }
+                }
+            }else{
+                Log.e("socketOn","else düştü")
+            }
+        }
+
+        /*mSocket.on("newMessage:user:${user.uId}"){ args ->
             if (args[0] != null){
                 val message = mutableListOf<MessageItem>()
                 Log.e("socketOn","${args[1]}")

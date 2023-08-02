@@ -31,6 +31,8 @@ interface DatingApiService {
     suspend fun fetchUserData(): User
     @GET("chat/{id}")
     suspend fun getMessages(@Path("id") id: String): List<MessageItem>
+    @GET("auth/profile/{id}")
+    suspend fun getUserProfile(@Path("id") id: String): User
     @Multipart
     @POST("auth/profile/addPhoto")
     suspend fun saveProfilePhoto(@Part image: MultipartBody.Part): ResponseBody

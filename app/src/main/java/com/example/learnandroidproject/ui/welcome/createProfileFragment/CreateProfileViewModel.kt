@@ -77,17 +77,20 @@ class CreateProfileViewModel@Inject constructor(private val datingApiRepository:
             val result = datingApiRepository.login(logUser)
             val responseString = result.component1()?.string() ?: ""
 
-            val sharedPreferences = context.getSharedPreferences(context.packageName,Context.MODE_PRIVATE)
-            val sharedPreferences2 = context.getSharedPreferences("LoggedUserID",Context.MODE_PRIVATE)
+            val accessTokenShared = context.getSharedPreferences("AccessToken",Context.MODE_PRIVATE)
+            val loggedIdShared = context.getSharedPreferences("LoggedUserID",Context.MODE_PRIVATE)
+            val refreshTokenShared = context.getSharedPreferences("RefShared", Context.MODE_PRIVATE)
             if (result.isSuccess()) {
                 // Parse the JSON response to extract the URL
                 try {
                     val jsonObject = JSONObject(responseString)
+                    val refToken = jsonObject.optString("refreshToken", "")
                     val accessToken = jsonObject.optString("accessToken", "")
                     val loggedUserId = jsonObject.optString("userId", "")
 
-                    sharedPreferences.edit().putString("accessTokenKey", accessToken).apply()
-                    sharedPreferences2.edit().putString("LoggedUserId",loggedUserId).apply()
+                    accessTokenShared.edit().putString("accessTokenKey", accessToken).apply()
+                    loggedIdShared.edit().putString("LoggedUserId",loggedUserId).apply()
+                    refreshTokenShared.edit().putString("ref", refToken).apply()
                     Log.e("userId","$loggedUserId")
 
                     _loginStateLiveData.postValue(true)

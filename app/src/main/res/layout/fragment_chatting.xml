@@ -39,6 +39,7 @@
                     android:layout_marginEnd="22dp"/>
 
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/userInfo"
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_marginTop="5dp"

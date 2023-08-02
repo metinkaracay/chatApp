@@ -64,6 +64,9 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
             viewModel.sendMessage(SocketHandler,requireContext(),message)
             binding.editText.text.clear()
         }
+        binding.userInfo.setOnClickListener{
+            welcomeViewModel.goToUserProfileFragment()
+        }
     }
     fun scrollToBottom(list: List<MessageItem>) {
         // UI'a erişebilmesi için Main thread kullandık

@@ -20,7 +20,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val sharedPreferences = requireContext().getSharedPreferences(requireContext().packageName,Context.MODE_PRIVATE)
+        val sharedPreferences = requireContext().getSharedPreferences("accessTokenShared",Context.MODE_PRIVATE)
         val savedToken = sharedPreferences.getString("accessTokenKey","")
         if (savedToken != null && savedToken.isNotBlank() && savedToken.isNotEmpty()){
             welcomeViewModel.goToBaseChatRoomsPage()

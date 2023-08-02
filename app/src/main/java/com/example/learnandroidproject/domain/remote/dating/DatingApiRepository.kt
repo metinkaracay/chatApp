@@ -29,6 +29,8 @@ interface DatingApiRepository {
 
     suspend fun getMessages(id: String): GenericResult<List<MessageItem>>
 
+    suspend fun getUserProfile(id: String): GenericResult<User>
+
     suspend fun saveProfilePhoto(image: MultipartBody.Part): GenericResult<ResponseBody>
 
     suspend fun login(user: LoginRequest): GenericResult<ResponseBody>

@@ -61,14 +61,18 @@
 
                 <TextView
                     android:id="@+id/lastMessage"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@{pageViewState.lastMessage}"
                     android:layout_gravity="start"
                     android:layout_marginStart="20dp"
+                    android:layout_marginEnd="40dp"
+                    android:maxLines="1"
+                    android:maxLength="50"
                     android:textSize="13sp"
                     android:fontFamily="@font/montserrat_regular"
-                    android:textColor="@color/black"/>
+                    android:textColor="@color/black"
+                    android:ellipsize="end"/>
 
                 <TextView
                     android:id="@+id/elapsedTime"
