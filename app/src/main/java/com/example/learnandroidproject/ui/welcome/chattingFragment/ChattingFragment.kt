@@ -39,9 +39,7 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         welcomeViewModel.messageMutableLiveEvent.observe(viewLifecycleOwner){
-            Log.e("liveDataListener","çalışıyor")
             viewModel.fetchMessagesOnSocket(it)
         }
         val user = welcomeViewModel.getUserInfo()
@@ -61,9 +59,6 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
         }
         viewModel.errorMessageLiveData.observe(viewLifecycleOwner){
             Toast.makeText(requireContext(),it,Toast.LENGTH_SHORT).show()
-        }
-        viewModel.sendingMessageArgsLiveData.observe(viewLifecycleOwner){
-            welcomeViewModel.sendingMessage(it)
         }
     }
 

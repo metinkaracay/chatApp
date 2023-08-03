@@ -44,7 +44,7 @@ class GeneralChatUsersViewModel @Inject constructor(private val datingApiReposit
         }
     }
 
-    fun getAllUsersLiveData(Socket: SocketHandler, context: Context){
+    /*fun getAllUsersLiveData(Socket: SocketHandler, context: Context){
         val sharedPreferences = context.getSharedPreferences("LoggedUserID",Context.MODE_PRIVATE)
         val loggedUserId = sharedPreferences.getString("LoggedUserId","")
 
@@ -85,5 +85,5 @@ class GeneralChatUsersViewModel @Inject constructor(private val datingApiReposit
             //_generalChatUsersPageViewStateLiveData.value = GeneralChatUsersPageViewState(userList)
             _generalChatUsersPageViewStateLiveData.postValue(GeneralChatUsersPageViewState(userList))
         }
-    }
+    }*/
 }

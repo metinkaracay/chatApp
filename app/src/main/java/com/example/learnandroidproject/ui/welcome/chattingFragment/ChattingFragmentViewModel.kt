@@ -168,10 +168,6 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
             val newMessage = MessageItem(message,loggedUserId.toString(),user.uId.toString(),currentTime.toString())
             messageList = messageList + newMessage
 
-            Log.e("iföngönrec","${user.uId}")
-            val args = Args(message,loggedUserId.toString(),user.uId.toString(),currentTime)
-            //_sendingMessageArgsLiveData.postValue(args)
-
             fetchMessages(messageList)
         }else{
             _errorMessageLiveData.postValue("Lütfen Bir Mesaj Girin")

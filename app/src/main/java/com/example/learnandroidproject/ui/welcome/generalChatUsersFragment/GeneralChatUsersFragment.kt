@@ -42,7 +42,7 @@ class GeneralChatUsersFragment : BaseFragment<FragmentGeneralChatUsersBinding>()
             }
         }
         adapterListeners()
-        viewModel.getAllUsersLiveData(SocketHandler,requireContext())
+        //viewModel.getAllUsersLiveData(SocketHandler,requireContext())
     }
     fun handleViewOptions(){
         binding.backArrow.setOnClickListener {

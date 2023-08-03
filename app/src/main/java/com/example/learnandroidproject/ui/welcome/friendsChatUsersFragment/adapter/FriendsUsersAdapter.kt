@@ -34,9 +34,9 @@ class FriendsUsersAdapter : RecyclerView.Adapter<FriendsUsersAdapter.UsersItemVi
         val dateFormat = SimpleDateFormat("dd/MM/yyyy, HH:mm:ss", Locale.getDefault())
         val dateNow = Date()
 
-        if (date.matches(Regex("\\d{2}:\\d{2}"))) {
+        if (date.matches(Regex("\\d{2}:\\d{2}:\\d{2}"))) {
             try {
-                val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+                val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
                 val messageTime = timeFormat.parse(date)
                 val currentTime = timeFormat.parse(timeFormat.format(dateNow))
 
@@ -56,7 +56,7 @@ class FriendsUsersAdapter : RecyclerView.Adapter<FriendsUsersAdapter.UsersItemVi
                 }
                 return result
             } catch (e: Exception) {
-                println("Geçersiz saat formatı veya hata: ${e.message}")
+                println("Geçersiz saat formatı veya hata2: ${e.message}")
                 return "Geçersiz"
             }
         }else if (date != "null"){

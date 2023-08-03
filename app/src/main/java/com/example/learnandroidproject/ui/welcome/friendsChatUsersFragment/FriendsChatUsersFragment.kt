@@ -47,9 +47,19 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
         welcomeViewModel.messageMutableLiveEvent.observeNonNull(viewLifecycleOwner){
             Log.e("sonmesaj","${it.message}")
             Log.e("sonmesaj2","${it.receiverId}")
-            viewModel.sortFriendList(it,requireContext())
+            //viewModel.sortFriendList(it,requireContext())
+        }
+        welcomeViewModel.isFriendsListRecording.observeNonNull(viewLifecycleOwner){
+            Log.e("isFriends","çalıştı")
+            viewModel.listUpdate(it,requireContext())
         }
     }
+    /*override fun onStart() {
+        super.onStart()
+        val data = welcomeViewModel.userMessages
+        Log.e("isFriendsGelen","${data}")
+        viewModel.listUpdate(welcomeViewModel.userMessages,requireContext())
+    }*/
     fun adapterListeners(){
         recyclerAdapter.setItemClickListener{
             welcomeViewModel.fillUserInfoData(it.uId,it.uName,it.uStatu,it.uPhoto)
@@ -57,7 +67,6 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
         }
         recyclerAdapter.setPhotoItemClickListener {
             welcomeViewModel.fillClickedUserPhoto(it)
-            Log.e("deffoto","$it")
             showUserProfilePhotoDialog(3)
         }
     }

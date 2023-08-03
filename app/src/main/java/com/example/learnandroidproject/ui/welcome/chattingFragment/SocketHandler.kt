@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import io.socket.client.IO
 import io.socket.client.Socket
+import io.socket.engineio.client.transports.WebSocket
 import java.net.URISyntaxException
 
 object SocketHandler {
@@ -15,7 +16,11 @@ object SocketHandler {
         val sharedPreferences = context.getSharedPreferences("accessTokenShared", Context.MODE_PRIVATE)
         val token = sharedPreferences.getString("accessTokenKey", "")
         try {
-            mSocket = IO.socket("http://10.82.0.73:3000/api/v1/chat?token=${token}")
+            val opts = IO.Options()
+            var name = arrayOf("websocket")
+            opts.transports = name
+            mSocket = IO.socket("http://10.82.0.73:3000/?token=${token}", opts)
+            Log.e("setSocket","Bağlantı kuruldu")
         } catch (e: URISyntaxException){
             Log.e("Socket Hatası","$e")
         }

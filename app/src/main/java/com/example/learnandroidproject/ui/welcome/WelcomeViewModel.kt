@@ -26,15 +26,19 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     private val _navigateUpSingleLiveEvent: SingleLiveEvent<Any?> = SingleLiveEvent()
     private val _closePageSingleLiveEvent: SingleLiveEvent<Any?> = SingleLiveEvent()
     private val _messageMutableLiveEvent: MutableLiveData<Args> = MutableLiveData()
+    private val _isFriendsListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = MutableLiveData()
 
     val closePageSingleLiveEvent: LiveData<Any?> = _closePageSingleLiveEvent
     val navigateToDestinationSingleLiveEvent: LiveData<NavigationData> = _navigateToDestinationSingleLiveEvent
     val navigateUpSingleLiveEvent: LiveData<Any?> = _navigateUpSingleLiveEvent
     val messageMutableLiveEvent: MutableLiveData<Args> = _messageMutableLiveEvent
+    val isFriendsListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = _isFriendsListRecording
 
     private var user: User = User(null, null, null, null, null, null, null,null,null)
     private var userInfo = UserInfo(0,"null","null","null",null,null)
     private var clickedUserPhoto: String? = null
+    val userMessages: MutableMap<String, MutableList<Args>> = mutableMapOf()
+
 
     fun fillUserData(userName: String, email: String, password: String) {
         user.userName = userName
@@ -59,12 +63,6 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     fun getClickedUserPhoto(): String? {
         return clickedUserPhoto
     }
-    fun sendingMessage(sendingArgs: Args){
-        viewModelScope.launch(Dispatchers.Main) {
-            Log.e("sendGeldi","${sendingArgs.receiverId}")
-            //_messageMutableLiveEvent.value = sendingArgs
-        }
-    }
     fun socketListener(Socket: SocketHandler, context: Context){
         val sharedPreferences = context.getSharedPreferences("LoggedUserID",Context.MODE_PRIVATE)
         val loggedUserId = sharedPreferences.getString("LoggedUserId","")
@@ -86,6 +84,25 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
                     argsModel = Args(args[1].toString(),args[0].toString(),loggedUserId.toString(),args[2].toString())
                 }
 
+                val senderId = argsModel.senderId
+                val receiverId = argsModel.receiverId//if (senderId == loggedUserId) args[2].toString() else senderId
+                val messageContent = argsModel.message
+                val messageDate = argsModel.messageTime
+
+                val newArgsModel = Args(messageContent, senderId, receiverId, messageDate)
+
+                // Mesajları kullanıcıya göre gruplayarak saklayalım.
+                if (userMessages.containsKey(receiverId)) {
+                    Log.e("socketListener","ifedüştü")
+                    userMessages[receiverId]?.add(newArgsModel)
+                } else {
+                    Log.e("socketListener","elsedüştü")
+                    userMessages[receiverId] = mutableListOf(newArgsModel)
+                }
+
+                viewModelScope.launch(Dispatchers.Main) {
+                    _isFriendsListRecording.value = userMessages
+                }
                 viewModelScope.launch(Dispatchers.Main) {
                     _messageMutableLiveEvent.value = argsModel
                 }
