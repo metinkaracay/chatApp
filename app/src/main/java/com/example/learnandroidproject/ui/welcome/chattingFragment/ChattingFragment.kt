@@ -1,14 +1,19 @@
 package com.example.learnandroidproject.ui.welcome.chattingFragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.learnandroidproject.R
 import com.example.learnandroidproject.common.extensions.observeNonNull
+import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.Args
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
 import com.example.learnandroidproject.databinding.FragmentChattingBinding
 import com.example.learnandroidproject.ui.base.BaseFragment
@@ -34,6 +39,11 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        welcomeViewModel.messageMutableLiveEvent.observe(viewLifecycleOwner){
+            Log.e("liveDataListener","çalışıyor")
+            viewModel.fetchMessagesOnSocket(it)
+        }
         val user = welcomeViewModel.getUserInfo()
         viewModel.user = user
         viewModel.getUserInfo()
@@ -52,7 +62,9 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
         viewModel.errorMessageLiveData.observe(viewLifecycleOwner){
             Toast.makeText(requireContext(),it,Toast.LENGTH_SHORT).show()
         }
-        viewModel.getMessages(SocketHandler,requireContext())
+        viewModel.sendingMessageArgsLiveData.observe(viewLifecycleOwner){
+            welcomeViewModel.sendingMessage(it)
+        }
     }
 
     fun handleViewOption(){

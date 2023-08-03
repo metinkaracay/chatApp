@@ -12,6 +12,7 @@ import com.example.learnandroidproject.common.extensions.observeNonNull
 import com.example.learnandroidproject.databinding.FragmentFriendsChatUsersBinding
 import com.example.learnandroidproject.ui.base.BaseFragment
 import com.example.learnandroidproject.ui.welcome.WelcomeViewModel
+import com.example.learnandroidproject.ui.welcome.chattingFragment.SocketHandler
 import com.example.learnandroidproject.ui.welcome.friendsChatUsersFragment.adapter.FriendsUsersAdapter
 import com.example.learnandroidproject.ui.welcome.generalChatUsersFragment.adapter.GeneralUsersAdapter
 import com.example.learnandroidproject.ui.welcome.popUpFragment.PopUpFragment
@@ -43,6 +44,11 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
             }
         }
         adapterListeners()
+        welcomeViewModel.messageMutableLiveEvent.observeNonNull(viewLifecycleOwner){
+            Log.e("sonmesaj","${it.message}")
+            Log.e("sonmesaj2","${it.receiverId}")
+            viewModel.sortFriendList(it,requireContext())
+        }
     }
     fun adapterListeners(){
         recyclerAdapter.setItemClickListener{

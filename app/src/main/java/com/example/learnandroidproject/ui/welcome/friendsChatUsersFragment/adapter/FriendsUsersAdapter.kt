@@ -26,29 +26,44 @@ class FriendsUsersAdapter : RecyclerView.Adapter<FriendsUsersAdapter.UsersItemVi
         photoIemClickListener = listener
     }
     fun setItems(page: List<UserInfo>) {
-        // Yeni mesajı göndermeden önceki ve gönderdikte sonraki liste boyutlarını aldık
-        val previousItemCount = list.size
         list = page
-        val newItemCount = list.size
-        // Yeni mesajı ekleyeceğimiz yeri belirledik
-        notifyItemRangeInserted(previousItemCount, newItemCount - previousItemCount)
-        // Son mesajdan iki önceki mesajdan itibaren sondan bir önceki mesaja kadar güncelledik
-        notifyItemRangeChanged(previousItemCount-1, newItemCount)
+        notifyDataSetChanged()
     }
 
     fun formattedDate(date: String): String{
         val dateFormat = SimpleDateFormat("dd/MM/yyyy, HH:mm:ss", Locale.getDefault())
+        val dateNow = Date()
 
-        val messageDate = date
+        if (date.matches(Regex("\\d{2}:\\d{2}"))) {
+            try {
+                val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+                val messageTime = timeFormat.parse(date)
+                val currentTime = timeFormat.parse(timeFormat.format(dateNow))
 
-        if (date != "null"){
+                val minDifference = abs(currentTime.time - messageTime.time) / (60 * 1000)
+
+                val result = when {
+                    minDifference < 1 -> "birkaç saniye önce"
+                    minDifference < 60 -> "${minDifference.toInt()} dakika önce"
+                    else -> {
+                        val hourDifference = minDifference / 60
+                        if (hourDifference < 24) {
+                            "$hourDifference saat önce"
+                        }else{
+                            "Bir Gün Önce"
+                        }
+                    }
+                }
+                return result
+            } catch (e: Exception) {
+                println("Geçersiz saat formatı veya hata: ${e.message}")
+                return "Geçersiz"
+            }
+        }else if (date != "null"){
 
             try {
-                val messageTime = dateFormat.parse(messageDate)
+                val messageTime = dateFormat.parse(date)
 
-                val dateNow = Date()
-
-                // Gelen tarih ile anlık tarih arasındaki farkı hesapla (dakika cinsinden)
                 val minDifference = abs(dateNow.time - messageTime.time) / (60 * 1000)
                 val dayDifference = minDifference / (24 * 60)
                 val yearDifference = dayDifference / 365
@@ -61,7 +76,6 @@ class FriendsUsersAdapter : RecyclerView.Adapter<FriendsUsersAdapter.UsersItemVi
                     minDifference.toInt() == 0 -> "birkaç saniye önce"
                     else -> "$minDifference dakika önce"
                 }
-                Log.e("sonuccccc","$result")
 
                 return result
             } catch (e: Exception) {

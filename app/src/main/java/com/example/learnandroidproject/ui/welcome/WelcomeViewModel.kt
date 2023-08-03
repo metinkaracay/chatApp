@@ -1,15 +1,22 @@
 package com.example.learnandroidproject.ui.welcome
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.learnandroidproject.R
 import com.example.learnandroidproject.common.SingleLiveEvent
+import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.Args
 import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
+import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
 import com.example.learnandroidproject.ui.common.navigation.NavigationData
 import com.example.learnandroidproject.ui.welcome.chattingFragment.SocketHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,11 +24,13 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
 
     private val _navigateToDestinationSingleLiveEvent: SingleLiveEvent<NavigationData> = SingleLiveEvent()
     private val _navigateUpSingleLiveEvent: SingleLiveEvent<Any?> = SingleLiveEvent()
-    private val _closePageSingleLiveEvent: SingleLiveEvent<Any?> = SingleLiveEvent() //TODO Mutable single event ile istek at sockette
+    private val _closePageSingleLiveEvent: SingleLiveEvent<Any?> = SingleLiveEvent()
+    private val _messageMutableLiveEvent: MutableLiveData<Args> = MutableLiveData()
 
     val closePageSingleLiveEvent: LiveData<Any?> = _closePageSingleLiveEvent
     val navigateToDestinationSingleLiveEvent: LiveData<NavigationData> = _navigateToDestinationSingleLiveEvent
     val navigateUpSingleLiveEvent: LiveData<Any?> = _navigateUpSingleLiveEvent
+    val messageMutableLiveEvent: MutableLiveData<Args> = _messageMutableLiveEvent
 
     private var user: User = User(null, null, null, null, null, null, null,null,null)
     private var userInfo = UserInfo(0,"null","null","null",null,null)
@@ -49,6 +58,41 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     }
     fun getClickedUserPhoto(): String? {
         return clickedUserPhoto
+    }
+    fun sendingMessage(sendingArgs: Args){
+        viewModelScope.launch(Dispatchers.Main) {
+            Log.e("sendGeldi","${sendingArgs.receiverId}")
+            //_messageMutableLiveEvent.value = sendingArgs
+        }
+    }
+    fun socketListener(Socket: SocketHandler, context: Context){
+        val sharedPreferences = context.getSharedPreferences("LoggedUserID",Context.MODE_PRIVATE)
+        val loggedUserId = sharedPreferences.getString("LoggedUserId","")
+
+        Socket.setSocket(context)
+        Socket.establishConnection()
+        val mSocket = Socket.getSocket()
+
+        mSocket.on("message"){ args ->
+            if (args[0] != null){
+                var argsModel = Args("","","","")
+
+                Log.e("welalıcı","${args[1]}")
+                Log.e("welsende","${args[0]}")
+                if(args[0].toString() == loggedUserId){
+                    argsModel = Args(args[1].toString(),args[0].toString(),args[3].toString(),args[2].toString())
+                    Log.e("weltest","çalıştı")
+                }else{
+                    argsModel = Args(args[1].toString(),args[0].toString(),loggedUserId.toString(),args[2].toString())
+                }
+
+                viewModelScope.launch(Dispatchers.Main) {
+                    _messageMutableLiveEvent.value = argsModel
+                }
+            }else{
+                Log.e("socketOn","else düştü")
+            }
+        }
     }
     fun onSecondFragmentClicked() {
         _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.secondFragment)

@@ -11,6 +11,7 @@ import com.github.michaelbull.result.get
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,7 +24,9 @@ class UserProfileViewModel @Inject constructor(private val datingApiRepository: 
         Log.e("FetchUserData","$userId")
         viewModelScope.launch(Dispatchers.IO){
             datingApiRepository.getUserProfile(userId).get()?.let {
-                _userProfilePageViewStateLiveData.value = UserProfilePageViewState(it)
+                withContext(Dispatchers.Main){
+                    _userProfilePageViewStateLiveData.value = UserProfilePageViewState(it)
+                }
             }
         }
     }

@@ -29,7 +29,7 @@ interface DatingApiService {
     suspend fun fetchFriendsUsers(): List<UserInfo>
     @GET("auth/profile")
     suspend fun fetchUserData(): User
-    @GET("chat/{id}")
+    @GET("chats/{id}")
     suspend fun getMessages(@Path("id") id: String): List<MessageItem>
     @GET("auth/profile/{id}")
     suspend fun getUserProfile(@Path("id") id: String): User

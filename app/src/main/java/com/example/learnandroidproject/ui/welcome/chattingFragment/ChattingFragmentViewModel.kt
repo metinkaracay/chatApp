@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.learnandroidproject.common.isSuccess
+import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.Args
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.SendingMessage
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
@@ -15,6 +16,7 @@ import com.example.learnandroidproject.ui.welcome.chattingFragment.adapter.Messa
 import com.github.michaelbull.result.get
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -31,6 +33,9 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
 
     private val _errorMessageLiveData: MutableLiveData<String> = MutableLiveData()
     val errorMessageLiveData: LiveData<String> = _errorMessageLiveData
+
+    private val _sendingMessageArgsLiveData: MutableLiveData<Args> = MutableLiveData()
+    val sendingMessageArgsLiveData: LiveData<Args> = _sendingMessageArgsLiveData
 
     var user: UserInfo = UserInfo(0,"","","null",null,null)
 
@@ -55,14 +60,42 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
         }
     }
 
-    fun getMessages(Socket: SocketHandler, context: Context){
+    fun fetchMessagesOnSocket(args: Args){
+        val dateNow = Date()
+        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+        val currentTime = timeFormat.format(dateNow)
+
+        if (user.uId == args.senderId.toInt()){
+
+            val newMessage = MessageItem(args.message,args.senderId,args.receiverId,currentTime)
+            Log.e("test","çalıştı")
+            viewModelScope.launch(Dispatchers.Main) {
+                messageList = messageList + newMessage
+
+                fetchMessages(messageList)
+            }
+        }
+    }
+
+    fun getMessages(args: LiveData<Array<Any>>, context:Context){
         val dateNow = Date()
         val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
         val currentTime = timeFormat.format(dateNow)
 
         val sharedPreferences = context.getSharedPreferences("LoggedUserID",Context.MODE_PRIVATE)
         val loggedUserId = sharedPreferences.getString("LoggedUserId","")
-        Socket.setSocket(context)
+
+        if (user.uId == args.value?.get(0)){
+
+            val newMessage = MessageItem(args.value?.get(1).toString(),args.value?.get(0).toString(),loggedUserId.toString(),currentTime)
+            Log.e("test","çalıştı")
+            viewModelScope.launch(Dispatchers.Main) {
+                messageList = messageList + newMessage
+
+                fetchMessages(messageList)
+            }
+        }
+        /*Socket.setSocket(context)
         val mSocket = Socket.getSocket()
 
         mSocket.connect()
@@ -87,7 +120,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
             }else{
                 Log.e("socketOn","else düştü")
             }
-        }
+        }*/
 
         /*mSocket.on("newMessage:user:${user.uId}"){ args ->
             if (args[0] != null){
@@ -127,9 +160,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
         val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
         val currentTime = timeFormat.format(dateNow)
 
-        Socket.setSocket(context)
         val mSocket = Socket.getSocket()
-        mSocket.connect()
 
         if (message.isNotEmpty() && message.isNotBlank()){
 
@@ -137,21 +168,13 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
             val newMessage = MessageItem(message,loggedUserId.toString(),user.uId.toString(),currentTime.toString())
             messageList = messageList + newMessage
 
+            Log.e("iföngönrec","${user.uId}")
+            val args = Args(message,loggedUserId.toString(),user.uId.toString(),currentTime)
+            //_sendingMessageArgsLiveData.postValue(args)
+
             fetchMessages(messageList)
-        }
-
-        /*if (message.isNotEmpty() && message.isNotBlank()){
-            viewModelScope.launch(Dispatchers.IO){
-                val result = datingApiRepository.sendMessage(user.uId.toString(),SendingMessage(message))
-
-                if (result.isSuccess()){
-                    Log.e("postSonuç","mesaj Gönderildi")
-                }else{
-                    Log.e("postSonuç","Hata")
-                }
-            }
         }else{
             _errorMessageLiveData.postValue("Lütfen Bir Mesaj Girin")
-        }*/
+        }
     }
 }

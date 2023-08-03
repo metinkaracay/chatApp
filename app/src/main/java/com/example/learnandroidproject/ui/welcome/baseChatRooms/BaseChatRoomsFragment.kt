@@ -1,8 +1,10 @@
 package com.example.learnandroidproject.ui.welcome.baseChatRooms
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.activityViewModels
@@ -13,6 +15,7 @@ import com.example.learnandroidproject.common.extensions.observeNonNull
 import com.example.learnandroidproject.databinding.FragmentBaseChatRoomsBinding
 import com.example.learnandroidproject.ui.base.BaseFragment
 import com.example.learnandroidproject.ui.welcome.WelcomeViewModel
+import com.example.learnandroidproject.ui.welcome.chattingFragment.SocketHandler
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -20,11 +23,12 @@ class BaseChatRoomsFragment : BaseFragment<FragmentBaseChatRoomsBinding>() {
 
     private val viewModel: BaseChatRoomsViewModel by viewModels()
     private val welcomeViewModel: WelcomeViewModel by activityViewModels()
+    var socketHandler: SocketHandler? = null
     override fun getLayoutResId(): Int = R.layout.fragment_base_chat_rooms
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        handleViewOption()
+        handleViewOption(socketHandler!!)
         with(viewModel){
             baseChatRoomsPageViewStateLiveData.observeNonNull(viewLifecycleOwner){
                 with(binding){
@@ -56,9 +60,22 @@ class BaseChatRoomsFragment : BaseFragment<FragmentBaseChatRoomsBinding>() {
                 super.onPageScrollStateChanged(state)
             }
         })
+        // Telefonun navigation bar'ında ki geri tuşuna basılmasını kontrol eder
+        /*val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)*/
     }
 
-    fun handleViewOption(){
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Log.e("baseCreate","çaıştı")
+        socketHandler = SocketHandler
+        welcomeViewModel.socketListener(socketHandler!!,requireContext())
+    }
+
+    fun handleViewOption(socket: SocketHandler){
         binding.profile.setOnClickListener {
             welcomeViewModel.goToProfilePage()
         }
@@ -67,6 +84,7 @@ class BaseChatRoomsFragment : BaseFragment<FragmentBaseChatRoomsBinding>() {
             viewModel.exitResponseLiveData.observe(viewLifecycleOwner){
                 if (it){
                     welcomeViewModel.goToMainPage()
+                    socket.closeConnection()
                 }else{
                     Toast.makeText(requireContext(),"Çıkış Başarısız Lütfen Daha Sonra Tekrar Deneyiniz",Toast.LENGTH_SHORT).show()
                 }

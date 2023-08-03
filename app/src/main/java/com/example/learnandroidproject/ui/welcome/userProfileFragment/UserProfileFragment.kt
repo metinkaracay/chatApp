@@ -1,6 +1,7 @@
 package com.example.learnandroidproject.ui.welcome.userProfileFragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -9,6 +10,7 @@ import com.example.learnandroidproject.common.extensions.observeNonNull
 import com.example.learnandroidproject.databinding.FragmentUserProfileBinding
 import com.example.learnandroidproject.ui.base.BaseFragment
 import com.example.learnandroidproject.ui.welcome.WelcomeViewModel
+import com.example.learnandroidproject.ui.welcome.popUpFragment.PopUpFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -21,6 +23,7 @@ class UserProfileFragment : BaseFragment<FragmentUserProfileBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        handleViewOption()
         val user = welcomeViewModel.getUserInfo()
         with(viewModel){
             userProfilePageViewStateLiveData.observeNonNull(viewLifecycleOwner){
@@ -31,5 +34,20 @@ class UserProfileFragment : BaseFragment<FragmentUserProfileBinding>() {
             }
         }
         viewModel.fetchUserData(user.uId.toString())
+    }
+    fun handleViewOption(){
+        binding.backArrow.setOnClickListener {
+            welcomeViewModel.navigateUp()
+        }
+        binding.userPhoto.setOnClickListener {
+            showUserProfilePhotoDialog(3)
+        }
+    }
+
+    private fun showUserProfilePhotoDialog(requestCode: Int) {
+        if (PopUpFragment.isShowing().not()) {
+            val filterNewDialogFragment: PopUpFragment = PopUpFragment.newInstance(requestCode)
+            filterNewDialogFragment.show(childFragmentManager, PopUpFragment::class.java.simpleName)
+        }
     }
 }
