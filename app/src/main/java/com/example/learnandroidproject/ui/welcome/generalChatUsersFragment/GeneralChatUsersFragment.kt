@@ -46,7 +46,7 @@ class GeneralChatUsersFragment : BaseFragment<FragmentGeneralChatUsersBinding>()
     }
     fun handleViewOptions(){
         binding.backArrow.setOnClickListener {
-            welcomeViewModel.goToBaseChatRoomsPage()
+            welcomeViewModel.navigateUp()
         }
     }
 

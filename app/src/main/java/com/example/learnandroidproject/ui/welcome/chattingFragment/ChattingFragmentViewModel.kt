@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.learnandroidproject.common.SingleLiveEvent
 import com.example.learnandroidproject.common.isSuccess
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.Args
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.SendingMessage
@@ -13,6 +14,7 @@ import com.example.learnandroidproject.data.local.model.dating.db.response.chatA
 import com.example.learnandroidproject.domain.remote.dating.DatingApiRepository
 import com.example.learnandroidproject.ui.base.BaseViewModel
 import com.example.learnandroidproject.ui.welcome.chattingFragment.adapter.MessageItemPageViewState
+import com.example.learnandroidproject.ui.welcome.friendsChatUsersFragment.FriendsChatUsersPageViewState
 import com.github.michaelbull.result.get
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +39,12 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
     private val _sendingMessageArgsLiveData: MutableLiveData<Args> = MutableLiveData()
     val sendingMessageArgsLiveData: LiveData<Args> = _sendingMessageArgsLiveData
 
+    private val _messageFetchRequestLiveData: MutableLiveData<Boolean> = MutableLiveData()
+    val messageFetchRequestLiveData: LiveData<Boolean> = _messageFetchRequestLiveData
+
     var user: UserInfo = UserInfo(0,"","","null",null,null)
+    var isNewChat = true
+    var isMessageOver = false
 
     var messageList: List<MessageItem> = arrayListOf()
     fun getUserInfo(){
@@ -45,19 +52,41 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
     }
     fun fetchMessages(list: List<MessageItem>){
         _chattingPageViewStateLiveData.value = ChattingFragmentPageViewState(user,list)
+        if (!list.isNullOrEmpty()){
+            isNewChat = false
+        }
     }
     init {
-        getAllMessages()
+        //getAllMessages()
+        _messageFetchRequestLiveData.postValue(true)
+        getMessagesFromPage(1)
     }
     fun getAllMessages(){
         viewModelScope.launch(Dispatchers.IO){
             datingApiRepository.getMessages(user.uId.toString()).get()?.let {
                 withContext(Dispatchers.Main){
+
                     messageList = it
                     fetchMessages(it)
                 }
             }
         }
+    }
+
+    fun getMessagesFromPage(pageId: Int){
+        viewModelScope.launch(Dispatchers.IO){
+            datingApiRepository.getMessagesFromPage(user.uId.toString(),pageId).get()?.let {
+                withContext(Dispatchers.Main){
+                    if (it.isNullOrEmpty()){
+                        _messageFetchRequestLiveData.postValue(false)
+                        isMessageOver = true
+                    }
+                    messageList = it + messageList
+                    fetchMessages(messageList)
+                }
+            }
+        }
+
     }
 
     fun fetchMessagesOnSocket(args: Args){

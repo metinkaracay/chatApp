@@ -139,6 +139,9 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     fun goToGenerelChatUsersFragment(){
         _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.generalChatUsersFragment)
     }
+    fun goToFriendsChatUsersFragment(){
+        _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.friendsChatUsersFragment)
+    }
     fun goToUserProfileFragment(){
         _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.userProfileFragment)
     }

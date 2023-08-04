@@ -34,6 +34,8 @@ class DatingApiRepositoryImpl @Inject constructor(
 
     override suspend fun getMessages(id: String): GenericResult<List<MessageItem>> = handleDatingRequest { datingApiService.getMessages(id) }
 
+    override suspend fun getMessagesFromPage(id: String, page: Int): GenericResult<List<MessageItem>> = handleDatingRequest{ datingApiService.getMessagesFromPage(id,page)}
+
     override suspend fun getUserProfile(id: String): GenericResult<User> = handleDatingRequest { datingApiService.getUserProfile(id) }
 
     override suspend fun saveProfilePhoto(image: MultipartBody.Part): GenericResult<ResponseBody> = handleDatingRequest { datingApiService.saveProfilePhoto(image) }

@@ -31,6 +31,9 @@ interface DatingApiService {
     suspend fun fetchUserData(): User
     @GET("chats/{id}")
     suspend fun getMessages(@Path("id") id: String): List<MessageItem>
+    @GET("chats/{id}")
+    suspend fun getMessagesFromPage(@Path("id") id: String,
+                                    @Query("page") page: Int ) : List<MessageItem>
     @GET("auth/profile/{id}")
     suspend fun getUserProfile(@Path("id") id: String): User
     @Multipart

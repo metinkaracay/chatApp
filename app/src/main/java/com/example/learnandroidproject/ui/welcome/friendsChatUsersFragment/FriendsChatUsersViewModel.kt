@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.learnandroidproject.common.SingleLiveEvent
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.Args
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
 import com.example.learnandroidproject.domain.remote.dating.DatingApiRepository
@@ -207,6 +208,7 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
                     // Bir kullanıcı birden fazla kez mesaj attığında biriktiriyor. Son elemanı almak için kullanıyoruz burayı
                     if (counter == listSize - 1) {
                         val currentTime = formatMessageTime(message.messageTime)
+                        Log.e("Messagefriends", "Sender1: ${message.senderId}, Receiver: ${message.receiverId}, Content: ${message.message}, Date: ${message.messageTime}")
                         if (friendList[i].uId.toString() == message.senderId) {
                             friendList[i].lastMessage = message.message
                             friendList[i].elapsedTime = currentTime
@@ -221,6 +223,8 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
                 for (message in userMessages1) {
                     if (counter == listSize - 1) {
                         val currentTime = formatMessageTime(message.messageTime)
+                        Log.e("Messagefriends", "Sender1: ${message.senderId}, Receiver: ${message.receiverId}, Content: ${message.message}, Date: ${message.messageTime}")
+
                         if (friendList[i].uId.toString() == message.receiverId) {
                             friendList[i].lastMessage = message.message
                             friendList[i].elapsedTime = currentTime
@@ -234,6 +238,11 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
                 userMessages1?.remove(message)
                 userMessages2?.remove(message)
             }
+        }
+        if (userMessages.isNotEmpty()){
+            Log.e("testttt","kimse kalmadı")
+        }else{
+            Log.e("testttt","yeni birine yazdın")
         }
         friendList.sortByDescending { it.elapsedTime }
         _friendsChatUsersPageViewStateLiveData.value = FriendsChatUsersPageViewState(friendList)

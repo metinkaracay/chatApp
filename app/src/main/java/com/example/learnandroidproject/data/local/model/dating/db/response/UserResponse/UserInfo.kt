@@ -8,6 +8,7 @@ data class UserInfo(
     @SerializedName("status") var uStatu: String,
     @SerializedName("url") var uPhoto: String,
     @SerializedName("lastMsg") var lastMessage: String?,
-    @SerializedName("sendTime") var elapsedTime: String?
+    @SerializedName("sendTime") var elapsedTime: String?,
+    @SerializedName("seen") var seen: Boolean
 ) {
 }
