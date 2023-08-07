@@ -65,7 +65,6 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
         // Telefonun navigation bar'ında ki geri tuşuna basılmasını kontrol eder
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                welcomeViewModel.goToBaseChatRoomsPage()
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)

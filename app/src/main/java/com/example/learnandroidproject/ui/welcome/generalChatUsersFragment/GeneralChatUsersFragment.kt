@@ -3,6 +3,7 @@ package com.example.learnandroidproject.ui.welcome.generalChatUsersFragment
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -42,7 +43,12 @@ class GeneralChatUsersFragment : BaseFragment<FragmentGeneralChatUsersBinding>()
             }
         }
         adapterListeners()
-        //viewModel.getAllUsersLiveData(SocketHandler,requireContext())
+        // Telefonun navigation bar'ında ki geri tuşuna basılmasını kontrol eder
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
     }
     fun handleViewOptions(){
         binding.backArrow.setOnClickListener {

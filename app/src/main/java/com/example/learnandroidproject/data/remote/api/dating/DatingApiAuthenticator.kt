@@ -25,7 +25,6 @@ class DatingApiAuthenticator @Inject constructor(
                 val savedAccessToken = accessTokenShared.getString("accessTokenKey", "")
                 val refreshTokenShared = context.getSharedPreferences("RefShared",Context.MODE_PRIVATE)
                 val savedRef = refreshTokenShared.getString("ref","")
-                Log.e("reftoken","$savedRef")
                 val tokenUrl = "${BaseUrlDecider.getApiBaseUrl()}auth/refreshToken"
                 val refreshTokenResponse = Fuel.post(tokenUrl)
                     .header("Content-Type" to "application/json", HEADER_DATING_TOKEN to "Bearer ${savedRef}")

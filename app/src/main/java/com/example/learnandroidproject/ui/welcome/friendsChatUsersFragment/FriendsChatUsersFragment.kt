@@ -35,6 +35,7 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
         val clickedUser = welcomeViewModel.getUserInfo()
         if (welcomeViewModel.getExitChatRoomData()){
             welcomeViewModel.exitToChatRoomFillData(false)
+            viewModel.clickedUserId = clickedUser.uId //TODO burayı iyileştir
             viewModel.updateSeenInfo(clickedUser.uId)
         }
         viewModel.updateSeenStateClickedUser(clickedUser.uId)
@@ -57,7 +58,7 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
             //viewModel.sortFriendList(it,requireContext())
         }
         welcomeViewModel.isFriendsListRecording.observeNonNull(viewLifecycleOwner){
-            Log.e("isFriends","çalıştı")
+            viewModel.clickedUsersList = welcomeViewModel.getClickedUsersList()
             viewModel.listUpdate(it,requireContext())
         }
     }

@@ -28,6 +28,8 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
 
     var friendList: MutableList<UserInfo> = mutableListOf<UserInfo>()
     val clickedUserLastMessage: Boolean? = null
+    var clickedUserId = 0
+    var clickedUsersList: MutableList<Int> = mutableListOf()
     var newUserInfo = UserInfo(0,"","","","","",true)
     init {
         getAllUsers()
@@ -249,29 +251,29 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
             }
 
             for (message in currentMessages) {
-                Log.e("userMessages1","$userMessages1")
-                Log.e("userMessages2","$userMessages2")
                 userMessages1?.remove(message)
                 userMessages2?.remove(message)
             }
         }
-        // Hata
+        // Hata - FriendList'te olmayan birinden mesaj alına yapılan işlemler
         if (userMessages.isNotEmpty()){
             Log.e("userMessages","$userMessages")// sender
             Log.e("userMessId","${userMessages[loggedUserId]}")
+            Log.e("userMessId","${userMessages[clickedUserId.toString()]}")
             var senderId: String? = null
             var messageTime: String? = null
             var lastMessage: String? = null
 
             Log.e("userMesTEst","çalışmadan önce : ${friendList.size}")
-            val usermes = userMessages[loggedUserId]
-            Log.e("userMes","$usermes")
-            if (!usermes.isNullOrEmpty()){
-                for (message in usermes){
+            val userMesReceiver = userMessages[loggedUserId]
+            //val userMessageSender = userMessages[clickedUserId.toString()]
+            Log.e("userMes","$userMesReceiver")
+            if (!userMesReceiver.isNullOrEmpty()){
+                for (message in userMesReceiver){
                     senderId = message.senderId
                     messageTime = formatMessageTime(message.messageTime)
                     lastMessage = message.message
-                    usermes.remove(message)
+                    userMesReceiver.remove(message)
                 }
                 Log.e("senderIdKontrol","$senderId")
                 viewModelScope.launch(Dispatchers.IO){
@@ -281,27 +283,68 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
                             friendList.add(newUserInfo)
                             Log.e("userMesTEst","çalışmış olmalı : ${friendList.size}")
                             withContext(Dispatchers.Main){
-
                                 friendList.sortByDescending { it.elapsedTime }
                                 _friendsChatUsersPageViewStateLiveData.postValue(FriendsChatUsersPageViewState(friendList))
                             }
                         }
                     }
                 }
+            }else if (!clickedUsersList.isNullOrEmpty()){
+                for (i in 0 until clickedUsersList.size) {
+                    Log.e("çalışıyor","çalışan ${clickedUsersList[i]}")
+                    withoutFriendListUsers(userMessages,clickedUsersList[i])
+                }
+                Log.e("liste eleman sayısı", "Eleman sayısı : ${clickedUsersList.size}")
+                clickedUsersList.clear()
+                Log.e("liste eleman sayısı", "Eleman sayısı2p : ${clickedUsersList.size}")
             } else {
                 viewModelScope.launch(Dispatchers.IO){
                     withContext(Dispatchers.Main){
-
                         friendList.sortByDescending { it.elapsedTime }
                         _friendsChatUsersPageViewStateLiveData.postValue(FriendsChatUsersPageViewState(friendList))
                     }
                 }
             }
+            friendList.sortByDescending { it.elapsedTime }
+            _friendsChatUsersPageViewStateLiveData.postValue(FriendsChatUsersPageViewState(friendList))
             Log.e("testttt","kimse kalmadı")
+            Log.e("userMessag","şu idli: ${clickedUserId}")
         }else{
             Log.e("testttt","yeni birine yazdın")
         }
+    }
 
+    fun withoutFriendListUsers(userMessages: MutableMap<String, MutableList<Args>>,clickedUserId: Int){
+        Log.e("fonk çalıştı","çalıştı $clickedUserId")
+        val userMessageSender = userMessages[clickedUserId.toString()]
+        var messageTime = ""
+        var lastMessage = ""
+
+        if (!userMessageSender.isNullOrEmpty()){
+            var listSize = userMessageSender.size
+            var counter = 0
+            for (message in userMessageSender){
+                if (counter == listSize - 1){
+                    messageTime = formatMessageTime(message.messageTime)
+                    lastMessage = message.message
+                    userMessageSender.remove(message)
+                }
+                counter++
+            }
+            viewModelScope.launch(Dispatchers.IO){
+                datingApiRepository.getUserProfile(clickedUserId.toString()).get()?.let {
+                    withContext(Dispatchers.Main){
+                        newUserInfo = UserInfo(clickedUserId,it.userName!!,it.status!!,it.photo!!,lastMessage,messageTime,true)
+                        friendList.add(newUserInfo)
+                        Log.e("userMesTEstSen","çalışmış olmalı sayı : ${friendList.size}")
+                        withContext(Dispatchers.Main){
+                            friendList.sortByDescending { it.elapsedTime }
+                            _friendsChatUsersPageViewStateLiveData.postValue(FriendsChatUsersPageViewState(friendList))
+                        }
+                    }
+                }
+            }
+        }
     }
 
     fun updateSeenStateClickedUser(id: Int){
@@ -323,4 +366,30 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
         Log.e("friendsFormatTime","$currentTime")
         return currentTime
     }
+    /*else if (!userMessageSender.isNullOrEmpty()){
+
+                var listSize = userMessageSender.size
+                var counter = 0
+                for (message in userMessageSender){
+                    if (counter == listSize - 1){
+                        messageTime = formatMessageTime(message.messageTime)
+                        lastMessage = message.message
+                        userMessageSender.remove(message)
+                    }
+                    counter++
+                }
+                viewModelScope.launch(Dispatchers.IO){
+                    datingApiRepository.getUserProfile(clickedUserId.toString()).get()?.let {
+                        withContext(Dispatchers.Main){
+                            newUserInfo = UserInfo(clickedUserId,it.userName!!,it.status!!,it.photo!!,lastMessage,messageTime,true)
+                            friendList.add(newUserInfo)
+                            Log.e("userMesTEstSen","çalışmış olmalı sayı : ${friendList.size}")
+                            withContext(Dispatchers.Main){
+                                friendList.sortByDescending { it.elapsedTime }
+                                _friendsChatUsersPageViewStateLiveData.postValue(FriendsChatUsersPageViewState(friendList))
+                            }
+                        }
+                    }
+                }
+            }*/
 }

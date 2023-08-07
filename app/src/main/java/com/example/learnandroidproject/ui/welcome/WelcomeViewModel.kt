@@ -39,7 +39,11 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     private var clickedUserPhoto: String? = null
     private var isExitChatRoom: Boolean = false
     val userMessages: MutableMap<String, MutableList<Args>> = mutableMapOf()
+    private var clickedUsers: MutableList<Int> = arrayListOf()
 
+    fun getClickedUsersList(): MutableList<Int>{
+        return clickedUsers
+    }
     fun exitToChatRoomFillData(data: Boolean){
         isExitChatRoom = data
     }
@@ -52,6 +56,9 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
         user.password = password
     }
     fun fillUserInfoData(id: Int,name: String, statu: String, photo: String) {
+        if (!clickedUsers.contains(id)){
+            clickedUsers.add(id)
+        }
         userInfo.uId = id
         userInfo.uName = name
         userInfo.uStatu = statu
@@ -100,10 +107,8 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
 
                 // Mesajları kullanıcıya göre gruplayarak saklayalım.
                 if (userMessages.containsKey(receiverId)) {
-                    Log.e("socketListener","ifedüştü")
                     userMessages[receiverId]?.add(newArgsModel)
                 } else {
-                    Log.e("socketListener","elsedüştü")
                     userMessages[receiverId] = mutableListOf(newArgsModel)
                 }
 
