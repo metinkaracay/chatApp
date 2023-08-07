@@ -42,7 +42,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
     private val _messageFetchRequestLiveData: MutableLiveData<Boolean> = MutableLiveData()
     val messageFetchRequestLiveData: LiveData<Boolean> = _messageFetchRequestLiveData
 
-    var user: UserInfo = UserInfo(0,"","","null",null,null)
+    var user: UserInfo = UserInfo(0,"","","null",null,null,true)
     var isNewChat = true
     var isMessageOver = false
 

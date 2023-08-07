@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.learnandroidproject.R
 import com.example.learnandroidproject.common.extensions.observeNonNull
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.Args
+import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
 import com.example.learnandroidproject.databinding.FragmentChattingBinding
 import com.example.learnandroidproject.ui.base.BaseFragment
@@ -72,6 +73,7 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
 
     fun handleViewOption(){
         binding.backArrow.setOnClickListener {
+            welcomeViewModel.exitToChatRoomFillData(true)
             welcomeViewModel.navigateUp()
         }
         binding.sendButton.setOnClickListener {

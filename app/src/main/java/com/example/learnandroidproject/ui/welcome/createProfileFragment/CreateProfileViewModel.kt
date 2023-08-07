@@ -1,10 +1,12 @@
 package com.example.learnandroidproject.ui.welcome.createProfileFragment
 
 import android.content.Context
+import android.net.ConnectivityManager
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.learnandroidproject.common.isFailure
 import com.example.learnandroidproject.common.isSuccess
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.LoginRequest
 import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
@@ -24,10 +26,13 @@ class CreateProfileViewModel@Inject constructor(private val datingApiRepository:
     private val _errorMessageLiveData: MutableLiveData<String> = MutableLiveData()
     val errorMessageLiveData: LiveData<String> = _errorMessageLiveData
 
+    private val _registerStateLiveData: MutableLiveData<Boolean> = MutableLiveData()
+    val registerStateLiveData: LiveData<Boolean> = _registerStateLiveData
+
     private val _loginStateLiveData: MutableLiveData<Boolean> = MutableLiveData()
     val loginStateLiveData: LiveData<Boolean> = _loginStateLiveData
 
-    fun checkMessage(user: User): Boolean{
+    fun checkFields(user: User): Boolean{
 
         val userFields = listOf(
             user.firstName to "Ad",
@@ -47,18 +52,27 @@ class CreateProfileViewModel@Inject constructor(private val datingApiRepository:
             _errorMessageLiveData.value = "Geçerli Bir Yaş Giriniz"
             return false
         }
-        return postUser(user)
-    }
-
-    fun postUser(user: User): Boolean {
-
-        viewModelScope.launch(Dispatchers.IO) {
-            datingApiRepository.register(user)
-        }
         return true
     }
 
+    fun postUser(user: User, context: Context) {
+        isNetworkAvailable(context)
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = datingApiRepository.register(user)
+            if (result.isFailure()){
+                val errorMessage = "Bu kullanıcı adı veya e-posta zaten kayıtlı"
+                _errorMessageLiveData.postValue(errorMessage)
+                _registerStateLiveData.postValue(false)
+            }else if (result.isSuccess()){
+                _registerStateLiveData.postValue(true)
+            }
+        }
+    }
+
     fun loginChatRooms(user: User,context: Context){
+
+        isNetworkAvailable(context)
 
         val externalUserId = UUID.randomUUID().toString()
         OneSignal.setExternalUserId(externalUserId, object : OneSignal.OSExternalUserIdUpdateCompletionHandler{
@@ -77,9 +91,9 @@ class CreateProfileViewModel@Inject constructor(private val datingApiRepository:
             val result = datingApiRepository.login(logUser)
             val responseString = result.component1()?.string() ?: ""
 
-            val accessTokenShared = context.getSharedPreferences("AccessToken",Context.MODE_PRIVATE)
-            val loggedIdShared = context.getSharedPreferences("LoggedUserID",Context.MODE_PRIVATE)
+            val accessTokenShared = context.getSharedPreferences("accessTokenShared",Context.MODE_PRIVATE)
             val refreshTokenShared = context.getSharedPreferences("RefShared", Context.MODE_PRIVATE)
+            val loggedIdShared = context.getSharedPreferences("LoggedUserID",Context.MODE_PRIVATE)
             if (result.isSuccess()) {
                 // Parse the JSON response to extract the URL
                 try {
@@ -92,6 +106,7 @@ class CreateProfileViewModel@Inject constructor(private val datingApiRepository:
                     loggedIdShared.edit().putString("LoggedUserId",loggedUserId).apply()
                     refreshTokenShared.edit().putString("ref", refToken).apply()
                     Log.e("userId","$loggedUserId")
+                    Log.e("Kayıt login access", "$accessToken")
 
                     _loginStateLiveData.postValue(true)
 
@@ -102,6 +117,15 @@ class CreateProfileViewModel@Inject constructor(private val datingApiRepository:
             } else{
                 Log.e("giriş hatası","Hataa")
             }
+        }
+    }
+
+    private fun isNetworkAvailable(context: Context) {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+
+        if (!(networkInfo != null && networkInfo.isConnected)){
+            _errorMessageLiveData.postValue("Lütfen internet bağlantınızı kontrol edin")
         }
     }
 }

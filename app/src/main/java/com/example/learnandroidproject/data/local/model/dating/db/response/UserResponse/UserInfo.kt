@@ -9,6 +9,6 @@ data class UserInfo(
     @SerializedName("url") var uPhoto: String,
     @SerializedName("lastMsg") var lastMessage: String?,
     @SerializedName("sendTime") var elapsedTime: String?,
-    @SerializedName("seen") var seen: Boolean
+    @SerializedName("isSeen") var seen: Boolean
 ) {
 }

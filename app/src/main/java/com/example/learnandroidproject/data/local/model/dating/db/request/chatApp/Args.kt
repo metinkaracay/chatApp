@@ -4,6 +4,7 @@ data class Args(
     var message: String,
     var senderId: String,
     var receiverId: String,
-    var messageTime: String
+    var messageTime: String,
+    var seen: Boolean
 ) {
 }

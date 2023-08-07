@@ -8,6 +8,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.viewModelScope
 import com.example.learnandroidproject.R
+import com.example.learnandroidproject.common.extensions.observeNonNull
 import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
 import com.example.learnandroidproject.databinding.FragmentCreateProfileBinding
 import com.example.learnandroidproject.ui.base.BaseFragment
@@ -53,15 +54,19 @@ class CreateProfileFragment() : BaseFragment<FragmentCreateProfileBinding>() {
                 R.id.radioFemale -> "Kadın"
                 else -> null
             }
-            val result = viewModel.checkMessage(user)
-
+            val result = viewModel.checkFields(user)
             if (result){
+                viewModel.postUser(user,requireContext())
 
-                showRegisterSuccessDialog()
-                viewModel.viewModelScope.launch(Dispatchers.IO){
-                    delay(2000L)
-                    withContext(Dispatchers.Main){
-                        viewModel.loginChatRooms(user,requireContext())
+                viewModel.registerStateLiveData.observeNonNull(viewLifecycleOwner){
+                    if (it){
+                        showRegisterSuccessDialog()
+                        viewModel.viewModelScope.launch(Dispatchers.IO){
+                            delay(2000L)
+                            withContext(Dispatchers.Main){
+                                viewModel.loginChatRooms(user,requireContext())
+                            }
+                        }
                     }
                 }
             }

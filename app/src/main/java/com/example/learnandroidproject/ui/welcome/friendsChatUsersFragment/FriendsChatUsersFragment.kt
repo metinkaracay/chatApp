@@ -32,10 +32,17 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val clickedUser = welcomeViewModel.getUserInfo()
+        if (welcomeViewModel.getExitChatRoomData()){
+            welcomeViewModel.exitToChatRoomFillData(false)
+            viewModel.updateSeenInfo(clickedUser.uId)
+        }
+        viewModel.updateSeenStateClickedUser(clickedUser.uId)
         recyclerAdapter = FriendsUsersAdapter()
         initResultsItemsRecyclerView()
         with(viewModel){
             friendsChatUsersPageViewStateLiveData.observeNonNull(viewLifecycleOwner){
+                Log.e("testObserve","Observe etti = ${it.users.size}")
                 with(binding){
                     pageViewState = it
                     executePendingBindings()
@@ -63,6 +70,7 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
     fun adapterListeners(){
         recyclerAdapter.setItemClickListener{
             welcomeViewModel.fillUserInfoData(it.uId,it.uName,it.uStatu,it.uPhoto)
+            viewModel.updateSeenInfo(it.uId)
             welcomeViewModel.goToChattingPage()
         }
         recyclerAdapter.setPhotoItemClickListener {

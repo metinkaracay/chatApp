@@ -33,6 +33,8 @@ interface DatingApiRepository {
 
     suspend fun getUserProfile(id: String): GenericResult<User>
 
+    suspend fun updateSeenInfoForUser(id: String): GenericResult<ResponseBody>
+
     suspend fun saveProfilePhoto(image: MultipartBody.Part): GenericResult<ResponseBody>
 
     suspend fun login(user: LoginRequest): GenericResult<ResponseBody>

@@ -35,11 +35,17 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     val isFriendsListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = _isFriendsListRecording
 
     private var user: User = User(null, null, null, null, null, null, null,null,null)
-    private var userInfo = UserInfo(0,"null","null","null",null,null)
+    private var userInfo = UserInfo(0,"null","null","null",null,null,false)
     private var clickedUserPhoto: String? = null
+    private var isExitChatRoom: Boolean = false
     val userMessages: MutableMap<String, MutableList<Args>> = mutableMapOf()
 
-
+    fun exitToChatRoomFillData(data: Boolean){
+        isExitChatRoom = data
+    }
+    fun getExitChatRoomData(): Boolean{
+        return isExitChatRoom
+    }
     fun fillUserData(userName: String, email: String, password: String) {
         user.userName = userName
         user.email = email
@@ -73,23 +79,24 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
 
         mSocket.on("message"){ args ->
             if (args[0] != null){
-                var argsModel = Args("","","","")
+                var argsModel = Args("","","","",false)
 
                 Log.e("welalıcı","${args[1]}")
-                Log.e("welsende","${args[0]}")
+                Log.e("welseen","${args[4]}")
                 if(args[0].toString() == loggedUserId){
-                    argsModel = Args(args[1].toString(),args[0].toString(),args[3].toString(),args[2].toString())
+                    argsModel = Args(args[1].toString(),args[0].toString(),args[3].toString(),args[2].toString(),args[4].equals(Boolean))
                     Log.e("weltest","çalıştı")
                 }else{
-                    argsModel = Args(args[1].toString(),args[0].toString(),loggedUserId.toString(),args[2].toString())
+                    argsModel = Args(args[1].toString(),args[0].toString(),loggedUserId.toString(),args[2].toString(),args[4].equals(Boolean))
                 }
 
                 val senderId = argsModel.senderId
                 val receiverId = argsModel.receiverId//if (senderId == loggedUserId) args[2].toString() else senderId
                 val messageContent = argsModel.message
                 val messageDate = argsModel.messageTime
+                val seen = argsModel.seen
 
-                val newArgsModel = Args(messageContent, senderId, receiverId, messageDate)
+                val newArgsModel = Args(messageContent, senderId, receiverId, messageDate,seen)
 
                 // Mesajları kullanıcıya göre gruplayarak saklayalım.
                 if (userMessages.containsKey(receiverId)) {

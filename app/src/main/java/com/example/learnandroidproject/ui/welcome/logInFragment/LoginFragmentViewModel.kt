@@ -1,6 +1,7 @@
 package com.example.learnandroidproject.ui.welcome.logInFragment
 
 import android.content.Context
+import android.net.ConnectivityManager
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -38,6 +39,8 @@ class LoginFragmentViewModel @Inject constructor(private val datingApiRepository
         _logInPageViewStateLiveData.value = LogInPageViewState()
     }
     fun postUserParams(user: LoginRequest,context: Context){
+        isNetworkAvailable(context)
+
         val externalUserId = UUID.randomUUID().toString()
         OneSignal.setExternalUserId(externalUserId, object :OneSignal.OSExternalUserIdUpdateCompletionHandler{
             override fun onSuccess(p0: JSONObject?) {
@@ -72,6 +75,8 @@ class LoginFragmentViewModel @Inject constructor(private val datingApiRepository
                     accessTokenShared.edit().putString("accessTokenKey", accessToken).apply()
                     refreshTokenShared.edit().putString("ref", refToken).apply()
                     loggedIdShared.edit().putString("LoggedUserId",loggedUserId).apply()
+
+                    Log.e("Login access", "$accessToken")
 
                     _loginStateLiveData.postValue(true)
 
@@ -114,5 +119,14 @@ class LoginFragmentViewModel @Inject constructor(private val datingApiRepository
             return false
         }
         return true
+    }
+
+    private fun isNetworkAvailable(context: Context) {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+
+        if (!(networkInfo != null && networkInfo.isConnected)){
+            _errorMessageLiveData.postValue("Lütfen internet bağlantınızı kontrol edin")
+        }
     }
 }

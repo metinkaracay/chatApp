@@ -36,6 +36,8 @@ interface DatingApiService {
                                     @Query("page") page: Int ) : List<MessageItem>
     @GET("auth/profile/{id}")
     suspend fun getUserProfile(@Path("id") id: String): User
+    @GET("chats/{id}/seen")
+    suspend fun updateSeenInfoForUser(@Path("id") id: String): ResponseBody
     @Multipart
     @POST("auth/profile/addPhoto")
     suspend fun saveProfilePhoto(@Part image: MultipartBody.Part): ResponseBody

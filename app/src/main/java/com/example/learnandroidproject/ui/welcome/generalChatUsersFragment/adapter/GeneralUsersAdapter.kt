@@ -103,7 +103,7 @@ class GeneralUsersAdapter : RecyclerView.Adapter<GeneralUsersAdapter.UsersItemVi
         }
         fun itemSelect(position: Int) {
             binding.userItem.setOnClickListener {
-                val user = UserInfo(list[position].uId,list[position].uName,list[position].uStatu,list[position].uPhoto,null,null)
+                val user = UserInfo(list[position].uId,list[position].uName,list[position].uStatu,list[position].uPhoto,null,null,true)
                 itemClickListener?.invoke(user)
             }
             binding.userPhoto.setOnClickListener {

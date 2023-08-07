@@ -12,11 +12,10 @@ import com.example.learnandroidproject.data.local.model.dating.db.response.UserR
 import com.example.learnandroidproject.domain.remote.dating.DatingApiRepository
 import com.example.learnandroidproject.ui.base.BaseViewModel
 import com.example.learnandroidproject.ui.welcome.generalChatUsersFragment.GeneralChatUsersPageViewState
+import com.example.learnandroidproject.ui.welcome.userProfileFragment.UserProfilePageViewState
 import com.github.michaelbull.result.get
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -28,6 +27,8 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
     val friendsChatUsersPageViewStateLiveData: LiveData<FriendsChatUsersPageViewState> = _friendsChatUsersPageViewStateLiveData
 
     var friendList: MutableList<UserInfo> = mutableListOf<UserInfo>()
+    val clickedUserLastMessage: Boolean? = null
+    var newUserInfo = UserInfo(0,"","","","","",true)
     init {
         getAllUsers()
     }
@@ -37,9 +38,17 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
         viewModelScope.launch(Dispatchers.IO){
             datingApiRepository.fetchFriendsUsers().get()?.let {
                 withContext(Dispatchers.Main){
+                    Log.e("fetchGelen","${it}")
                     friendList.addAll(it)
                     _friendsChatUsersPageViewStateLiveData.value = FriendsChatUsersPageViewState(it)
                 }
+            }
+        }
+    }
+    fun updateSeenInfo(id: Int){
+        if (id != 0){
+            viewModelScope.launch(Dispatchers.IO){
+                datingApiRepository.updateSeenInfoForUser(id.toString())
             }
         }
     }
@@ -202,52 +211,107 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
             var counter = 0
             val currentMessages: MutableList<Args> = mutableListOf()
 
+            // Karşıdan mesaj geldiğinde çalışır
             if (userMessages2 != null) {
                 val listSize = userMessages2.size
                 for (message in userMessages2) {
                     // Bir kullanıcı birden fazla kez mesaj attığında biriktiriyor. Son elemanı almak için kullanıyoruz burayı
                     if (counter == listSize - 1) {
                         val currentTime = formatMessageTime(message.messageTime)
-                        Log.e("Messagefriends", "Sender1: ${message.senderId}, Receiver: ${message.receiverId}, Content: ${message.message}, Date: ${message.messageTime}")
+                        Log.e("Messagefriends", "Sender: ${message.senderId}, Receiver: ${message.receiverId}, Content: ${message.message}, Date: ${message.messageTime}, Seen: ${message.seen}")
                         if (friendList[i].uId.toString() == message.senderId) {
                             friendList[i].lastMessage = message.message
                             friendList[i].elapsedTime = currentTime
+                            friendList[i].seen = message.seen
                             currentMessages.add(message)
                         }
                     }
                     counter++
                 }
             }
+            // Telefonda oturum açan kullanıcı mesaj attığında çalışır
             if (userMessages1 != null) {
                 val listSize = userMessages1.size
                 for (message in userMessages1) {
                     if (counter == listSize - 1) {
                         val currentTime = formatMessageTime(message.messageTime)
-                        Log.e("Messagefriends", "Sender1: ${message.senderId}, Receiver: ${message.receiverId}, Content: ${message.message}, Date: ${message.messageTime}")
+                        Log.e("Messagefriends", "Sender1: ${message.senderId}, Receiver: ${message.receiverId}, Content: ${message.message}, Date: ${message.messageTime}, Seen: ${message.seen}")
 
                         if (friendList[i].uId.toString() == message.receiverId) {
                             friendList[i].lastMessage = message.message
                             friendList[i].elapsedTime = currentTime
+                            friendList[i].seen = true
                             currentMessages.add(message)
                         }
                     }
                     counter++
                 }
             }
+
             for (message in currentMessages) {
+                Log.e("userMessages1","$userMessages1")
+                Log.e("userMessages2","$userMessages2")
                 userMessages1?.remove(message)
                 userMessages2?.remove(message)
             }
         }
+        // Hata
         if (userMessages.isNotEmpty()){
+            Log.e("userMessages","$userMessages")// sender
+            Log.e("userMessId","${userMessages[loggedUserId]}")
+            var senderId: String? = null
+            var messageTime: String? = null
+            var lastMessage: String? = null
+
+            Log.e("userMesTEst","çalışmadan önce : ${friendList.size}")
+            val usermes = userMessages[loggedUserId]
+            Log.e("userMes","$usermes")
+            if (!usermes.isNullOrEmpty()){
+                for (message in usermes){
+                    senderId = message.senderId
+                    messageTime = formatMessageTime(message.messageTime)
+                    lastMessage = message.message
+                    usermes.remove(message)
+                }
+                Log.e("senderIdKontrol","$senderId")
+                viewModelScope.launch(Dispatchers.IO){
+                    datingApiRepository.getUserProfile(senderId!!).get()?.let {
+                        withContext(Dispatchers.Main){
+                            newUserInfo = UserInfo(senderId.toInt(),it.userName!!,it.status!!,it.photo!!,lastMessage,messageTime,false)
+                            friendList.add(newUserInfo)
+                            Log.e("userMesTEst","çalışmış olmalı : ${friendList.size}")
+                            withContext(Dispatchers.Main){
+
+                                friendList.sortByDescending { it.elapsedTime }
+                                _friendsChatUsersPageViewStateLiveData.postValue(FriendsChatUsersPageViewState(friendList))
+                            }
+                        }
+                    }
+                }
+            } else {
+                viewModelScope.launch(Dispatchers.IO){
+                    withContext(Dispatchers.Main){
+
+                        friendList.sortByDescending { it.elapsedTime }
+                        _friendsChatUsersPageViewStateLiveData.postValue(FriendsChatUsersPageViewState(friendList))
+                    }
+                }
+            }
             Log.e("testttt","kimse kalmadı")
         }else{
             Log.e("testttt","yeni birine yazdın")
         }
-        friendList.sortByDescending { it.elapsedTime }
-        _friendsChatUsersPageViewStateLiveData.value = FriendsChatUsersPageViewState(friendList)
+
     }
 
+    fun updateSeenStateClickedUser(id: Int){
+        for (i in 0 until friendList.size){
+            if (friendList[i].uId == id){
+                Log.e("seen düzenlendi id: ","$id")
+                friendList[i].seen = true
+            }
+        }
+    }
 
     fun formatMessageTime(messageTime: String): String{
         val dateFormat = SimpleDateFormat("dd/MM/yyyy, HH:mm:ss", Locale.getDefault())
