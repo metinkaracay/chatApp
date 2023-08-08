@@ -41,8 +41,18 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     private var clickedUserPhoto: String? = null
     private var isExitChatRoom: Boolean = false
     val userMessages: MutableMap<String, MutableList<Args>> = mutableMapOf()
+    var sendedMessages: MutableMap<String, MutableList<Args>> = mutableMapOf()
     private var clickedUsers: MutableList<Int> = arrayListOf()
     private var additionId: String? = null
+    private var lastSentMessage: MessageItem? = null
+
+    fun fillLastSentMessage(messageData: MutableMap<String, MutableList<Args>>){
+        sendedMessages = messageData
+    }
+
+    fun getLastSentMessage(): MutableMap<String, MutableList<Args>>?{
+        return sendedMessages
+    }
 
     fun fillAdditionalId(id: String){
         _additionalDataSingleLiveEvent.postValue(true)

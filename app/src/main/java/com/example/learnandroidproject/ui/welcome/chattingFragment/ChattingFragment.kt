@@ -72,12 +72,17 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
 
     fun handleViewOption(){
         binding.backArrow.setOnClickListener {
+            Log.e("çıkıştaki model","${viewModel.sendingMessage}")
+            var messageData =viewModel.sendingMessage
+            welcomeViewModel.fillLastSentMessage(messageData)
             welcomeViewModel.exitToChatRoomFillData(true)
             welcomeViewModel.navigateUp()
         }
         binding.sendButton.setOnClickListener {
             val message = binding.editText.text.toString()
             viewModel.sendMessage(SocketHandler,requireContext(),message)
+            //var messageData = viewModel.sendMessage(SocketHandler,requireContext(),message)
+            //welcomeViewModel.fillLastSentMessage(messageData)
             binding.editText.text.clear()
         }
         binding.userInfo.setOnClickListener{

@@ -17,10 +17,12 @@ import com.example.learnandroidproject.ui.welcome.chattingFragment.adapter.Messa
 import com.example.learnandroidproject.ui.welcome.friendsChatUsersFragment.FriendsChatUsersPageViewState
 import com.github.michaelbull.result.get
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.socket.client.Ack
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -45,6 +47,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
     var user: UserInfo = UserInfo(0,"","","null",null,null,true)
     var isNewChat = true
     var isMessageOver = false
+    var sendingMessage: MutableMap<String, MutableList<Args>> = mutableMapOf()
 
     var messageList: List<MessageItem> = arrayListOf()
     fun getUserInfo(){
@@ -195,10 +198,27 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
 
         if (message.isNotEmpty() && message.isNotBlank()){
 
-            mSocket.emit("message",user.uId,message)
+            mSocket.emit("message",user.uId,message, Ack{ args ->
+
+                val ackReceiverId = args.getOrNull(0)
+                val json = JSONObject(ackReceiverId.toString())
+
+                val ackReceiver = json.get("receiverId")
+                val ackMessageTime = json.get("payloadDate")
+
+                Log.e("testACK","args1: ${ackReceiver}")
+                Log.e("testAck2", "args2 ${ackMessageTime}")
+
+                var model = Args(message,loggedUserId.toString(),ackReceiver.toString(),ackMessageTime.toString(),true)
+
+                sendingMessage[ackReceiver.toString()] = mutableListOf(model)
+                Log.e("gönderilen model","$sendingMessage")
+
+
+
+            })
             val newMessage = MessageItem(message,loggedUserId.toString(),user.uId.toString(),currentTime.toString())
             messageList = messageList + newMessage
-
             fetchMessages(messageList)
         }else{
             _errorMessageLiveData.postValue("Lütfen Bir Mesaj Girin")

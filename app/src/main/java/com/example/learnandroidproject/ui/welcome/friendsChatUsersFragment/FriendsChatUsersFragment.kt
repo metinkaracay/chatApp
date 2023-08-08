@@ -3,8 +3,13 @@ package com.example.learnandroidproject.ui.welcome.friendsChatUsersFragment
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.learnandroidproject.R
@@ -33,7 +38,12 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val clickedUser = welcomeViewModel.getUserInfo()
-        //
+        val msj = welcomeViewModel.getLastSentMessage()
+        if (msj != null){
+            Log.e("gelennmesaj","$msj")
+            viewModel.sendingMessage = msj
+        }
+        // mesajlaştığımız odadaki son mesajın görüldü durumunu kontrol etmek için
         viewModel.clickedUserForCurrentRoom = clickedUser.uId
         if (welcomeViewModel.getExitChatRoomData()){
             welcomeViewModel.exitToChatRoomFillData(false)
@@ -61,6 +71,13 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
         }
         welcomeViewModel.isFriendsListRecording.observeNonNull(viewLifecycleOwner){
             viewModel.clickedUsersList = welcomeViewModel.getClickedUsersList()
+            val msj = welcomeViewModel.getLastSentMessage()
+            if (msj != null){
+
+                Log.e("gelennmesaj","$msj")
+            }else{
+                Log.e("gelennmesaj","gelmedi")
+            }
             viewModel.listUpdate(it,requireContext())
         }
         viewModel.listUpdated.observeNonNull(viewLifecycleOwner){
@@ -85,12 +102,20 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
             }
         }
     }
-    /*override fun onStart() {
-        super.onStart()
-        val data = welcomeViewModel.userMessages
-        Log.e("isFriendsGelen","${data}")
-        viewModel.listUpdate(welcomeViewModel.userMessages,requireContext())
-    }*/
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        ProcessLifecycleOwner.get().lifecycle.addObserver(object : LifecycleObserver {
+            @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+            fun onBackground() {
+            }
+
+            @OnLifecycleEvent(Lifecycle.Event.ON_START)
+            fun onForeground() {
+                Toast.makeText(requireContext(),"TEst",Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
     fun adapterListeners(){
         recyclerAdapter.setItemClickListener{
             welcomeViewModel.fillUserInfoData(it.uId,it.uName,it.uStatu,it.uPhoto)
