@@ -41,7 +41,7 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        welcomeViewModel.messageMutableLiveEvent.observe(viewLifecycleOwner){
+        welcomeViewModel.messageSingleLiveEvent.observe(viewLifecycleOwner){
             viewModel.fetchMessagesOnSocket(it)
         }
         val user = welcomeViewModel.getUserInfo()

@@ -38,9 +38,6 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
     private val _errorMessageLiveData: MutableLiveData<String> = MutableLiveData()
     val errorMessageLiveData: LiveData<String> = _errorMessageLiveData
 
-    private val _sendingMessageArgsLiveData: MutableLiveData<Args> = MutableLiveData()
-    val sendingMessageArgsLiveData: LiveData<Args> = _sendingMessageArgsLiveData
-
     private val _messageFetchRequestLiveData: MutableLiveData<Boolean> = MutableLiveData()
     val messageFetchRequestLiveData: LiveData<Boolean> = _messageFetchRequestLiveData
 
@@ -60,20 +57,8 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
         }
     }
     init {
-        //getAllMessages()
         _messageFetchRequestLiveData.postValue(true)
         getMessagesFromPage(1)
-    }
-    fun getAllMessages(){
-        viewModelScope.launch(Dispatchers.IO){
-            datingApiRepository.getMessages(user.uId.toString()).get()?.let {
-                withContext(Dispatchers.Main){
-
-                    messageList = it
-                    fetchMessages(it)
-                }
-            }
-        }
     }
 
     fun getMessagesFromPage(pageId: Int){
@@ -109,82 +94,6 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
                 fetchMessages(messageList)
             }
         }
-    }
-
-    fun getMessages(args: LiveData<Array<Any>>, context:Context){
-        val dateNow = Date()
-        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-        val currentTime = timeFormat.format(dateNow)
-
-        val sharedPreferences = context.getSharedPreferences("LoggedUserID",Context.MODE_PRIVATE)
-        val loggedUserId = sharedPreferences.getString("LoggedUserId","")
-
-        if (user.uId == args.value?.get(0)){
-
-            val newMessage = MessageItem(args.value?.get(1).toString(),args.value?.get(0).toString(),loggedUserId.toString(),currentTime)
-            viewModelScope.launch(Dispatchers.Main) {
-
-                messageList = messageList + newMessage
-
-                fetchMessages(messageList)
-            }
-        }
-        /*Socket.setSocket(context)
-        val mSocket = Socket.getSocket()
-
-        mSocket.connect()
-
-        mSocket.on("message"){ args ->
-            Log.e("socket","sockete girdi")
-            if (args[0] != null){
-                val message = mutableListOf<MessageItem>()
-                Log.e("socketOn","${args[1]}")
-                Log.e("gelenTarih","${args[2]}")
-                val newMessage = MessageItem(args[1].toString(),args[0].toString(),loggedUserId.toString(),currentTime)
-
-                if (user.uId == args[0]){
-
-                    Log.e("test","çalıştı")
-                    viewModelScope.launch(Dispatchers.Main) {
-                        messageList = messageList + newMessage
-
-                        fetchMessages(messageList)
-                    }
-                }
-            }else{
-                Log.e("socketOn","else düştü")
-            }
-        }*/
-
-        /*mSocket.on("newMessage:user:${user.uId}"){ args ->
-            if (args[0] != null){
-                val message = mutableListOf<MessageItem>()
-                Log.e("socketOn","${args[1]}")
-                val newMessage = MessageItem(args[0].toString(),args[1].toString(),user.uId.toString())
-
-                viewModelScope.launch(Dispatchers.Main) {
-                    messageList = messageList + newMessage
-
-                    fetchMessages(messageList)
-                }
-            }
-        }
-        Log.e("userIdTest","${loggedUserId}")
-        mSocket.on("newMessage:user:${loggedUserId}"){ args ->
-            if (args[0] != null){
-                if(args[1].toString() == user.uId.toString()){
-                val message = mutableListOf<MessageItem>()
-                Log.e("socketOn","${args[1]}")
-                val newMessage = MessageItem(args[0].toString(),user.uId.toString(),loggedUserId.toString())
-
-                viewModelScope.launch(Dispatchers.Main) {
-                    messageList = messageList + newMessage
-
-                    fetchMessages(messageList)
-                }
-                }
-            }
-        }*/
     }
     fun sendMessage(Socket: SocketHandler,context: Context,message: String){
         val sharedPreferences = context.getSharedPreferences("LoggedUserID",Context.MODE_PRIVATE)

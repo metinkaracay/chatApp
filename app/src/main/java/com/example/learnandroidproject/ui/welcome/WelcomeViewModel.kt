@@ -26,14 +26,14 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     private val _navigateUpSingleLiveEvent: SingleLiveEvent<Any?> = SingleLiveEvent()
     private val _closePageSingleLiveEvent: SingleLiveEvent<Any?> = SingleLiveEvent()
     private val _additionalDataSingleLiveEvent: SingleLiveEvent<Boolean> = SingleLiveEvent()
-    private val _messageMutableLiveEvent: SingleLiveEvent<Args> = SingleLiveEvent()
+    private val _messageSingleLiveEvent: SingleLiveEvent<Args> = SingleLiveEvent()
     private val _isFriendsListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = MutableLiveData()
 
     val closePageSingleLiveEvent: LiveData<Any?> = _closePageSingleLiveEvent
     val navigateToDestinationSingleLiveEvent: LiveData<NavigationData> = _navigateToDestinationSingleLiveEvent
     val navigateUpSingleLiveEvent: LiveData<Any?> = _navigateUpSingleLiveEvent
     val additionalDataSingleLiveEvent: SingleLiveEvent<Boolean> = _additionalDataSingleLiveEvent
-    val messageMutableLiveEvent: SingleLiveEvent<Args> = _messageMutableLiveEvent  // TODO isimi düzelt
+    val messageSingleLiveEvent: SingleLiveEvent<Args> = _messageSingleLiveEvent  // TODO isimi düzelt
     val isFriendsListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = _isFriendsListRecording
 
     private var user: User = User(null, null, null, null, null, null, null,null,null)
@@ -123,7 +123,7 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
                 }
 
                 val senderId = argsModel.senderId
-                val receiverId = argsModel.receiverId//if (senderId == loggedUserId) args[2].toString() else senderId
+                val receiverId = argsModel.receiverId
                 val messageContent = argsModel.message
                 val messageDate = argsModel.messageTime
                 val seen = argsModel.seen
@@ -142,7 +142,7 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
                 }
                 viewModelScope.launch(Dispatchers.Main) {
                     Log.e("weltestscope","welcome Çalıştı")
-                    _messageMutableLiveEvent.value = argsModel
+                    _messageSingleLiveEvent.value = argsModel
                 }
             }else{
                 Log.e("socketOn","else düştü")

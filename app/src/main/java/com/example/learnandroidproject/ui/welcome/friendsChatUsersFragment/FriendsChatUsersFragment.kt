@@ -64,11 +64,6 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
             }
         }
         adapterListeners()
-        welcomeViewModel.messageMutableLiveEvent.observeNonNull(viewLifecycleOwner){
-            Log.e("sonmesaj","${it.message}")
-            Log.e("sonmesaj2","${it.receiverId}")
-            //viewModel.sortFriendList(it,requireContext())
-        }
         welcomeViewModel.isFriendsListRecording.observeNonNull(viewLifecycleOwner){
             viewModel.clickedUsersList = welcomeViewModel.getClickedUsersList()
             val msj = welcomeViewModel.getLastSentMessage()
