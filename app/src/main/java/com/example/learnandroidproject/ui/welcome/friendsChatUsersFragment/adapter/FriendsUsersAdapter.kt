@@ -29,7 +29,6 @@ class FriendsUsersAdapter : RecyclerView.Adapter<FriendsUsersAdapter.UsersItemVi
         list = page
         notifyDataSetChanged()
     }
-
     fun formattedDate(date: String): String{
         val dateFormat = SimpleDateFormat("dd/MM/yyyy, HH:mm:ss", Locale.getDefault())
         val dateNow = Date()

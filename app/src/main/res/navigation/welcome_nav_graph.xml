@@ -73,4 +73,8 @@
         android:id="@+id/userProfileFragment"
         android:name="com.example.learnandroidproject.ui.welcome.userProfileFragment.UserProfileFragment"
         android:label="UserProfileFragment" />
+    <activity
+        android:id="@+id/splashActivity"
+        android:name="com.example.learnandroidproject.ui.splash.SplashActivity"
+        android:label="SplashActivity" />
 </navigation>

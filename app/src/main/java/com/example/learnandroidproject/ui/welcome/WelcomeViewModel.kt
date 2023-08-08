@@ -25,13 +25,15 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     private val _navigateToDestinationSingleLiveEvent: SingleLiveEvent<NavigationData> = SingleLiveEvent()
     private val _navigateUpSingleLiveEvent: SingleLiveEvent<Any?> = SingleLiveEvent()
     private val _closePageSingleLiveEvent: SingleLiveEvent<Any?> = SingleLiveEvent()
-    private val _messageMutableLiveEvent: MutableLiveData<Args> = MutableLiveData()
+    private val _additionalDataSingleLiveEvent: SingleLiveEvent<Boolean> = SingleLiveEvent()
+    private val _messageMutableLiveEvent: SingleLiveEvent<Args> = SingleLiveEvent()
     private val _isFriendsListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = MutableLiveData()
 
     val closePageSingleLiveEvent: LiveData<Any?> = _closePageSingleLiveEvent
     val navigateToDestinationSingleLiveEvent: LiveData<NavigationData> = _navigateToDestinationSingleLiveEvent
     val navigateUpSingleLiveEvent: LiveData<Any?> = _navigateUpSingleLiveEvent
-    val messageMutableLiveEvent: MutableLiveData<Args> = _messageMutableLiveEvent
+    val additionalDataSingleLiveEvent: SingleLiveEvent<Boolean> = _additionalDataSingleLiveEvent
+    val messageMutableLiveEvent: SingleLiveEvent<Args> = _messageMutableLiveEvent  // TODO isimi düzelt
     val isFriendsListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = _isFriendsListRecording
 
     private var user: User = User(null, null, null, null, null, null, null,null,null)
@@ -40,6 +42,17 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     private var isExitChatRoom: Boolean = false
     val userMessages: MutableMap<String, MutableList<Args>> = mutableMapOf()
     private var clickedUsers: MutableList<Int> = arrayListOf()
+    private var additionId: String? = null
+
+    fun fillAdditionalId(id: String){
+        _additionalDataSingleLiveEvent.postValue(true)
+        additionId = id
+    }
+
+    fun getAdditionalId(): String?{
+        _additionalDataSingleLiveEvent.postValue(false)
+        return additionId
+    }
 
     fun getClickedUsersList(): MutableList<Int>{
         return clickedUsers
@@ -89,11 +102,13 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
                 var argsModel = Args("","","","",false)
 
                 Log.e("welalıcı","${args[1]}")
+                Log.e("welmesss","${args[1]}")
                 Log.e("welseen","${args[4]}")
                 if(args[0].toString() == loggedUserId){
                     argsModel = Args(args[1].toString(),args[0].toString(),args[3].toString(),args[2].toString(),args[4].equals(Boolean))
                     Log.e("weltest","çalıştı")
                 }else{
+                    Log.e("weltestalıcı","çalıştı")
                     argsModel = Args(args[1].toString(),args[0].toString(),loggedUserId.toString(),args[2].toString(),args[4].equals(Boolean))
                 }
 
@@ -116,6 +131,7 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
                     _isFriendsListRecording.value = userMessages
                 }
                 viewModelScope.launch(Dispatchers.Main) {
+                    Log.e("weltestscope","welcome Çalıştı")
                     _messageMutableLiveEvent.value = argsModel
                 }
             }else{
@@ -158,6 +174,9 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
         _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.userProfileFragment)
     }
 
+    fun goToSplashActivity(){
+        _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.splashActivity)
+    }
     fun navigateUp() {
         _navigateUpSingleLiveEvent.call()
     }

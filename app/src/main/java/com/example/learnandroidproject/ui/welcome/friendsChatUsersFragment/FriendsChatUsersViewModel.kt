@@ -26,9 +26,18 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
     private val _friendsChatUsersPageViewStateLiveData: MutableLiveData<FriendsChatUsersPageViewState> = MutableLiveData()
     val friendsChatUsersPageViewStateLiveData: LiveData<FriendsChatUsersPageViewState> = _friendsChatUsersPageViewStateLiveData
 
+    private val _listUpdated: MutableLiveData<Boolean> = MutableLiveData()
+    val listUpdated: LiveData<Boolean> = _listUpdated
+
+    private val _notificationUserFilled: MutableLiveData<Boolean> = MutableLiveData()
+    val notificationUserFilled: LiveData<Boolean> = _notificationUserFilled
+
+
     var friendList: MutableList<UserInfo> = mutableListOf<UserInfo>()
+    var notificationUser: UserInfo? = null
     val clickedUserLastMessage: Boolean? = null
     var clickedUserId = 0
+    var clickedUserForCurrentRoom: Int? = null
     var clickedUsersList: MutableList<Int> = mutableListOf()
     var newUserInfo = UserInfo(0,"","","","","",true)
     init {
@@ -46,6 +55,27 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
                 }
             }
         }
+    }
+
+    fun findUserForNotification(id: String){
+        viewModelScope.launch(Dispatchers.IO){
+            delay(300L)
+
+            Log.e("bildirimdeki liste","${friendList}")
+            if (!friendList.isNullOrEmpty()){
+                for (i in 0 until friendList.size){
+                    if (friendList[i].uId == id.toInt()){
+                        notificationUser = UserInfo(id.toInt(),friendList[i].uName,friendList[i].uStatu,friendList[i].uPhoto,friendList[i].lastMessage,friendList[i].elapsedTime,friendList[i].seen)
+                        _notificationUserFilled.postValue(true)
+                    }
+                }
+            }
+        }
+    }
+
+    fun fixObserver(){
+        // Looptan kurtarmak için
+        _notificationUserFilled.postValue(false)
     }
     fun updateSeenInfo(id: Int){
         if (id != 0){
@@ -224,7 +254,14 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
                         if (friendList[i].uId.toString() == message.senderId) {
                             friendList[i].lastMessage = message.message
                             friendList[i].elapsedTime = currentTime
+                            /*if (clickedUserForCurrentRoom.uId == message.senderId.toInt()){
+                                friendList[i].seen = true
+                            }else{
+                                friendList[i].seen = message.seen
+                            }*/
                             friendList[i].seen = message.seen
+
+                            Log.e("gelen seen","${message.seen}")
                             currentMessages.add(message)
                         }
                     }
@@ -242,6 +279,7 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
                         if (friendList[i].uId.toString() == message.receiverId) {
                             friendList[i].lastMessage = message.message
                             friendList[i].elapsedTime = currentTime
+                            Log.e("gelen seen1","${message.seen}")
                             friendList[i].seen = true
                             currentMessages.add(message)
                         }
@@ -312,6 +350,7 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
         }else{
             Log.e("testttt","yeni birine yazdın")
         }
+        _listUpdated.postValue(true)
     }
 
     fun withoutFriendListUsers(userMessages: MutableMap<String, MutableList<Args>>,clickedUserId: Int){
@@ -347,11 +386,13 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
         }
     }
 
-    fun updateSeenStateClickedUser(id: Int){
+    fun updateSeenStateClickedUser(id: Int?){
         for (i in 0 until friendList.size){
             if (friendList[i].uId == id){
                 Log.e("seen düzenlendi id: ","$id")
                 friendList[i].seen = true
+                clickedUserForCurrentRoom = null
+                _listUpdated.postValue(false)
             }
         }
     }

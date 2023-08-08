@@ -97,8 +97,10 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
         if (user.uId == args.senderId.toInt()){
 
             val newMessage = MessageItem(args.message,args.senderId,args.receiverId,currentTime)
-            Log.e("test","çalıştı")
+
+            Log.e("test","viewmodel çalıştı")
             viewModelScope.launch(Dispatchers.Main) {
+                Log.e("weltestscope","Çaıştoı")
                 messageList = messageList + newMessage
 
                 fetchMessages(messageList)
@@ -117,8 +119,8 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
         if (user.uId == args.value?.get(0)){
 
             val newMessage = MessageItem(args.value?.get(1).toString(),args.value?.get(0).toString(),loggedUserId.toString(),currentTime)
-            Log.e("test","çalıştı")
             viewModelScope.launch(Dispatchers.Main) {
+
                 messageList = messageList + newMessage
 
                 fetchMessages(messageList)

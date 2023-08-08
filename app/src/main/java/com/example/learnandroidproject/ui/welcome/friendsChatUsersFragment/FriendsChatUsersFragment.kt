@@ -33,12 +33,14 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val clickedUser = welcomeViewModel.getUserInfo()
+        //
+        viewModel.clickedUserForCurrentRoom = clickedUser.uId
         if (welcomeViewModel.getExitChatRoomData()){
             welcomeViewModel.exitToChatRoomFillData(false)
             viewModel.clickedUserId = clickedUser.uId //TODO burayı iyileştir
             viewModel.updateSeenInfo(clickedUser.uId)
         }
-        viewModel.updateSeenStateClickedUser(clickedUser.uId)
+
         recyclerAdapter = FriendsUsersAdapter()
         initResultsItemsRecyclerView()
         with(viewModel){
@@ -61,6 +63,27 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
             viewModel.clickedUsersList = welcomeViewModel.getClickedUsersList()
             viewModel.listUpdate(it,requireContext())
         }
+        viewModel.listUpdated.observeNonNull(viewLifecycleOwner){
+            if (it){
+                Log.e("observelist","çalıştı")
+                viewModel.updateSeenStateClickedUser(viewModel.clickedUserForCurrentRoom)
+            }
+        }
+        viewModel.notificationUserFilled.observeNonNull(viewLifecycleOwner){
+            Log.e("bildirimdeki boolean","$it")
+            if (it){
+                var user = viewModel.notificationUser
+
+                if (user != null){
+                    Log.e("bildirimdeki user","Id: ${user.uId}, Name: ${user.uName}")
+                    welcomeViewModel.fillUserInfoData(user.uId,user.uName,user.uStatu,user.uPhoto)
+                    welcomeViewModel.goToChattingPage()
+                    viewModel.fixObserver()
+                }else{
+                    Log.e("bildirimdeki user","boş geldi")
+                }
+            }
+        }
     }
     /*override fun onStart() {
         super.onStart()
@@ -77,6 +100,11 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
         recyclerAdapter.setPhotoItemClickListener {
             welcomeViewModel.fillClickedUserPhoto(it)
             showUserProfilePhotoDialog(3)
+        }
+        welcomeViewModel.additionalDataSingleLiveEvent.observeNonNull(viewLifecycleOwner){
+            if (it){
+                viewModel.findUserForNotification(welcomeViewModel.getAdditionalId().toString())
+            }
         }
     }
 
