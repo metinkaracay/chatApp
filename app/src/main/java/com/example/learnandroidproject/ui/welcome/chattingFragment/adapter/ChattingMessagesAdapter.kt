@@ -18,9 +18,10 @@ class ChattingMessagesAdapter : RecyclerView.Adapter<ChattingMessagesAdapter.Mes
     private var lastMessage: String? = null
     fun setItems(page: List<MessageItem>,userId: Int,message: String?) {
         uId = userId
+        //list = page
         list = page
         lastMessage = message
-        notifyItemRangeChanged(list.size,1)
+        notifyItemRangeInserted(list.size,10)
     }
 
     fun formattedDate(date: String): String{

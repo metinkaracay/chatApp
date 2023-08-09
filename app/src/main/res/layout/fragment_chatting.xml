@@ -57,7 +57,7 @@
                         android:layout_height="match_parent"
                         android:visibility="@{pageViewState.defaultPhotoVisibility}"
                         android:src="@{pageViewState.defaultPhoto(context)}"
-                        android:scaleType="fitCenter"/>
+                        android:scaleType="centerCrop"/>
 
                     <ImageView
                         android:id="@+id/selectedUserPhoto"

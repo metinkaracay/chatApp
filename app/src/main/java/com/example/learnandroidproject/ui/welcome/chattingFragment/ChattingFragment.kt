@@ -47,7 +47,6 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
         val user = welcomeViewModel.getUserInfo()
         viewModel.user = user
         viewModel.getUserInfo()
-
         val senderUserMessage = welcomeViewModel.getLastSentMessage()
         if (senderUserMessage != null){
             Log.e("gelennmesaj","$senderUserMessage")
@@ -62,7 +61,6 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
                     executePendingBindings()
                 }
                 chattingMessagesAdapter.setItems(it.messages,it.userInfo.uId,it.firstMessage)
-                scrollToBottom(it.messages)
             }
         }
         viewModel.errorMessageLiveData.observe(viewLifecycleOwner){
@@ -76,6 +74,11 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+    }
+
     fun handleViewOption(){
         binding.backArrow.setOnClickListener {
             Log.e("çıkıştaki model","${viewModel.sendingMessage}")
@@ -87,9 +90,8 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
         binding.sendButton.setOnClickListener {
             val message = binding.editText.text.toString()
             viewModel.sendMessage(SocketHandler,requireContext(),message)
-            //var messageData = viewModel.sendMessage(SocketHandler,requireContext(),message)
-            //welcomeViewModel.fillLastSentMessage(messageData)
             binding.editText.text.clear()
+            binding.recyclerView.scrollToPosition(viewModel.messageList.size -1 )
         }
         binding.userInfo.setOnClickListener{
             welcomeViewModel.goToUserProfileFragment()
@@ -107,30 +109,23 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
                 }
             }
         }
+        binding.recyclerView.scrollToPosition(viewModel.messageList.size -1 ) // ilk açıldığında en alta kaydırmak için
     }
-    fun scrollToBottom(list: List<MessageItem>) {
-        binding.recyclerView?.let {
-            val itemCount = list.size
-            if (itemCount > 0) {
-                it.scrollToPosition(itemCount - 1)
-            }
-        }
+    /*fun scrollToLastMessage(item: Int) { TODO Scroll düzeltilmeli
         // UI'a erişebilmesi için Main thread kullandık
-        /*CoroutineScope(Dispatchers.Main).launch {
+        CoroutineScope(Dispatchers.Main).launch {
             delay(TimeUnit.MILLISECONDS.toMillis(100))
             binding.recyclerView?.let {
-                val itemCount = list.size
-                if (itemCount > 0) {
-                    it.scrollToPosition(itemCount - 1)
-                }
+                it.scrollToPosition(item-1)
             }
-        }*/
-    }
+        }
+    }*/
 
     private fun initResultsItemsRecyclerView() {
         with(binding.recyclerView) {
             layoutManager = LinearLayoutManager(requireContext()).apply {
                 orientation = RecyclerView.VERTICAL
+                stackFromEnd= true
             }
             adapter = chattingMessagesAdapter
         }

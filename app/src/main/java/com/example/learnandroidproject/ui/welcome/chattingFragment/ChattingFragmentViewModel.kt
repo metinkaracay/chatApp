@@ -107,7 +107,11 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
 
         if (message.isNotEmpty() && message.isNotBlank()){
 
-            mSocket.emit("message",user.uId,message, Ack{ args ->
+            val messageJson = JSONObject()
+            messageJson.put("senderId", user.uId)
+            messageJson.put("message", message)
+
+            mSocket.emit("message",messageJson.toString(), Ack{ args ->
 
                 val ackReceiverId = args.getOrNull(0)
                 val json = JSONObject(ackReceiverId.toString())
@@ -117,17 +121,12 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
 
                 var model = Args(message,loggedUserId.toString(),ackReceiver.toString(),ackMessageTime.toString(),true)
 
-                //sendingMessage daha önce oluşmamışsa oluştur
-                if(sendingMessage.isEmpty()){
-                    sendingMessage[ackReceiver.toString()] = mutableListOf(model)
-                }else if (sendingMessage[ackReceiver.toString()].isNullOrEmpty()){
-                    sendingMessage[ackReceiver.toString()] = mutableListOf(model)
-                }else{
-                    sendingMessage[ackReceiver]?.add(model)
-                }
+                // SendingMessage daha önce oluşmamışsa oluştur
+                val messageListModel = sendingMessage.getOrPut(ackReceiver.toString()) { mutableListOf() }
+
+                // Modeli liste içine ekle
+                messageListModel.add(model)
                 Log.e("gönderilen model","$sendingMessage")
-
-
 
             })
             val newMessage = MessageItem(message,loggedUserId.toString(),user.uId.toString(),currentTime.toString())

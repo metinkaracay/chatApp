@@ -16,8 +16,8 @@ import com.example.learnandroidproject.ui.common.navigation.NavigationData
 import com.example.learnandroidproject.ui.welcome.chattingFragment.SocketHandler
 import com.google.android.datatransport.cct.internal.LogEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import org.json.JSONObject
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,6 +31,8 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     private val _isFriendsListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = MutableLiveData()
     private val _isMEssageSended: MutableLiveData<Any> = MutableLiveData()
 
+    private val _testSingleLiveEvent: SingleLiveEvent<String> = SingleLiveEvent()
+
     val closePageSingleLiveEvent: LiveData<Any?> = _closePageSingleLiveEvent
     val navigateToDestinationSingleLiveEvent: LiveData<NavigationData> = _navigateToDestinationSingleLiveEvent
     val navigateUpSingleLiveEvent: LiveData<Any?> = _navigateUpSingleLiveEvent
@@ -38,6 +40,8 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     val messageSingleLiveEvent: SingleLiveEvent<Args> = _messageSingleLiveEvent  // TODO isimi düzelt
     val isFriendsListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = _isFriendsListRecording
     val isMEssageSended: MutableLiveData<Any> = _isMEssageSended
+
+    val testSingleLiveEvent: LiveData<String> = _testSingleLiveEvent
 
     private var user: User = User(null, null, null, null, null, null, null,null,null)
     private var userInfo = UserInfo(0,"null","null","null",null,null,false)
@@ -62,7 +66,11 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     }
 
     fun fillAdditionalId(id: String){
-        _additionalDataSingleLiveEvent.postValue(true)
+        Log.e("bildirimdeki","testttt: $id")
+        viewModelScope.launch(Dispatchers.IO){
+            delay(1000L)
+            _additionalDataSingleLiveEvent.postValue(true)
+        }
         additionId = id
     }
 
@@ -118,16 +126,32 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
             if (args[0] != null){
                 var argsModel = Args("","","","",false)
 
-                Log.e("welalıcı","${args[1]}")
-                Log.e("welmesss","${args[1]}")
-                Log.e("welseen","${args[4]}")
-                if(args[0].toString() == loggedUserId){
+                val json = JSONObject(args[0].toString())
+
+                val senderIdFromServer = json.getInt("senderId")
+                val message = json.getString("message")
+                val date = json.getString("sendTime")
+                val receiverIdFromServer = json.getInt("receiverId")
+                val isSeen = json.getBoolean("isSeen")
+
+                Log.e("welargs0","${message}")
+                //Log.e("welargs","${receiverId2}")
+                Log.e("welseen","${date}")
+                /*if(args[0].toString() == loggedUserId){
                     argsModel = Args(args[1].toString(),args[0].toString(),args[3].toString(),args[2].toString(),args[4].equals(Boolean))
                     Log.e("weltest","çalıştı")
                 }else{
                     Log.e("weltestalıcı","çalıştı")
                     argsModel = Args(args[1].toString(),args[0].toString(),loggedUserId.toString(),args[2].toString(),args[4].equals(Boolean))
+                }*/
+                if(args[0].toString() == loggedUserId){
+                    argsModel = Args(message,senderIdFromServer.toString(),receiverIdFromServer.toString(),date,isSeen.equals(Boolean))
+                    Log.e("weltest","çalıştı")
+                }else{
+                    Log.e("weltestalıcı","çalıştı")
+                    argsModel = Args(message,senderIdFromServer.toString(),receiverIdFromServer.toString(),date,isSeen.equals(Boolean))
                 }
+
 
                 val senderId = argsModel.senderId
                 val receiverId = argsModel.receiverId
@@ -136,6 +160,15 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
                 val seen = argsModel.seen
 
                 val newArgsModel = Args(messageContent, senderId, receiverId, messageDate,seen)
+
+
+                GlobalScope.launch {
+                    withContext(Dispatchers.Main) {
+                        _testSingleLiveEvent.value = messageContent
+                    }
+                }
+                viewModelScope.launch(Dispatchers.Main) {
+                }
 
                 /*if (userMessages.containsKey(receiverId)) {
                     Log.e("testREc","$receiverId")

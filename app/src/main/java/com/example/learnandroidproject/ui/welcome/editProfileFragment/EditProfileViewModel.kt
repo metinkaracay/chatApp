@@ -46,7 +46,7 @@ class EditProfileViewModel @Inject constructor(private val datingApiRepository: 
     }
     fun updateToPhoto(link: String){
         viewModelScope.launch(Dispatchers.IO) {
-            delay(1000L)
+            delay(1500L)
             withContext(Dispatchers.Main) {
                 _userPhotoLiveData.value = link
                 _editProfilePageViewStateLiveData.value = editProfilePageViewStateLiveData.value?.copy(image = link)

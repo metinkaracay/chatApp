@@ -92,7 +92,7 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
         for (i in 0 until friendList.size) {
             val userId = friendList[i].uId.toString()
             var userMessages1 = sendingMessage[userId] // Benim gönderdiğim
-            Log.e("sendingMessages","${sendingMessage}")
+            Log.e("sendingMessages","${userMessages1}")
 
             var counter = 0
 
@@ -119,16 +119,7 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
         }
         if (!clickedUsersList.isNullOrEmpty()) {
             for (i in 0 until clickedUsersList.size) {
-                Log.e("yeni fonk","clicked şu : $i")
-                Log.e("yeni fonk1","clicked şu : ${clickedUsersList[i]}")
-                for (j in 0 until friendList.size) { // TODO duplicate çözülürse sil
-                    Log.e("clickedUserListiç","${clickedUsersList[i]}")
-                    if (friendList[j].uId == clickedUsersList[i]){
-                        Log.e("Eşleşti","bu kişi friendlistte")
-                    }else{
-                        withoutFriendListUsers(sendingMessage, clickedUsersList[i]) // bu hariç
-                    }
-                }
+                withoutFriendListUsers(sendingMessage, clickedUsersList[i]) // bu hariç
             }
             clickedUsersList.clear()
             _listUpdated.postValue(true)
@@ -251,7 +242,9 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
                     senderId = message.senderId
                     messageTime = formatMessageTime(message.messageTime)
                     lastMessage = message.message
-                    userMesReceiver.remove(message)
+                    //userMesReceiver.remove(message)
+                    userMesReceiver.clear()
+
                 }
                 Log.e("senderIdKontrol", "$senderId")
                 viewModelScope.launch(Dispatchers.IO) {
