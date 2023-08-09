@@ -47,6 +47,12 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
         val user = welcomeViewModel.getUserInfo()
         viewModel.user = user
         viewModel.getUserInfo()
+
+        val senderUserMessage = welcomeViewModel.getLastSentMessage()
+        if (senderUserMessage != null){
+            Log.e("gelennmesaj","$senderUserMessage")
+        }
+        viewModel.sendingMessage = senderUserMessage!!
         handleViewOption()
         initResultsItemsRecyclerView()
         with(viewModel){

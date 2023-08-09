@@ -15,7 +15,7 @@ data class EditProfilePageViewState(
 
     fun toolbarColor(context: Context): Int = ContextCompat.getColor(context,R.color.toolbar_color)
     fun backArrow(context: Context) : Drawable? = ContextCompat.getDrawable(context, R.drawable.back_arrow_icon)
-    fun getHeaderName() = "Chat App"
+    fun getHeaderName() = user.userName
     fun getSaveButtonText() = "Kaydet"
     fun saveButtonColor(context: Context): Int = if (isEditting) ContextCompat.getColor(context,R.color.online_color) else ContextCompat.getColor(context, R.color.grey)
     fun getEditButtonText() = "Düzenle"

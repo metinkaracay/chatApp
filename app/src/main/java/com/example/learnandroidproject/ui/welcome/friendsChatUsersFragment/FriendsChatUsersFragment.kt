@@ -41,8 +41,8 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
         val msj = welcomeViewModel.getLastSentMessage()
         if (msj != null){
             Log.e("gelennmesaj","$msj")
-            viewModel.sendingMessage = msj
         }
+        viewModel.sendingMessage = msj!!
         // mesajlaştığımız odadaki son mesajın görüldü durumunu kontrol etmek için
         viewModel.clickedUserForCurrentRoom = clickedUser.uId
         if (welcomeViewModel.getExitChatRoomData()){
@@ -66,14 +66,13 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
         adapterListeners()
         welcomeViewModel.isFriendsListRecording.observeNonNull(viewLifecycleOwner){
             viewModel.clickedUsersList = welcomeViewModel.getClickedUsersList()
-            val msj = welcomeViewModel.getLastSentMessage()
-            if (msj != null){
 
-                Log.e("gelennmesaj","$msj")
-            }else{
-                Log.e("gelennmesaj","gelmedi")
-            }
             viewModel.listUpdate(it,requireContext())
+        }
+        welcomeViewModel.isMEssageSended.observeNonNull(viewLifecycleOwner){
+            viewModel.clickedUsersList = welcomeViewModel.getClickedUsersList()
+            Log.e("ismessageSended","çalıştı")
+            viewModel.listUpdateForSending()
         }
         viewModel.listUpdated.observeNonNull(viewLifecycleOwner){
             if (it){
@@ -107,7 +106,8 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
 
             @OnLifecycleEvent(Lifecycle.Event.ON_START)
             fun onForeground() {
-                Toast.makeText(requireContext(),"TEst",Toast.LENGTH_SHORT).show()
+                viewModel.getAllUsers()
+                Toast.makeText(requireContext(),"İstek atıldı",Toast.LENGTH_SHORT).show()
             }
         })
     }

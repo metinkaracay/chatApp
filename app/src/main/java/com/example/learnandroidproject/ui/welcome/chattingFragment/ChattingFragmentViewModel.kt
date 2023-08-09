@@ -115,12 +115,16 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
                 val ackReceiver = json.get("receiverId")
                 val ackMessageTime = json.get("payloadDate")
 
-                Log.e("testACK","args1: ${ackReceiver}")
-                Log.e("testAck2", "args2 ${ackMessageTime}")
-
                 var model = Args(message,loggedUserId.toString(),ackReceiver.toString(),ackMessageTime.toString(),true)
 
-                sendingMessage[ackReceiver.toString()] = mutableListOf(model)
+                //sendingMessage daha önce oluşmamışsa oluştur
+                if(sendingMessage.isEmpty()){
+                    sendingMessage[ackReceiver.toString()] = mutableListOf(model)
+                }else if (sendingMessage[ackReceiver.toString()].isNullOrEmpty()){
+                    sendingMessage[ackReceiver.toString()] = mutableListOf(model)
+                }else{
+                    sendingMessage[ackReceiver]?.add(model)
+                }
                 Log.e("gönderilen model","$sendingMessage")
 
 

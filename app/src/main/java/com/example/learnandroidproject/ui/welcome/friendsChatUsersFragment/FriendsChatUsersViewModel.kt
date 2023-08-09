@@ -52,6 +52,7 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
             datingApiRepository.fetchFriendsUsers().get()?.let {
                 withContext(Dispatchers.Main){
                     Log.e("fetchGelen","${it}")
+                    friendList.clear()
                     friendList.addAll(it)
                     _friendsChatUsersPageViewStateLiveData.value = FriendsChatUsersPageViewState(it)
                 }
@@ -87,15 +88,74 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
         }
     }
 
+    fun listUpdateForSending(){
+        for (i in 0 until friendList.size) {
+            val userId = friendList[i].uId.toString()
+            var userMessages1 = sendingMessage[userId] // Benim gönderdiğim
+            Log.e("sendingMessages","${sendingMessage}")
+
+            var counter = 0
+
+            if (userMessages1 != null) {
+                val listSize = userMessages1.size
+                Log.e("listSize gönderilen", "$listSize")
+                for (message in userMessages1) {
+                    if (counter == listSize - 1) {
+                        val currentTime = formatMessageTime(message.messageTime)
+                        Log.e("Messagefriends", "Sender1: ${message.senderId}, Receiver: ${message.receiverId}, Content: ${message.message}, Date: ${message.messageTime}, Seen: ${message.seen}")
+
+                        if (friendList[i].uId.toString() == message.receiverId) {
+                            friendList[i].lastMessage = message.message
+                            friendList[i].elapsedTime = currentTime
+                            Log.e("gelen seen1", "${message.seen}")
+                            friendList[i].seen = true
+                            userMessages1.clear()
+
+                        }
+                    }
+                    counter++
+                }
+            }
+        }
+        if (!clickedUsersList.isNullOrEmpty()) {
+            for (i in 0 until clickedUsersList.size) {
+                Log.e("yeni fonk","clicked şu : $i")
+                Log.e("yeni fonk1","clicked şu : ${clickedUsersList[i]}")
+                for (j in 0 until friendList.size) { // TODO duplicate çözülürse sil
+                    Log.e("clickedUserListiç","${clickedUsersList[i]}")
+                    if (friendList[j].uId == clickedUsersList[i]){
+                        Log.e("Eşleşti","bu kişi friendlistte")
+                    }else{
+                        withoutFriendListUsers(sendingMessage, clickedUsersList[i]) // bu hariç
+                    }
+                }
+            }
+            clickedUsersList.clear()
+            _listUpdated.postValue(true)
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            withContext(Dispatchers.Main) {
+                friendList.sortByDescending { it.elapsedTime }
+                _friendsChatUsersPageViewStateLiveData.postValue(FriendsChatUsersPageViewState(friendList))
+            }
+        }
+    }
+
     fun listUpdate(userMessages: MutableMap<String, MutableList<Args>>, context: Context) {
         val sharedPreferences = context.getSharedPreferences("LoggedUserID", Context.MODE_PRIVATE)
         val loggedUserId = sharedPreferences.getString("LoggedUserId", "")
 
+        var userMessages2 = userMessages[loggedUserId.toString()]
+        Log.e("userMessagesçökerten2","$userMessages2") // bana gelen
+
         for (i in 0 until friendList.size) {
             val userId = friendList[i].uId.toString()
             //var userMessages1 = userMessages[userId] //soketten kendi mesajımı dinlediğimde
-            var userMessages1 = sendingMessage[userId]
-            var userMessages2 = userMessages[loggedUserId.toString()]
+            var userMessages1 = sendingMessage[userId] // Benim gönderdiğim
+            Log.e("userMessagesçökerten1","$userMessages1")
+            /*var userMessages2 = userMessages[loggedUserId.toString()]
+            Log.e("usMess2 içi","$userMessages2") // bana gelen*/
 
             var counter = 0
             val currentMessages: MutableList<Args> = mutableListOf()
@@ -118,7 +178,8 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
                             friendList[i].seen = message.seen
 
                             Log.e("gelen seen", "${message.seen}")
-                            currentMessages.add(message)
+                            //currentMessages.add(message)
+                            userMessages2.clear()
                         }
                     }
                     counter++
@@ -145,36 +206,35 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
                 }
             }*/
 
-            if (userMessages1 != null) {
+            /*if (userMessages1 != null) { //TODO son kapatılan 1
                 val listSize = userMessages1.size
                 Log.e("listSize gönderilen", "$listSize")
                 for (message in userMessages1) {
                     if (counter == listSize - 1) {
                         val currentTime = formatMessageTime(message.messageTime)
-                        Log.e(
-                            "Messagefriends",
-                            "Sender1: ${message.senderId}, Receiver: ${message.receiverId}, Content: ${message.message}, Date: ${message.messageTime}, Seen: ${message.seen}"
-                        )
+                        Log.e("Messagefriends", "Sender1: ${message.senderId}, Receiver: ${message.receiverId}, Content: ${message.message}, Date: ${message.messageTime}, Seen: ${message.seen}")
 
                         if (friendList[i].uId.toString() == message.receiverId) {
                             friendList[i].lastMessage = message.message
                             friendList[i].elapsedTime = currentTime
                             Log.e("gelen seen1", "${message.seen}")
                             friendList[i].seen = true
-                            currentMessages.add(message)
+                            //currentMessages.add(message)
+                            userMessages1.clear()
+
                         }
                     }
                     counter++
                 }
-            }
-            for (message in currentMessages) {
+            }*/
+            /*for (message in currentMessages) {
                 userMessages1?.remove(message)
                 userMessages2?.remove(message)
-            }
+            }*/
         }
         // Hata - FriendList'te olmayan birinden mesaj alına yapılan işlemler
         if (userMessages.isNotEmpty()) {
-            Log.e("userMessages", "$userMessages")// sender
+            Log.e("userMessagesçökerten", "$userMessages")// sender
             Log.e("userMessId", "${userMessages[loggedUserId]}")
             Log.e("userMessId", "${userMessages[clickedUserId.toString()]}")
             var senderId: String? = null
@@ -224,23 +284,26 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
                 }
             }
             friendList.sortByDescending { it.elapsedTime }
-            _friendsChatUsersPageViewStateLiveData.postValue(
-                FriendsChatUsersPageViewState(
-                    friendList
-                )
-            )
+            _friendsChatUsersPageViewStateLiveData.postValue(FriendsChatUsersPageViewState(friendList))
             Log.e("testttt", "kimse kalmadı")
             Log.e("userMessag", "şu idli: ${clickedUserId}")
         }
-        if (!clickedUsersList.isNullOrEmpty()) {
+        /*if (!clickedUsersList.isNullOrEmpty()) { // TODO son kapatılan 2
             for (i in 0 until clickedUsersList.size) {
-                Log.e("çalışıyor", "çalışan ${clickedUsersList[i]}")
                 withoutFriendListUsers(userMessages, clickedUsersList[i])
             }
             Log.e("liste eleman sayısı", "Eleman sayısı : ${clickedUsersList.size}")
             clickedUsersList.clear()
             Log.e("liste eleman sayısı", "Eleman sayısı2p : ${clickedUsersList.size}")
             _listUpdated.postValue(true)
+        }*/
+
+
+        viewModelScope.launch(Dispatchers.IO) {
+            withContext(Dispatchers.Main) {
+                friendList.sortByDescending { it.elapsedTime }
+                _friendsChatUsersPageViewStateLiveData.postValue(FriendsChatUsersPageViewState(friendList))
+            }
         }
     }
 
@@ -248,6 +311,7 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
         Log.e("fonk çalıştı","çalıştı $clickedUserId")
         //val userMessageSender = userMessages[clickedUserId.toString()] // soketten kendi mesajımı dinlediğimde
         val userMessageSender = sendingMessage[clickedUserId.toString()]
+        Log.e("gelenSendingMessageİç","$userMessageSender")
 
         var messageTime = ""
         var lastMessage = ""
@@ -283,7 +347,6 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
         }*/
 
         if (!userMessageSender.isNullOrEmpty()){
-            Log.e("duplicateoldu","418. satır çalıştı")
             var listSize = userMessageSender.size
             var counter = 0
             for (message in userMessageSender){

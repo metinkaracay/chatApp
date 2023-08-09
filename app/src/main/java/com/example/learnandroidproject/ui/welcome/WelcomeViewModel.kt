@@ -14,6 +14,7 @@ import com.example.learnandroidproject.data.local.model.dating.db.response.UserR
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
 import com.example.learnandroidproject.ui.common.navigation.NavigationData
 import com.example.learnandroidproject.ui.welcome.chattingFragment.SocketHandler
+import com.google.android.datatransport.cct.internal.LogEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,6 +29,7 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     private val _additionalDataSingleLiveEvent: SingleLiveEvent<Boolean> = SingleLiveEvent()
     private val _messageSingleLiveEvent: SingleLiveEvent<Args> = SingleLiveEvent()
     private val _isFriendsListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = MutableLiveData()
+    private val _isMEssageSended: MutableLiveData<Any> = MutableLiveData()
 
     val closePageSingleLiveEvent: LiveData<Any?> = _closePageSingleLiveEvent
     val navigateToDestinationSingleLiveEvent: LiveData<NavigationData> = _navigateToDestinationSingleLiveEvent
@@ -35,6 +37,7 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     val additionalDataSingleLiveEvent: SingleLiveEvent<Boolean> = _additionalDataSingleLiveEvent
     val messageSingleLiveEvent: SingleLiveEvent<Args> = _messageSingleLiveEvent  // TODO isimi düzelt
     val isFriendsListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = _isFriendsListRecording
+    val isMEssageSended: MutableLiveData<Any> = _isMEssageSended
 
     private var user: User = User(null, null, null, null, null, null, null,null,null)
     private var userInfo = UserInfo(0,"null","null","null",null,null,false)
@@ -51,6 +54,10 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     }
 
     fun getLastSentMessage(): MutableMap<String, MutableList<Args>>?{
+        viewModelScope.launch(Dispatchers.Main) {
+            _isMEssageSended.value = ""
+        }
+
         return sendedMessages
     }
 
@@ -130,11 +137,21 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
 
                 val newArgsModel = Args(messageContent, senderId, receiverId, messageDate,seen)
 
-                // Mesajları kullanıcıya göre gruplayarak saklayalım.
-                if (userMessages.containsKey(receiverId)) {
+                /*if (userMessages.containsKey(receiverId)) {
+                    Log.e("testREc","$receiverId")
                     userMessages[receiverId]?.add(newArgsModel)
                 } else {
+                    Log.e("testREc1","$receiverId")
                     userMessages[receiverId] = mutableListOf(newArgsModel)
+                }*/
+
+                //userMessages daha önce oluşmamışsa oluştur
+                if(userMessages.isEmpty()){
+                    Log.e("userMesss","$userMessages")
+                    userMessages[receiverId] = mutableListOf(newArgsModel)
+                }else{
+                    Log.e("userMesss1","$userMessages")
+                    userMessages[receiverId]?.add(newArgsModel)
                 }
 
                 viewModelScope.launch(Dispatchers.Main) {
