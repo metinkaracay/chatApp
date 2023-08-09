@@ -1,6 +1,5 @@
 package com.example.learnandroidproject.ui.welcome.chattingFragment.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -15,12 +14,9 @@ class ChattingMessagesAdapter : RecyclerView.Adapter<ChattingMessagesAdapter.Mes
 
     private var list: List<MessageItem> = emptyList()
     private var uId: Int? = null
-    private var lastMessage: String? = null
-    fun setItems(page: List<MessageItem>,userId: Int,message: String?) {
+    fun setItems(page: List<MessageItem>,userId: Int) {
         uId = userId
-        //list = page
         list = page
-        lastMessage = message
         notifyItemRangeInserted(list.size,10)
     }
 
@@ -47,17 +43,6 @@ class ChattingMessagesAdapter : RecyclerView.Adapter<ChattingMessagesAdapter.Mes
             return "mesaj yok"
         }
     }
-
-    fun lastMessageControl(message: String){
-        if (lastMessage != null){
-            if (message == lastMessage){
-                //Log.e("mesaj_test","Son mesaja geldi")
-                //Log.e("mesaj_testmes","$message")
-                //Log.e("mesaj_testlas","$lastMessage")
-            }
-        }
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChattingMessagesAdapter.MessageItemViewHolder{
         val binding: MessageItemBinding = DataBindingUtil.inflate(
             LayoutInflater.from(parent.context),
@@ -76,9 +61,6 @@ class ChattingMessagesAdapter : RecyclerView.Adapter<ChattingMessagesAdapter.Mes
         val messageTime = formattedDate(list[position].messageTime)
         list[position].messageTime = messageTime
         holder.bind(message)
-
-        Log.e("Anlık_Mesaj_Adapter",list[position].message)
-        lastMessageControl(list[position].message)
     }
 
     inner class MessageItemViewHolder(private var binding: MessageItemBinding) : RecyclerView.ViewHolder(binding.root){

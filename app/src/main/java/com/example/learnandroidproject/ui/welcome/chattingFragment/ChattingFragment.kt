@@ -60,7 +60,7 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
                     pageViewState = it
                     executePendingBindings()
                 }
-                chattingMessagesAdapter.setItems(it.messages,it.userInfo.uId,it.firstMessage)
+                chattingMessagesAdapter.setItems(it.messages,it.userInfo.uId)
             }
         }
         viewModel.errorMessageLiveData.observe(viewLifecycleOwner){

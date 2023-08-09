@@ -14,7 +14,6 @@ import com.example.learnandroidproject.data.local.model.dating.db.response.UserR
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
 import com.example.learnandroidproject.ui.common.navigation.NavigationData
 import com.example.learnandroidproject.ui.welcome.chattingFragment.SocketHandler
-import com.google.android.datatransport.cct.internal.LogEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import org.json.JSONObject
@@ -31,8 +30,6 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     private val _isFriendsListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = MutableLiveData()
     private val _isMEssageSended: MutableLiveData<Any> = MutableLiveData()
 
-    private val _testSingleLiveEvent: SingleLiveEvent<String> = SingleLiveEvent()
-
     val closePageSingleLiveEvent: LiveData<Any?> = _closePageSingleLiveEvent
     val navigateToDestinationSingleLiveEvent: LiveData<NavigationData> = _navigateToDestinationSingleLiveEvent
     val navigateUpSingleLiveEvent: LiveData<Any?> = _navigateUpSingleLiveEvent
@@ -40,8 +37,6 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     val messageSingleLiveEvent: SingleLiveEvent<Args> = _messageSingleLiveEvent  // TODO isimi düzelt
     val isFriendsListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = _isFriendsListRecording
     val isMEssageSended: MutableLiveData<Any> = _isMEssageSended
-
-    val testSingleLiveEvent: LiveData<String> = _testSingleLiveEvent
 
     private var user: User = User(null, null, null, null, null, null, null,null,null)
     private var userInfo = UserInfo(0,"null","null","null",null,null,false)
@@ -61,14 +56,13 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch(Dispatchers.Main) {
             _isMEssageSended.value = ""
         }
-
         return sendedMessages
     }
 
     fun fillAdditionalId(id: String){
         Log.e("bildirimdeki","testttt: $id")
         viewModelScope.launch(Dispatchers.IO){
-            delay(1000L)
+            delay(1000L) // Bildirime tıklandığında chatin açılması için friendList'in yüklenmesini bekliyoruz
             _additionalDataSingleLiveEvent.postValue(true)
         }
         additionId = id
@@ -160,15 +154,6 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
                 val seen = argsModel.seen
 
                 val newArgsModel = Args(messageContent, senderId, receiverId, messageDate,seen)
-
-
-                GlobalScope.launch {
-                    withContext(Dispatchers.Main) {
-                        _testSingleLiveEvent.value = messageContent
-                    }
-                }
-                viewModelScope.launch(Dispatchers.Main) {
-                }
 
                 /*if (userMessages.containsKey(receiverId)) {
                     Log.e("testREc","$receiverId")

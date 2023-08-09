@@ -8,7 +8,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.Observer
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,15 +17,9 @@ import com.example.learnandroidproject.common.extensions.observeNonNull
 import com.example.learnandroidproject.databinding.FragmentFriendsChatUsersBinding
 import com.example.learnandroidproject.ui.base.BaseFragment
 import com.example.learnandroidproject.ui.welcome.WelcomeViewModel
-import com.example.learnandroidproject.ui.welcome.chattingFragment.SocketHandler
 import com.example.learnandroidproject.ui.welcome.friendsChatUsersFragment.adapter.FriendsUsersAdapter
-import com.example.learnandroidproject.ui.welcome.generalChatUsersFragment.adapter.GeneralUsersAdapter
 import com.example.learnandroidproject.ui.welcome.popUpFragment.PopUpFragment
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -43,11 +36,11 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val clickedUser = welcomeViewModel.getUserInfo()
-        val msj = welcomeViewModel.getLastSentMessage()
-        if (msj != null){
-            Log.e("gelennmesaj","$msj")
+        val messageArray = welcomeViewModel.getLastSentMessage()
+        if (messageArray != null){
+            Log.e("gelennmesaj","$messageArray")
         }
-        viewModel.sendingMessage = msj!!
+        viewModel.sendingMessage = messageArray!!
         // mesajlaştığımız odadaki son mesajın görüldü durumunu kontrol etmek için
         viewModel.clickedUserForCurrentRoom = clickedUser.uId
         if (welcomeViewModel.getExitChatRoomData()){
@@ -100,14 +93,6 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
                 }
             }
         }
-        GlobalScope.launch {
-            withContext(Dispatchers.Main) {
-                welcomeViewModel.testSingleLiveEvent.observe(viewLifecycleOwner, Observer{
-                    Log.e("test_Gelen_Mesaj","$it")
-                })
-            }
-        }
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -118,7 +103,8 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
             }
 
             @OnLifecycleEvent(Lifecycle.Event.ON_START)
-            fun onForeground() { viewModel.getAllUsers()
+            fun onForeground() {
+                viewModel.getAllUsers()
                 Toast.makeText(requireContext(),"İstek atıldı",Toast.LENGTH_SHORT).show()
             }
         })
@@ -153,15 +139,5 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
             val filterNewDialogFragment: PopUpFragment = PopUpFragment.newInstance(requestCode)
             filterNewDialogFragment.show(childFragmentManager, PopUpFragment::class.java.simpleName)
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.e("Test_1_2", "on_destroy")
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        Log.e("Test_1_2", "on_destroy_view")
     }
 }
