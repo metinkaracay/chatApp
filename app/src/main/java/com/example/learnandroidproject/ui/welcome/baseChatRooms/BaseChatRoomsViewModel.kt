@@ -54,7 +54,4 @@ class BaseChatRoomsViewModel @Inject constructor(private val datingApiRepository
             }
         }
     }
-    fun sortFriendsList(){
-
-    }
 }

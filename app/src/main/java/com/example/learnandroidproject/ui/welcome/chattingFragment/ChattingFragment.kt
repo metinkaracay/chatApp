@@ -27,7 +27,6 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
     @Inject
     lateinit var chattingMessagesAdapter: ChattingMessagesAdapter
     override fun getLayoutResId(): Int = R.layout.fragment_chatting
-    var pageId = 1
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -49,6 +48,11 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
                 }
                 chattingMessagesAdapter.setItems(it.messages,it.userInfo.uId)
             }
+            newMessageOnTheChatLiveData.observeNonNull(viewLifecycleOwner){
+                if (it){
+                    binding.recyclerView.scrollToPosition(this.messageList.size - 1)
+                }
+            }
         }
         viewModel.errorMessageLiveData.observe(viewLifecycleOwner){
             Toast.makeText(requireContext(),it,Toast.LENGTH_SHORT).show()
@@ -56,6 +60,7 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
         // Telefonun navigation bar'ında ki geri tuşuna basılmasını kontrol eder
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
+                welcomeViewModel.exitToChatRoomFillData(true)
                 welcomeViewModel.navigateUp()
             }
         }
@@ -74,7 +79,6 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
             val message = binding.editText.text.toString()
             viewModel.sendMessage(SocketHandler,requireContext(),message)
             binding.editText.text.clear()
-            binding.recyclerView.scrollToPosition(viewModel.messageList.size -1 )
 
             welcomeViewModel.fillTestSingleEvent(message)
         }
@@ -84,27 +88,20 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
         viewModel.messageFetchRequestLiveData.observe(viewLifecycleOwner){
             if (it){
                 binding.swipeRefreshLayout.setOnRefreshListener {
-                    pageId++
-                    viewModel.getMessagesFromPage(pageId)
+                    viewModel.getMessagesFromPage()
                     binding.swipeRefreshLayout.isRefreshing = false
                 }
             }else{
                 if (!viewModel.isNewChat){
+                    binding.swipeRefreshLayout.isEnabled = false
                     Toast.makeText(requireContext(),"Tüm Mesajlar Yüklendi",Toast.LENGTH_SHORT).show()
                 }
             }
         }
-        binding.recyclerView.scrollToPosition(viewModel.messageList.size -1 ) // ilk açıldığında en alta kaydırmak için
-    }
-    /*fun scrollToLastMessage(item: Int) { TODO Scroll düzeltilmeli
-        // UI'a erişebilmesi için Main thread kullandık
-        CoroutineScope(Dispatchers.Main).launch {
-            delay(TimeUnit.MILLISECONDS.toMillis(100))
-            binding.recyclerView?.let {
-                it.scrollToPosition(item-1)
-            }
+        binding.editText.setOnClickListener {
+            binding.recyclerView.scrollToPosition(viewModel.messageList.size - 1 )
         }
-    }*/
+    }
 
     private fun initResultsItemsRecyclerView() {
         with(binding.recyclerView) {

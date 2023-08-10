@@ -27,7 +27,7 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     private val _additionalDataSingleLiveEvent: SingleLiveEvent<Boolean> = SingleLiveEvent()
     private val _messageSingleLiveEvent: SingleLiveEvent<Args> = SingleLiveEvent()
     private val _isFriendsListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = MutableLiveData()
-    private val _isMEssageSended: MutableLiveData<Any> = MutableLiveData()
+    private val _isMessageSended: MutableLiveData<Any> = MutableLiveData()
 
     private val _testSingleLiveEvent: SingleLiveEvent<String> = SingleLiveEvent()
 
@@ -37,7 +37,7 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     val additionalDataSingleLiveEvent: SingleLiveEvent<Boolean> = _additionalDataSingleLiveEvent
     val messageSingleLiveEvent: SingleLiveEvent<Args> = _messageSingleLiveEvent
     val isFriendsListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = _isFriendsListRecording
-    val isMEssageSended: MutableLiveData<Any> = _isMEssageSended
+    val isMessageSended: MutableLiveData<Any> = _isMessageSended
 
     val testSingleLiveEvent: LiveData<String> = _testSingleLiveEvent
 
@@ -50,6 +50,11 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     var sendedMessages: MutableMap<String, MutableList<Args>> = mutableMapOf()
     private var clickedUsers: MutableList<Int> = arrayListOf()
     private var additionId: String? = null
+    private var currentFragment: Int? = null
+
+    fun onDestinationChanged(destinationId: Int) {
+        currentFragment = destinationId
+    }
 
     fun fillTestSingleEvent(text: String){
         Log.e("test_single_Live","gelen text : ${text}")
@@ -62,15 +67,22 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
 
     fun getLastSentMessage(): MutableMap<String, MutableList<Args>>?{
         viewModelScope.launch(Dispatchers.Main) {
-            _isMEssageSended.value = ""
+            _isMessageSended.value = ""
         }
         return sendedMessages
     }
 
     fun fillAdditionalId(id: String){
+        Log.e("şu anki fragment","$currentFragment")
+        if(currentFragment == R.id.chattingFragment){
+            navigateUp()
+        }
+
         viewModelScope.launch(Dispatchers.IO){
             delay(1000L) // Bildirime tıklandığında chatin açılması için friendList'in yüklenmesini bekliyoruz
-            _additionalDataSingleLiveEvent.postValue(true)
+            withContext(Dispatchers.Main) {
+                _additionalDataSingleLiveEvent.postValue(true)
+            }
         }
         additionId = id
     }

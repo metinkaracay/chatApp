@@ -35,69 +35,79 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val clickedUser = welcomeViewModel.getUserInfo()
-        val messageArray = welcomeViewModel.getLastSentMessage()
-        if (messageArray != null){
-            Log.e("gelennmesaj","$messageArray")
-        }
+        val clickedUser = welcomeViewModel.getUserInfo() // Son tıklanan kişi
+        val messageArray = welcomeViewModel.getLastSentMessage() // Bizim gönderdiğimiz mesajlar
         viewModel.sendingMessage = messageArray!!
-        // mesajlaştığımız odadaki son mesajın görüldü durumunu kontrol etmek için
-        viewModel.clickedUserForCurrentRoom = clickedUser.uId
         if (welcomeViewModel.getExitChatRoomData()){
             welcomeViewModel.exitToChatRoomFillData(false)
             viewModel.updateSeenInfo(clickedUser.uId)
         }
-
         recyclerAdapter = FriendsUsersAdapter()
         initResultsItemsRecyclerView()
         with(viewModel){
             friendsChatUsersPageViewStateLiveData.observeNonNull(viewLifecycleOwner){
-                Log.e("testObserve","Observe etti = ${it.users.size}")
                 with(binding){
                     pageViewState = it
                     executePendingBindings()
                 }
                 recyclerAdapter.setItems(it.users)
             }
-        }
-        adapterListeners()
-        welcomeViewModel.isFriendsListRecording.observeNonNull(viewLifecycleOwner){
-            viewModel.clickedUsersList = welcomeViewModel.getClickedUsersList()
-
-            viewModel.listUpdate(it,requireContext())
-        }
-        welcomeViewModel.isMEssageSended.observeNonNull(viewLifecycleOwner){
-            viewModel.clickedUsersList = welcomeViewModel.getClickedUsersList()
-            Log.e("ismessageSended","çalıştı")
-            viewModel.listUpdateForSending()
-        }
-        viewModel.listUpdated.observeNonNull(viewLifecycleOwner){
-            if (it){
-                Log.e("observelist","çalıştı")
-                viewModel.updateSeenStateClickedUser(viewModel.clickedUserForCurrentRoom)
+            listUpdated.observeNonNull(viewLifecycleOwner){
+                if (it){
+                    // mesajlaştığımız odadaki son mesajın görüldü durumunu kontrol etmek için
+                    viewModel.updateSeenStateClickedUser(clickedUser.uId)
+                }
             }
-        }
-        viewModel.notificationUserFilled.observeNonNull(viewLifecycleOwner){
-            Log.e("bildirimdeki boolean","$it")
-            if (it){
-                var user = viewModel.notificationUser
+            notificationUserFilled.observeNonNull(viewLifecycleOwner){
+                if (it){
+                    val user = viewModel.notificationUser
 
-                if (user != null){
-                    Log.e("bildirimdeki user","Id: ${user.uId}, Name: ${user.uName}")
-                    welcomeViewModel.fillUserInfoData(user.uId,user.uName,user.uStatu,user.uPhoto)
-                    welcomeViewModel.goToChattingPage()
-                    viewModel.fixObserver()
-                }else{
-                    Log.e("bildirimdeki user","boş geldi")
+                    if (user != null){
+                        Log.e("bildirimdeki user","Id: ${user.uId}, Name: ${user.uName}")
+                        welcomeViewModel.fillUserInfoData(user.uId,user.uName,user.uStatu,user.uPhoto)
+                        welcomeViewModel.goToChattingPage()
+                        viewModel.fixObserver()
+                    }else{
+                        Log.e("bildirimdeki user","boş geldi")
+                    }
                 }
             }
         }
+        adapterListeners()
+        with(welcomeViewModel){
+            isFriendsListRecording.observeNonNull(viewLifecycleOwner){
+                viewModel.clickedUsersList = welcomeViewModel.getClickedUsersList()
 
+                viewModel.listUpdate(it,requireContext())
+            }
+            isMessageSended.observeNonNull(viewLifecycleOwner){
+                viewModel.clickedUsersList = welcomeViewModel.getClickedUsersList()
+                viewModel.listUpdateForSending()
+            }
+            additionalDataSingleLiveEvent.observeNonNull(viewLifecycleOwner){
+                if (it){
+                    viewModel.findUserForNotification(welcomeViewModel.getAdditionalId().toString())
+                }
+            }
+        }
         welcomeViewModel.testSingleLiveEvent.observeNonNull(viewLifecycleOwner){
             Log.e("test_Single_Live_Text","FriendChat gelen : ${it}")
         }
     }
 
+    fun adapterListeners(){
+        with(recyclerAdapter){
+            setItemClickListener{
+                welcomeViewModel.fillUserInfoData(it.uId,it.uName,it.uStatu,it.uPhoto)
+                viewModel.updateSeenInfo(it.uId)
+                welcomeViewModel.goToChattingPage()
+            }
+            setPhotoItemClickListener {
+                welcomeViewModel.fillClickedUserPhoto(it)
+                showUserProfilePhotoDialog(3)
+            }
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ProcessLifecycleOwner.get().lifecycle.addObserver(object : LifecycleObserver {
@@ -111,22 +121,6 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
                 Toast.makeText(requireContext(),"İstek atıldı",Toast.LENGTH_SHORT).show()
             }
         })
-    }
-    fun adapterListeners(){
-        recyclerAdapter.setItemClickListener{
-            welcomeViewModel.fillUserInfoData(it.uId,it.uName,it.uStatu,it.uPhoto)
-            viewModel.updateSeenInfo(it.uId)
-            welcomeViewModel.goToChattingPage()
-        }
-        recyclerAdapter.setPhotoItemClickListener {
-            welcomeViewModel.fillClickedUserPhoto(it)
-            showUserProfilePhotoDialog(3)
-        }
-        welcomeViewModel.additionalDataSingleLiveEvent.observeNonNull(viewLifecycleOwner){
-            if (it){
-                viewModel.findUserForNotification(welcomeViewModel.getAdditionalId().toString())
-            }
-        }
     }
 
     private fun initResultsItemsRecyclerView() {

@@ -13,7 +13,6 @@ import com.example.learnandroidproject.common.extensions.observeNonNull
 import com.example.learnandroidproject.databinding.FragmentGeneralChatUsersBinding
 import com.example.learnandroidproject.ui.base.BaseFragment
 import com.example.learnandroidproject.ui.welcome.WelcomeViewModel
-import com.example.learnandroidproject.ui.welcome.chattingFragment.SocketHandler
 import com.example.learnandroidproject.ui.welcome.generalChatUsersFragment.adapter.GeneralUsersAdapter
 import com.example.learnandroidproject.ui.welcome.popUpFragment.PopUpFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,6 +45,7 @@ class GeneralChatUsersFragment : BaseFragment<FragmentGeneralChatUsersBinding>()
         // Telefonun navigation bar'ında ki geri tuşuna basılmasını kontrol eder
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
+                welcomeViewModel.navigateUp()
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)

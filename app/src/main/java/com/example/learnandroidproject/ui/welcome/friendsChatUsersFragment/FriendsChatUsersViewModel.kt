@@ -31,10 +31,10 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
 
     var friendList: MutableList<UserInfo> = mutableListOf<UserInfo>()
     var notificationUser: UserInfo? = null
-    var clickedUserForCurrentRoom: Int? = null
     var clickedUsersList: MutableList<Int> = mutableListOf()
     var newUserInfo = UserInfo(0,"","","","","",true)
     var sendingMessage: MutableMap<String, MutableList<Args>> = mutableMapOf()
+
     init {
         getAllUsers()
     }
@@ -91,7 +91,6 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
 
             if (userMessages1 != null) {
                 val listSize = userMessages1.size
-                Log.e("listSize gönderilen", "$listSize")
                 for (message in userMessages1) {
                     if (counter == listSize - 1) {
                         val currentTime = formatMessageTime(message.messageTime)
@@ -100,10 +99,8 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
                         if (friendList[i].uId.toString() == message.receiverId) {
                             friendList[i].lastMessage = message.message
                             friendList[i].elapsedTime = currentTime
-                            Log.e("gelen seen1", "${message.seen}")
                             friendList[i].seen = true
                             userMessages1.clear()
-
                         }
                     }
                     counter++
@@ -112,7 +109,7 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
         }
         if (!clickedUsersList.isNullOrEmpty()) {
             for (i in 0 until clickedUsersList.size) {
-                withoutFriendListUsers(sendingMessage, clickedUsersList[i]) // bu hariç
+                withoutFriendListUsers(sendingMessage, clickedUsersList[i])
             }
             clickedUsersList.clear()
             _listUpdated.postValue(true)
@@ -133,19 +130,14 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
         var userMessages2 = userMessages[loggedUserId.toString()]
 
         for (i in 0 until friendList.size) {
-            val userId = friendList[i].uId.toString()
             //var userMessages1 = userMessages[userId] //soketten kendi mesajımı dinlediğimde
-            var userMessages1 = sendingMessage[userId] // Benim gönderdiğim
-            Log.e("userMessages1","$userMessages1")
-
             var counter = 0
 
             // Karşıdan mesaj geldiğinde çalışır
             if (userMessages2 != null) {
                 val listSize = userMessages2.size
-                Log.e("listSize gelen", "$listSize")
                 for (message in userMessages2) {
-                    // Bir kullanıcı birden fazla kez mesaj attığında biriktiriyor. Son elemanı almak için kullanıyoruz burayı
+                    // Bir kullanıcı birden fazla kez mesaj attığında biriktiriyor. Mapin son elemanını almak için kullanıyoruz burayı
                     if (counter == listSize - 1) {
                         val currentTime = formatMessageTime(message.messageTime)
                         Log.e("Messagefriends", "Sender: ${message.senderId}, Receiver: ${message.receiverId}, Content: ${message.message}, Date: ${message.messageTime}, Seen: ${message.seen}")
@@ -153,9 +145,6 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
                             friendList[i].lastMessage = message.message
                             friendList[i].elapsedTime = currentTime
                             friendList[i].seen = message.seen
-
-                            Log.e("gelen tarih", "${message.messageTime}")
-                            Log.e("işlenen tarih", "${currentTime}")
                             userMessages2.clear()
                         }
                     }
@@ -163,7 +152,7 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
                 }
             }
         }
-        // Hata - FriendList'te olmayan birinden mesaj alına yapılan işlemler
+        // FriendList'te olmayan birinden mesaj alına yapılan işlemler
         if (userMessages.isNotEmpty()) {
             Log.e("userMessagesçökerten", "$userMessages")// sender
             Log.e("userMessId", "${userMessages[loggedUserId]}")
@@ -171,12 +160,10 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
             var messageTime: String? = null
             var lastMessage: String? = null
 
-            Log.e("userMesTEst", "çalışmadan önce : ${friendList.size}")
             val userMesReceiver = userMessages[loggedUserId]
             //val userMessageSender = userMessages[clickedUserId.toString()] soketten kendi mesajımı dinlediğimde
             Log.e("userMessages", "$userMesReceiver")
             if (!userMesReceiver.isNullOrEmpty()) {
-                Log.e("çökerten açık","çökebiilit")
                 for (message in userMesReceiver) {
                     senderId = message.senderId
                     messageTime = formatMessageTime(message.messageTime)
@@ -184,13 +171,12 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
                     userMesReceiver.clear()
 
                 }
-                Log.e("senderIdKontrol", "$senderId")
                 viewModelScope.launch(Dispatchers.IO) {
                     datingApiRepository.getUserProfile(senderId!!).get()?.let {
                         withContext(Dispatchers.Main) {
                             newUserInfo = UserInfo(senderId.toInt(), it.userName!!, it.status!!, it.photo!!, lastMessage, messageTime,false)
                             if (friendList.contains(newUserInfo)) {
-                                Log.e("zaten vardı yine geldi1", "$newUserInfo")
+                                Log.e("zaten vardı yine geldi", "$newUserInfo")
                             } else {
                                 friendList.add(newUserInfo)
                             }
@@ -204,18 +190,7 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
                         }
                     }
                 }
-            }else {
-                viewModelScope.launch(Dispatchers.IO) {
-                    withContext(Dispatchers.Main) {
-                        friendList.sortByDescending { it.elapsedTime }
-                        _friendsChatUsersPageViewStateLiveData.postValue(
-                            FriendsChatUsersPageViewState(friendList)
-                        )
-                    }
-                }
             }
-            friendList.sortByDescending { it.elapsedTime }
-            _friendsChatUsersPageViewStateLiveData.postValue(FriendsChatUsersPageViewState(friendList))
         }
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -225,7 +200,7 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
             }
         }
     }
-
+    // FriendListte olmayan birine ben mesaj attığımda çalışır
     fun withoutFriendListUsers(userMessages: MutableMap<String, MutableList<Args>>,clickedUser: Int){
         Log.e("fonk çalıştı","çalıştı $clickedUser")
         //val userMessageSender = userMessages[clickedUserId.toString()] // soketten kendi mesajımı dinlediğimde
@@ -264,18 +239,17 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
             }
         }
     }
-
+    // Bir chatten çıkıldığında o chati görüldü yapar
     fun updateSeenStateClickedUser(id: Int?){
         for (i in 0 until friendList.size){
             if (friendList[i].uId == id){
                 Log.e("seen düzenlendi id: ","$id")
                 friendList[i].seen = true
-                clickedUserForCurrentRoom = null
                 _listUpdated.postValue(false)
             }
         }
     }
-
+    // Sunucudan gelen mesaj tarihlerini client için uygun formata çevirir
     fun formatMessageTime(messageTime: String): String{
         val dateFormat = SimpleDateFormat("dd/MM/yyyy, HH:mm:ss", Locale.getDefault())
 

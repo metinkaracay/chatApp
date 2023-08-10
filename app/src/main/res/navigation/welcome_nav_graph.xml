@@ -14,18 +14,6 @@
         android:name="com.example.learnandroidproject.ui.welcome.secondFragment.SecondFragment"
         android:label="SecondFragment" />
     <fragment
-        android:id="@+id/testFragment"
-        android:name="com.example.learnandroidproject.ui.welcome.testFragment.TestFragment"
-        android:label="TestFragment" />
-    <fragment
-        android:id="@+id/postTestFragment"
-        android:name="com.example.learnandroidproject.ui.welcome.postTestFragment.PostTestFragment"
-        android:label="PostTestFragment" />
-    <fragment
-        android:id="@+id/signInFragment"
-        android:name="com.example.learnandroidproject.ui.welcome.signInFragment.SignInFragment"
-        android:label="SignInFragment" />
-    <fragment
         android:id="@+id/createAccountFragment"
         android:name="com.example.learnandroidproject.ui.welcome.createAccountFragment.CreateAccountFragment"
         android:label="CreateAccountFragment" >
@@ -37,10 +25,6 @@
         android:id="@+id/createProfileFragment"
         android:name="com.example.learnandroidproject.ui.welcome.createProfileFragment.CreateProfileFragment"
         android:label="CreateProfileFragment" />
-    <fragment
-        android:id="@+id/testImageFragment"
-        android:name="com.example.learnandroidproject.ui.welcome.testImageFragment.TestImageFragment"
-        android:label="TestImageFragment" />
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.example.learnandroidproject.ui.welcome.mainFragment.MainFragment"

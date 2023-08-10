@@ -35,11 +35,15 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
     private val _messageFetchRequestLiveData: MutableLiveData<Boolean> = MutableLiveData()
     val messageFetchRequestLiveData: LiveData<Boolean> = _messageFetchRequestLiveData
 
+    private val _newMessageOnTheChatLiveData: MutableLiveData<Boolean> = MutableLiveData()
+    val newMessageOnTheChatLiveData: LiveData<Boolean> = _newMessageOnTheChatLiveData
+
     var user: UserInfo = UserInfo(0,"","","null",null,null,true)
+    var pageId = 1
     var isNewChat = true
     var isMessageOver = false
     var sendingMessage: MutableMap<String, MutableList<Args>> = mutableMapOf()
-
+    var fetchSocketData = false
     var messageList: List<MessageItem> = arrayListOf()
     fun getUserInfo(){
         _userLiveData.value = userLiveData.value?.copy(userInfo = user)
@@ -52,10 +56,10 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
     }
     init {
         _messageFetchRequestLiveData.postValue(true)
-        getMessagesFromPage(1)
+        getMessagesFromPage()
     }
 
-    fun getMessagesFromPage(pageId: Int){
+    fun getMessagesFromPage(){
         viewModelScope.launch(Dispatchers.IO){
             datingApiRepository.getMessagesFromPage(user.uId.toString(),pageId).get()?.let {
                 withContext(Dispatchers.Main){
@@ -65,10 +69,10 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
                     }
                     messageList = it + messageList
                     sendMessagesToPageViewState(messageList)
+                    pageId++
                 }
             }
         }
-
     }
 
     fun fetchMessagesOnSocket(args: Args){
@@ -76,16 +80,18 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
         val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
         val currentTime = timeFormat.format(dateNow)
 
-        if (user.uId == args.senderId.toInt()){
+        if (user.uId == args.senderId.toInt() && fetchSocketData){
 
             val newMessage = MessageItem(args.message,args.senderId,args.receiverId,currentTime)
 
             viewModelScope.launch(Dispatchers.Main) {
+                _newMessageOnTheChatLiveData.postValue(true)
                 messageList = messageList + newMessage
-
                 sendMessagesToPageViewState(messageList)
             }
         }
+        fetchSocketData = true // Chatte değilken gelen mesajları biriktirdiği için fazladan mesaj yazdırıyordu. Bu durumu engellemek için kontrol
+        _newMessageOnTheChatLiveData.postValue(false)
     }
     fun sendMessage(Socket: SocketHandler,context: Context,message: String){
         val sharedPreferences = context.getSharedPreferences("LoggedUserID",Context.MODE_PRIVATE)
@@ -119,11 +125,13 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
                 // Modeli liste içine ekle
                 messageListModel.add(model)
                 Log.e("gönderilen model","$sendingMessage")
+                _newMessageOnTheChatLiveData.postValue(true)
 
             })
             val newMessage = MessageItem(message,loggedUserId.toString(),user.uId.toString(),currentTime.toString())
             messageList = messageList + newMessage
             sendMessagesToPageViewState(messageList)
+            _newMessageOnTheChatLiveData.postValue(false)
         }else{
             _errorMessageLiveData.postValue("Lütfen Bir Mesaj Girin")
         }
