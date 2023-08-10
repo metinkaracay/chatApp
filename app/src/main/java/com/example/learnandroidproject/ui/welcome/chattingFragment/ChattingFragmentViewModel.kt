@@ -44,7 +44,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
     fun getUserInfo(){
         _userLiveData.value = userLiveData.value?.copy(userInfo = user)
     }
-    fun fetchMessages(list: List<MessageItem>){
+    fun sendMessagesToPageViewState(list: List<MessageItem>){
         _chattingPageViewStateLiveData.value = ChattingFragmentPageViewState(user,list)
         if (!list.isNullOrEmpty()){
             isNewChat = false
@@ -64,7 +64,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
                         isMessageOver = true
                     }
                     messageList = it + messageList
-                    fetchMessages(messageList)
+                    sendMessagesToPageViewState(messageList)
                 }
             }
         }
@@ -76,18 +76,14 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
         val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
         val currentTime = timeFormat.format(dateNow)
 
-        Log.e("çökertti","userid : ${user.uId}")
-        Log.e("çökertti","senderid : ${args.senderId}")
         if (user.uId == args.senderId.toInt()){
 
             val newMessage = MessageItem(args.message,args.senderId,args.receiverId,currentTime)
 
-            Log.e("test","viewmodel çalıştı")
             viewModelScope.launch(Dispatchers.Main) {
-                Log.e("weltestscope","Çaıştoı")
                 messageList = messageList + newMessage
 
-                fetchMessages(messageList)
+                sendMessagesToPageViewState(messageList)
             }
         }
     }
@@ -127,7 +123,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
             })
             val newMessage = MessageItem(message,loggedUserId.toString(),user.uId.toString(),currentTime.toString())
             messageList = messageList + newMessage
-            fetchMessages(messageList)
+            sendMessagesToPageViewState(messageList)
         }else{
             _errorMessageLiveData.postValue("Lütfen Bir Mesaj Girin")
         }

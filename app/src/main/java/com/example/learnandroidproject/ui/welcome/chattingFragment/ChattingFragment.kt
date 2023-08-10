@@ -7,25 +7,15 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.learnandroidproject.R
 import com.example.learnandroidproject.common.extensions.observeNonNull
-import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.Args
-import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
-import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
 import com.example.learnandroidproject.databinding.FragmentChattingBinding
 import com.example.learnandroidproject.ui.base.BaseFragment
 import com.example.learnandroidproject.ui.welcome.WelcomeViewModel
 import com.example.learnandroidproject.ui.welcome.chattingFragment.adapter.ChattingMessagesAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -42,16 +32,12 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         welcomeViewModel.messageSingleLiveEvent.observe(viewLifecycleOwner){
-            Log.e("çökertti","args: $it")
             viewModel.fetchMessagesOnSocket(it)
         }
         val user = welcomeViewModel.getUserInfo()
         viewModel.user = user
         viewModel.getUserInfo()
         val senderUserMessage = welcomeViewModel.getLastSentMessage()
-        if (senderUserMessage != null){
-            Log.e("gelennmesaj","$senderUserMessage")
-        }
         viewModel.sendingMessage = senderUserMessage!!
         handleViewOption()
         initResultsItemsRecyclerView()
@@ -70,6 +56,7 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
         // Telefonun navigation bar'ında ki geri tuşuna basılmasını kontrol eder
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
+                welcomeViewModel.navigateUp()
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
@@ -78,7 +65,7 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
     fun handleViewOption(){
         binding.backArrow.setOnClickListener {
             Log.e("çıkıştaki model","${viewModel.sendingMessage}")
-            var messageData =viewModel.sendingMessage
+            var messageData = viewModel.sendingMessage // Chat boyunca attığımız mesajları toplayıp chatten çıkıldığı anda topluca gönderiyoruz
             welcomeViewModel.fillLastSentMessage(messageData)
             welcomeViewModel.exitToChatRoomFillData(true)
             welcomeViewModel.navigateUp()
