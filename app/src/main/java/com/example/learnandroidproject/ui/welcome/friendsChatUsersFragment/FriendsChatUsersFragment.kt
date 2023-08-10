@@ -45,7 +45,6 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
         viewModel.clickedUserForCurrentRoom = clickedUser.uId
         if (welcomeViewModel.getExitChatRoomData()){
             welcomeViewModel.exitToChatRoomFillData(false)
-            viewModel.clickedUserId = clickedUser.uId //TODO burayı iyileştir
             viewModel.updateSeenInfo(clickedUser.uId)
         }
 
@@ -92,6 +91,10 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
                     Log.e("bildirimdeki user","boş geldi")
                 }
             }
+        }
+
+        welcomeViewModel.testSingleLiveEvent.observeNonNull(viewLifecycleOwner){
+            Log.e("test_Single_Live_Text","FriendChat gelen : ${it}")
         }
     }
 

@@ -68,7 +68,7 @@ abstract class BaseActivity<DB : ViewDataBinding> : AppCompatActivity() {
                 navigationData.args,
                 buildNavOptions(
                     enterAnim = navigationData.navigationAnimator?.enterAnim ?: R.anim.slide_in_left_anim,
-                    exitAnim = navigationData.navigationAnimator?.exitAnim ?: R.anim.slide_out_left_anim,
+                    exitAnim = navigationData.navigationAnimator?.exitAnim ?: R.anim.slide_out_right_anim,
                     popEnterAnim = navigationData.navigationAnimator?.popEnterAnim ?: R.anim.slide_in_right_anim,
                     popExitAnim = navigationData.navigationAnimator?.popExitAnim ?: R.anim.slide_out_right_anim,
                     popupTo = navigationData.popupTo,

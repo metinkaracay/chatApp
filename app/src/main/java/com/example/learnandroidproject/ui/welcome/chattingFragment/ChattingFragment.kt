@@ -42,6 +42,7 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         welcomeViewModel.messageSingleLiveEvent.observe(viewLifecycleOwner){
+            Log.e("çökertti","args: $it")
             viewModel.fetchMessagesOnSocket(it)
         }
         val user = welcomeViewModel.getUserInfo()
@@ -74,11 +75,6 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
-
     fun handleViewOption(){
         binding.backArrow.setOnClickListener {
             Log.e("çıkıştaki model","${viewModel.sendingMessage}")
@@ -92,6 +88,8 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
             viewModel.sendMessage(SocketHandler,requireContext(),message)
             binding.editText.text.clear()
             binding.recyclerView.scrollToPosition(viewModel.messageList.size -1 )
+
+            welcomeViewModel.fillTestSingleEvent(message)
         }
         binding.userInfo.setOnClickListener{
             welcomeViewModel.goToUserProfileFragment()

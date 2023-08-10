@@ -76,6 +76,8 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
         val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
         val currentTime = timeFormat.format(dateNow)
 
+        Log.e("çökertti","userid : ${user.uId}")
+        Log.e("çökertti","senderid : ${args.senderId}")
         if (user.uId == args.senderId.toInt()){
 
             val newMessage = MessageItem(args.message,args.senderId,args.receiverId,currentTime)

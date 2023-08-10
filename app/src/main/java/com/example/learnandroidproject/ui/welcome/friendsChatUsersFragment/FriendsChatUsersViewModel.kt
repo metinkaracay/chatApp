@@ -31,7 +31,6 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
 
     var friendList: MutableList<UserInfo> = mutableListOf<UserInfo>()
     var notificationUser: UserInfo? = null
-    var clickedUserId = 0
     var clickedUserForCurrentRoom: Int? = null
     var clickedUsersList: MutableList<Int> = mutableListOf()
     var newUserInfo = UserInfo(0,"","","","","",true)
@@ -132,18 +131,14 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
         val loggedUserId = sharedPreferences.getString("LoggedUserId", "")
 
         var userMessages2 = userMessages[loggedUserId.toString()]
-        Log.e("userMessagesçökerten2","$userMessages2") // bana gelen
 
         for (i in 0 until friendList.size) {
             val userId = friendList[i].uId.toString()
             //var userMessages1 = userMessages[userId] //soketten kendi mesajımı dinlediğimde
             var userMessages1 = sendingMessage[userId] // Benim gönderdiğim
-            Log.e("userMessagesçökerten1","$userMessages1")
-            /*var userMessages2 = userMessages[loggedUserId.toString()]
-            Log.e("usMess2 içi","$userMessages2") // bana gelen*/
+            Log.e("userMessages1","$userMessages1")
 
             var counter = 0
-            val currentMessages: MutableList<Args> = mutableListOf()
 
             // Karşıdan mesaj geldiğinde çalışır
             if (userMessages2 != null) {
@@ -153,16 +148,14 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
                     // Bir kullanıcı birden fazla kez mesaj attığında biriktiriyor. Son elemanı almak için kullanıyoruz burayı
                     if (counter == listSize - 1) {
                         val currentTime = formatMessageTime(message.messageTime)
-                        Log.e(
-                            "Messagefriends",
-                            "Sender: ${message.senderId}, Receiver: ${message.receiverId}, Content: ${message.message}, Date: ${message.messageTime}, Seen: ${message.seen}"
-                        )
+                        Log.e("Messagefriends", "Sender: ${message.senderId}, Receiver: ${message.receiverId}, Content: ${message.message}, Date: ${message.messageTime}, Seen: ${message.seen}")
                         if (friendList[i].uId.toString() == message.senderId) {
                             friendList[i].lastMessage = message.message
                             friendList[i].elapsedTime = currentTime
                             friendList[i].seen = message.seen
 
-                            Log.e("gelen seen", "${message.seen}")
+                            Log.e("gelen tarih", "${message.messageTime}")
+                            Log.e("işlenen tarih", "${currentTime}")
                             userMessages2.clear()
                         }
                     }
@@ -174,7 +167,6 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
         if (userMessages.isNotEmpty()) {
             Log.e("userMessagesçökerten", "$userMessages")// sender
             Log.e("userMessId", "${userMessages[loggedUserId]}")
-            Log.e("userMessId", "${userMessages[clickedUserId.toString()]}")
             var senderId: String? = null
             var messageTime: String? = null
             var lastMessage: String? = null
@@ -224,8 +216,6 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
             }
             friendList.sortByDescending { it.elapsedTime }
             _friendsChatUsersPageViewStateLiveData.postValue(FriendsChatUsersPageViewState(friendList))
-            Log.e("testttt", "kimse kalmadı")
-            Log.e("userMessag", "şu idli: ${clickedUserId}")
         }
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -236,10 +226,10 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
         }
     }
 
-    fun withoutFriendListUsers(userMessages: MutableMap<String, MutableList<Args>>,clickedUserId: Int){
-        Log.e("fonk çalıştı","çalıştı $clickedUserId")
-        val userMessageSender = sendingMessage[clickedUserId.toString()]
-        Log.e("gelenSendingMessageİç","$userMessageSender")
+    fun withoutFriendListUsers(userMessages: MutableMap<String, MutableList<Args>>,clickedUser: Int){
+        Log.e("fonk çalıştı","çalıştı $clickedUser")
+        //val userMessageSender = userMessages[clickedUserId.toString()] // soketten kendi mesajımı dinlediğimde
+        val userMessageSender = sendingMessage[clickedUser.toString()]
 
         var messageTime = ""
         var lastMessage = ""
@@ -256,9 +246,9 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
                 counter++
             }
             viewModelScope.launch(Dispatchers.IO){
-                datingApiRepository.getUserProfile(clickedUserId.toString()).get()?.let {
+                datingApiRepository.getUserProfile(clickedUser.toString()).get()?.let {
                     withContext(Dispatchers.Main){
-                        newUserInfo = UserInfo(clickedUserId,it.userName!!,it.status!!,it.photo!!,lastMessage,messageTime,true)
+                        newUserInfo = UserInfo(clickedUser,it.userName!!,it.status!!,it.photo!!,lastMessage,messageTime,true)
                         if (friendList.contains(newUserInfo)){
                             Log.e("zaten vardı yine geldi2","$newUserInfo")
                         }else{
