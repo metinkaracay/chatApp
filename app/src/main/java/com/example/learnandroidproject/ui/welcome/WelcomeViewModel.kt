@@ -51,6 +51,15 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     private var clickedUsers: MutableList<Int> = arrayListOf()
     private var additionId: String? = null
     private var currentFragment: Int? = null
+    private var selectedUsersForGroupChat: List<UserInfo> = arrayListOf()
+
+    fun fillSelectedUsersForGroupChat(userList: List<UserInfo>){
+        selectedUsersForGroupChat = userList
+    }
+
+    fun getSelectedUsersForGroupChat(): List<UserInfo>{
+        return selectedUsersForGroupChat
+    }
 
     fun onDestinationChanged(destinationId: Int) {
         currentFragment = destinationId
@@ -194,8 +203,11 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     fun goToGenerelChatUsersFragment(){
         _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.generalChatUsersFragment)
     }
-    fun goToFriendsChatUsersFragment(){
-        _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.friendsChatUsersFragment)
+    fun goToCreateGroupFragment(){
+        _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.createGroupFragment)
+    }
+    fun goToCompleteGroupFragment(){
+        _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.completeGroupCreateFragment)
     }
     fun goToUserProfileFragment(){
         _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.userProfileFragment)

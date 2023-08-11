@@ -1,5 +1,6 @@
 package com.example.learnandroidproject.data.remote.api.dating
 
+import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.GroupInfo
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.LoginRequest
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.UpdateUser
 import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
@@ -23,6 +24,8 @@ interface DatingApiService {
     suspend fun fetchFriendsUsers(): List<UserInfo>
     @GET("auth/profile")
     suspend fun fetchUserData(): User
+    @GET("auth/allUsers")
+    suspend fun fetchAllUsers(): List<UserInfo>
     @GET("chats/{id}")
     suspend fun getMessagesFromPage(@Path("id") id: String,
                                     @Query("page") page: Int ) : List<MessageItem>
@@ -40,6 +43,8 @@ interface DatingApiService {
     suspend fun updateProfile(@Body user: UpdateUser): ResponseBody
     @POST("auth/logout")
     suspend fun exit(): ResponseBody
+    @POST("auth/createGroup")
+    suspend fun createGroup(@Body group: GroupInfo): ResponseBody
 
     @Headers("Content-Type: application/json")
     @POST("auth/register")

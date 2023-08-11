@@ -54,6 +54,9 @@ class GeneralChatUsersFragment : BaseFragment<FragmentGeneralChatUsersBinding>()
         binding.backArrow.setOnClickListener {
             welcomeViewModel.navigateUp()
         }
+        binding.createGroup.setOnClickListener {
+            welcomeViewModel.goToCreateGroupFragment()
+        }
     }
 
     fun adapterListeners(){

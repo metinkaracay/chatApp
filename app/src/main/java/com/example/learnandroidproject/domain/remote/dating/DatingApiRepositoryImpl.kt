@@ -2,6 +2,7 @@ package com.example.learnandroidproject.domain.remote.dating
 
 import com.example.learnandroidproject.common.GenericResult
 import com.example.learnandroidproject.common.handleDatingRequest
+import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.GroupInfo
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.LoginRequest
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.UpdateUser
 import com.example.learnandroidproject.data.local.model.dating.db.response.NewsBaseResponse
@@ -25,6 +26,8 @@ class DatingApiRepositoryImpl @Inject constructor(
 
     override suspend fun fetchUserData(): GenericResult<User> = handleDatingRequest { datingApiService.fetchUserData() }
 
+    override suspend fun fetchAllUsers(): GenericResult<List<UserInfo>> = handleDatingRequest { datingApiService.fetchAllUsers() }
+
     override suspend fun getMessagesFromPage(id: String, page: Int): GenericResult<List<MessageItem>> = handleDatingRequest{ datingApiService.getMessagesFromPage(id,page)}
 
     override suspend fun getUserProfile(id: String): GenericResult<User> = handleDatingRequest { datingApiService.getUserProfile(id) }
@@ -36,6 +39,8 @@ class DatingApiRepositoryImpl @Inject constructor(
     override suspend fun login(user: LoginRequest): GenericResult<ResponseBody> = handleDatingRequest { datingApiService.login(user) }
 
     override suspend fun exit(): GenericResult<ResponseBody> = handleDatingRequest { datingApiService.exit() }
+
+    override suspend fun createGroup(group: GroupInfo): GenericResult<ResponseBody> = handleDatingRequest { datingApiService.createGroup(group) }
 
     override suspend fun updateProfile(user: UpdateUser): GenericResult<ResponseBody> = handleDatingRequest { datingApiService.updateProfile(user) }
 

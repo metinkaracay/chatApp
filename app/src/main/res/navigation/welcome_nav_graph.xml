@@ -61,4 +61,12 @@
         android:id="@+id/splashActivity"
         android:name="com.example.learnandroidproject.ui.splash.SplashActivity"
         android:label="SplashActivity" />
+    <fragment
+        android:id="@+id/createGroupFragment"
+        android:name="com.example.learnandroidproject.ui.welcome.createGroupFragment.CreateGroupFragment"
+        android:label="CreateGroupFragment" />
+    <fragment
+        android:id="@+id/completeGroupCreateFragment"
+        android:name="com.example.learnandroidproject.ui.welcome.completeGroupCreate.CompleteGroupCreateFragment"
+        android:label="CompleteGroupCreateFragment" />
 </navigation>

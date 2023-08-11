@@ -39,7 +39,13 @@ class PopUpViewModel @Inject constructor(private val datingApiRepository: Dating
             photoPicker(imageUrl)
         }else if(requestCode == 3){
             showUserPhoto(imageUrl)
+        }else if(requestCode == 4){
+            logoutToAccount()
         }
+    }
+
+    fun logoutToAccount(){
+        PopUpPageViewState(PopUpPageViewState.PopUpType.LOGOUT,null)
     }
 
     fun countDownTimer(){

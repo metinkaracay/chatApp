@@ -13,7 +13,8 @@ data class PopUpPageViewState(
     enum class PopUpType{
         SIGNIN,
         SELECTPHOTO,
-        SHOWUSERPHOTO
+        SHOWUSERPHOTO,
+        LOGOUT
     }
     fun defaultUserPhotoVisibility() = if ((type == PopUpType.SELECTPHOTO && photoUrl == "null") || (type == PopUpType.SHOWUSERPHOTO && photoUrl == "null")) View.VISIBLE else View.GONE
     fun selectedUserPhotoVisibility() = if ((type == PopUpType.SELECTPHOTO && photoUrl != "null") || (type == PopUpType.SHOWUSERPHOTO && photoUrl != "null")) View.VISIBLE else View.GONE
@@ -26,6 +27,7 @@ data class PopUpPageViewState(
     fun getHeaderText() = "Kayıt Başarılı!"
     fun imageVisibility() = if (type == PopUpType.SIGNIN) View.VISIBLE else View.GONE
     fun Image(context: Context): Drawable? = ContextCompat.getDrawable(context, R.drawable.check_mark)
+    fun logoutOptionsVisibility() = if (type == PopUpType.LOGOUT) View.VISIBLE else View.GONE
     fun infoTextVisibility() = if (type == PopUpType.SIGNIN) View.VISIBLE else View.GONE
     fun getInfoText() = "Anasayfaya yönlendiriliyorsunuz"
 }

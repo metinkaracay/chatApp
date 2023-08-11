@@ -16,6 +16,7 @@ import com.example.learnandroidproject.databinding.FragmentBaseChatRoomsBinding
 import com.example.learnandroidproject.ui.base.BaseFragment
 import com.example.learnandroidproject.ui.welcome.WelcomeViewModel
 import com.example.learnandroidproject.ui.welcome.chattingFragment.SocketHandler
+import com.example.learnandroidproject.ui.welcome.popUpFragment.PopUpFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -70,7 +71,6 @@ class BaseChatRoomsFragment : BaseFragment<FragmentBaseChatRoomsBinding>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.e("baseCreate","çaıştı")
         socketHandler = SocketHandler
         welcomeViewModel.socketListener(socketHandler!!,requireContext())
     }
@@ -80,6 +80,7 @@ class BaseChatRoomsFragment : BaseFragment<FragmentBaseChatRoomsBinding>() {
             welcomeViewModel.goToProfilePage()
         }
         binding.exitButton.setOnClickListener {
+            //showExitPopUpDialog(4)
             viewModel.exitToServer(requireContext())
             viewModel.exitResponseLiveData.observe(viewLifecycleOwner){
                 if (it){
@@ -120,6 +121,12 @@ class BaseChatRoomsFragment : BaseFragment<FragmentBaseChatRoomsBinding>() {
             binding.tabInternet.textSize = 17f
             binding.tabInternet.setTextColor(ContextCompat.getColor(requireContext(), R.color.register_title_color))
             binding.tabInternet.typeface = ResourcesCompat.getFont(requireContext(), R.font.gotham_book)
+        }
+    }
+    private fun showExitPopUpDialog(requestCode: Int) {
+        if (PopUpFragment.isShowing().not()) {
+            val filterNewDialogFragment: PopUpFragment = PopUpFragment.newInstance(requestCode)
+            filterNewDialogFragment.show(childFragmentManager, PopUpFragment::class.java.simpleName)
         }
     }
 }
