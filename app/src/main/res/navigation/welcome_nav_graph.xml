@@ -69,4 +69,12 @@
         android:id="@+id/completeGroupCreateFragment"
         android:name="com.example.learnandroidproject.ui.welcome.completeGroupCreate.CompleteGroupCreateFragment"
         android:label="CompleteGroupCreateFragment" />
+    <fragment
+        android:id="@+id/groupChatsFragment"
+        android:name="com.example.learnandroidproject.ui.welcome.groupChatsFragment.GroupChatsFragment"
+        android:label="GroupChatsFragment" />
+    <fragment
+        android:id="@+id/groupChattingFragment"
+        android:name="com.example.learnandroidproject.ui.welcome.groupChattingFragment.GroupChattingFragment"
+        android:label="GroupChattingFragment" />
 </navigation>

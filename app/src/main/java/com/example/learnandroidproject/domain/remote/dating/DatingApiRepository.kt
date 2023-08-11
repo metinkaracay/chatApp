@@ -1,12 +1,13 @@
 package com.example.learnandroidproject.domain.remote.dating
 
 import com.example.learnandroidproject.common.GenericResult
-import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.GroupInfo
+import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.GroupData
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.LoginRequest
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.UpdateUser
 import com.example.learnandroidproject.data.local.model.dating.db.response.NewsBaseResponse
 import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
+import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.GroupInfo
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
@@ -19,11 +20,15 @@ interface DatingApiRepository {
 
     suspend fun fetchFriendsUsers(): GenericResult<List<UserInfo>>
 
+    suspend fun fetchGroups(): GenericResult<List<GroupInfo>>
+
     suspend fun fetchUserData(): GenericResult<User>
 
     suspend fun fetchAllUsers(): GenericResult<List<UserInfo>>
 
     suspend fun getMessagesFromPage(id:String, page: Int): GenericResult<List<MessageItem>>
+
+    suspend fun getGroupMessagesFromPage(id: String, page: Int): GenericResult<List<MessageItem>>
 
     suspend fun getUserProfile(id: String): GenericResult<User>
 
@@ -37,7 +42,7 @@ interface DatingApiRepository {
 
     suspend fun exit(): GenericResult<ResponseBody>
 
-    suspend fun createGroup(group: GroupInfo): GenericResult<ResponseBody>
+    suspend fun createGroup(group: GroupData): GenericResult<ResponseBody>
 
     suspend fun register(user: User): GenericResult<ResponseBody>
 

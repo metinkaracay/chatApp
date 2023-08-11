@@ -112,5 +112,4 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
             adapter = chattingMessagesAdapter
         }
     }
-
 }

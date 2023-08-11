@@ -1,11 +1,12 @@
 package com.example.learnandroidproject.data.remote.api.dating
 
-import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.GroupInfo
+import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.GroupData
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.LoginRequest
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.UpdateUser
 import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
 import com.example.learnandroidproject.data.local.model.dating.db.response.NewsBaseResponse
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
+import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.GroupInfo
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
@@ -22,6 +23,8 @@ interface DatingApiService {
     suspend fun fetchUsersForChatRooms(): List<UserInfo>
     @GET("auth/friends")
     suspend fun fetchFriendsUsers(): List<UserInfo>
+    @GET("auth/groups")
+    suspend fun fetchGroups(): List<GroupInfo>
     @GET("auth/profile")
     suspend fun fetchUserData(): User
     @GET("auth/allUsers")
@@ -29,6 +32,8 @@ interface DatingApiService {
     @GET("chats/{id}")
     suspend fun getMessagesFromPage(@Path("id") id: String,
                                     @Query("page") page: Int ) : List<MessageItem>
+    @GET("chats/group/{id}")
+    suspend fun getGroupMessagesFromPage(@Path("id") id: String, @Query("page") page: Int) : List<MessageItem>
     @GET("auth/profile/{id}")
     suspend fun getUserProfile(@Path("id") id: String): User
     @GET("chats/{id}/seen")
@@ -44,7 +49,7 @@ interface DatingApiService {
     @POST("auth/logout")
     suspend fun exit(): ResponseBody
     @POST("auth/createGroup")
-    suspend fun createGroup(@Body group: GroupInfo): ResponseBody
+    suspend fun createGroup(@Body group: GroupData): ResponseBody
 
     @Headers("Content-Type: application/json")
     @POST("auth/register")

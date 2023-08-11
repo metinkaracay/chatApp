@@ -32,8 +32,4 @@ class FriendsUsersItemPageViewState(
     fun lastMessageFont(context: Context): Typeface? = if (users.seen == false) ResourcesCompat.getFont(context,R.font.montserrat_bold) else ResourcesCompat.getFont(context,R.font.montserrat_regular)
 
     fun getElapsedTime() = mElapsedTime
-
-    init {
-        Log.e("görüldü","${users.seen}")
-    }
 }

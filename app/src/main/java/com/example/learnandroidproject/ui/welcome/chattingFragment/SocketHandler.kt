@@ -19,8 +19,8 @@ object SocketHandler {
             val opts = IO.Options()
             var name = arrayOf("websocket")
             opts.transports = name
-            mSocket = IO.socket("http://10.82.0.69:3000/?token=${token}", opts)
-            //mSocket = IO.socket("http://ec2-18-196-242-245.eu-central-1.compute.amazonaws.com:3000/?token=${token}", opts)
+            //mSocket = IO.socket("http://10.82.0.69:3000/?token=${token}", opts)
+            mSocket = IO.socket("http://ec2-18-196-242-245.eu-central-1.compute.amazonaws.com:3000/?token=${token}", opts)
             Log.e("setSocket","Bağlantı kuruldu")
         } catch (e: URISyntaxException){
             Log.e("Socket Hatası","$e")

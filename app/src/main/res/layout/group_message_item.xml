@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="pageViewState"
+            type="com.example.learnandroidproject.ui.welcome.groupChattingFragment.adapter.GroupMessageItemPageViewState" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginHorizontal="30dp"
+        android:gravity="@{pageViewState.layoutGravity}">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{pageViewState.messageSenderName}"
+            android:textSize="14sp"
+            android:gravity="@{pageViewState.senderNameGravity}"
+            android:textColor="@{pageViewState.userNameTextColor(context)}"
+            android:fontFamily="@font/montserrat_semi_bold"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/textMessageBubble"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:orientation="vertical"
+                android:visibility="@{pageViewState.textBubbleVisibility}"
+                android:background="@{pageViewState.messageBackground(context)}">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    android:paddingHorizontal="10dp"
+                    android:text="@{pageViewState.text}"
+                    android:textColor="@{pageViewState.textColor(context)}"
+                    android:gravity="top"
+                    android:textSize="15sp"
+                    android:fontFamily="@font/gotham_book"
+                    android:lineSpacingExtra="3sp"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_gravity="end"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="16dp"
+                    android:layout_marginEnd="6dp"
+                    android:text="@{pageViewState.msgTime}"
+                    android:textColor="@{pageViewState.textColor(context)}"
+                    android:fontFamily="@font/gotham_book_italic"/>
+
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</layout>

@@ -7,6 +7,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.learnandroidproject.ui.welcome.friendsChatUsersFragment.FriendsChatUsersFragment
 import com.example.learnandroidproject.ui.welcome.generalChatUsersFragment.GeneralChatUsersFragment
+import com.example.learnandroidproject.ui.welcome.groupChatsFragment.GroupChatsFragment
 import com.example.learnandroidproject.ui.welcome.localChatUsersFragment.LocalChatUsersFragment
 
 class Adapter(fragmentManager: FragmentManager, lifecycle: Lifecycle): FragmentStateAdapter(fragmentManager, lifecycle)  {
@@ -17,9 +18,9 @@ class Adapter(fragmentManager: FragmentManager, lifecycle: Lifecycle): FragmentS
 
     override fun createFragment(position: Int): Fragment {
         return when(position){
-            0 -> FriendsChatUsersFragment()//GeneralChatUsersFragment()
-            1 -> LocalChatUsersFragment()
-            else -> GeneralChatUsersFragment()
+            0 -> GroupChatsFragment()
+            1 -> FriendsChatUsersFragment()
+            else -> GroupChatsFragment()
         }
     }
 }

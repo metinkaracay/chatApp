@@ -7,6 +7,7 @@ data class GroupInfo(
     @SerializedName("groupName") var groupName: String,
     @SerializedName("url") var groupPhoto: String,
     @SerializedName("sendTime") var messageTime: String,
-    @SerializedName("lastMsg") var lastMessage: String
+    @SerializedName("lastMsg") var lastMessage: String,
+    @SerializedName("isSeen") var isSeen: Boolean?
 ) {
 }

@@ -11,6 +11,7 @@ import com.example.learnandroidproject.common.SingleLiveEvent
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.Args
 import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
+import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.GroupInfo
 import com.example.learnandroidproject.ui.common.navigation.NavigationData
 import com.example.learnandroidproject.ui.welcome.chattingFragment.SocketHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -44,6 +45,7 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
 
     private var user: User = User(null, null, null, null, null, null, null,null,null)
     private var userInfo = UserInfo(0,"null","null","null",null,null,false)
+    private var groupInfo = GroupInfo(0,"null","null","null","null",null)
     private var clickedUserPhoto: String? = null
     private var isExitChatRoom: Boolean = false
     val userMessages: MutableMap<String, MutableList<Args>> = mutableMapOf()
@@ -127,6 +129,18 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     fun getUserInfo(): UserInfo {
         return userInfo
     }
+
+    fun fillGroupInfoData(id: Int,gName: String, photo: String) {
+        if (!clickedUsers.contains(id)){
+            clickedUsers.add(id)
+        }
+        groupInfo.groupId = id
+        groupInfo.groupName = gName
+        groupInfo.groupPhoto = photo
+    }
+    fun getGroupInfo(): GroupInfo {
+        return groupInfo
+    }
     fun getUser(): User {
         return user
     }
@@ -199,6 +213,9 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     }
     fun goToChattingPage() {
         _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.chattingFragment)
+    }
+    fun goToGroupChattingPage() {
+        _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.groupChattingFragment)
     }
     fun goToGenerelChatUsersFragment(){
         _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.generalChatUsersFragment)
