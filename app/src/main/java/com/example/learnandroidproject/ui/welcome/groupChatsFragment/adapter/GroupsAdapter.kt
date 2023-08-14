@@ -1,5 +1,6 @@
 package com.example.learnandroidproject.ui.welcome.groupChatsFragment.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -113,7 +114,7 @@ class GroupsAdapter : RecyclerView.Adapter<GroupsAdapter.GroupsItemViewHolder>()
 
         fun bind(group : GroupInfo, elapsedTime: String){
             with(binding){
-                pageViewState = GroupsItemPageViewState(group)
+                pageViewState = GroupsItemPageViewState(group,elapsedTime)
             }
         }
         fun itemSelect(position: Int) {

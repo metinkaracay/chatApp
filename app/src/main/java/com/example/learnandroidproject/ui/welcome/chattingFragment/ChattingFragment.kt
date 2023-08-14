@@ -1,5 +1,6 @@
 package com.example.learnandroidproject.ui.welcome.chattingFragment
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -30,6 +31,8 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val sharedPreferences = requireContext().getSharedPreferences("LoggedUserID", Context.MODE_PRIVATE)
+        val loggedUserId = sharedPreferences.getString("LoggedUserId","")
         welcomeViewModel.messageSingleLiveEvent.observe(viewLifecycleOwner){
             viewModel.fetchMessagesOnSocket(it)
         }
@@ -37,7 +40,7 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
         viewModel.user = user
         viewModel.getUserInfo()
         val senderUserMessage = welcomeViewModel.getLastSentMessage()
-        viewModel.sendingMessage = senderUserMessage!!
+        viewModel.sendingMessage = senderUserMessage!! // TODO burada grupla alakalı bir fark var
         handleViewOption()
         initResultsItemsRecyclerView()
         with(viewModel){
@@ -46,7 +49,8 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
                     pageViewState = it
                     executePendingBindings()
                 }
-                chattingMessagesAdapter.setItems(it.messages,it.userInfo.uId)
+                //chattingMessagesAdapter.setItems(it.messages,it.userInfo.uId) eski
+                chattingMessagesAdapter.setItems(it.messages,loggedUserId!!.toInt())
             }
             newMessageOnTheChatLiveData.observeNonNull(viewLifecycleOwner){
                 if (it){

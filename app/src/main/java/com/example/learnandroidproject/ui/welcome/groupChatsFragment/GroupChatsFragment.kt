@@ -1,6 +1,7 @@
 package com.example.learnandroidproject.ui.welcome.groupChatsFragment
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -28,6 +29,11 @@ class GroupChatsFragment : BaseFragment<FragmentGroupChatsBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val clickedGroup = welcomeViewModel.getGroupInfo() // Son tıklanan grup
+        if (welcomeViewModel.getExitChatRoomData()){
+            welcomeViewModel.exitToChatRoomFillData(false)
+            viewModel.updateSeenStateClickedUser(clickedGroup.groupId)
+        }
         recyclerAdapter = GroupsAdapter()
         initResultsItemsRecyclerView()
         handleViewOptions()
@@ -39,18 +45,29 @@ class GroupChatsFragment : BaseFragment<FragmentGroupChatsBinding>() {
                 }
                 recyclerAdapter.setItems(it.groups)
             }
+            listUpdated.observeNonNull(viewLifecycleOwner){
+                if (it){
+                    // mesajlaştığımız odadaki son mesajın görüldü durumunu kontrol etmek için
+                    Log.e("listupdateee","$it")
+                    viewModel.updateSeenStateClickedUser(clickedGroup.groupId)
+                }
+            }
+        }
+        welcomeViewModel.isGroupListRecording.observeNonNull(viewLifecycleOwner){
+            Log.e("gelen model fragmen","$it")
+            viewModel.listUpdate(it,requireContext())
         }
         adapterListener()
 
     }
 
     fun handleViewOptions(){
-
     }
 
     fun adapterListener(){
         recyclerAdapter.setItemClickListener {
             welcomeViewModel.fillGroupInfoData(it.groupId,it.groupName,it.groupPhoto)
+            viewModel.updateSeenInfo(it.groupId)
             welcomeViewModel.goToGroupChattingPage()
         }
     }

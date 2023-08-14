@@ -14,8 +14,8 @@ class ChattingMessagesAdapter : RecyclerView.Adapter<ChattingMessagesAdapter.Mes
 
     private var list: List<MessageItem> = emptyList()
     private var uId: Int? = null
-    fun setItems(page: List<MessageItem>,userId: Int) {
-        uId = userId
+    fun setItems(page: List<MessageItem>,loggedUserId: Int) {
+        uId = loggedUserId
         list = page
         notifyItemRangeInserted(list.size,10)
     }
@@ -67,7 +67,7 @@ class ChattingMessagesAdapter : RecyclerView.Adapter<ChattingMessagesAdapter.Mes
 
         fun bind(messages : MessageItem){
             with(binding){
-                pageViewState = MessageItemPageViewState(messages,uId)
+                pageViewState = MessageItemPageViewState(messages,uId!!)
             }
         }
     }

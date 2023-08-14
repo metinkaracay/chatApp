@@ -9,6 +9,8 @@ import com.example.learnandroidproject.data.local.model.dating.db.response.chatA
 import com.example.learnandroidproject.databinding.GroupMessageItemBinding
 import com.example.learnandroidproject.databinding.MessageItemBinding
 import com.example.learnandroidproject.ui.welcome.chattingFragment.adapter.MessageItemPageViewState
+import java.text.SimpleDateFormat
+import java.util.*
 
 class GroupChattingMessagesAdapter : RecyclerView.Adapter<GroupChattingMessagesAdapter.MessageItemViewHolder>() {
 
@@ -34,9 +36,33 @@ class GroupChattingMessagesAdapter : RecyclerView.Adapter<GroupChattingMessagesA
         return list.size
     }
 
+    fun formattedDate(date: String): String{
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy, HH:mm:ss", Locale.getDefault())
+
+        if (date.matches(Regex("\\d{2}:\\d{2}"))) {
+            return date
+        }
+
+        if (date != "null"){
+            try {
+                val messageTime = dateFormat.parse(date)
+
+                val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+                val currentTime = timeFormat.format(messageTime)
+
+                return currentTime
+            } catch (e: Exception) {
+                println("Geçersiz tarih formatı veya hata: ${e.message}")
+                return "Geçersiz"
+            }
+        }else{
+            return "mesaj yok"
+        }
+    }
+
     override fun onBindViewHolder(holder: GroupChattingMessagesAdapter.MessageItemViewHolder, position: Int) {
         val message = list[position]
-
+        list[position].messageTime = formattedDate(list[position].messageTime)
         holder.bind(message)
     }
 

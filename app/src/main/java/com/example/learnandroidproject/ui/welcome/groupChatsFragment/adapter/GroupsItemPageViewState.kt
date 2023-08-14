@@ -10,8 +10,8 @@ import com.example.learnandroidproject.R
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.GroupInfo
 
 data class GroupsItemPageViewState(
-    private val group: GroupInfo
-    //val elapsedTime: String
+    private val group: GroupInfo,
+    val messageElapsedTime: String
 ) {
 
     fun getUserName() = group.groupName
@@ -29,5 +29,5 @@ data class GroupsItemPageViewState(
     fun lastMessageFont(context: Context): Typeface? = if (group.isSeen == false) ResourcesCompat.getFont(context,
         R.font.montserrat_bold) else ResourcesCompat.getFont(context, R.font.montserrat_regular)
 
-    fun getElapsedTime() = group.messageTime
+    fun getElapsedTime() = messageElapsedTime
 }

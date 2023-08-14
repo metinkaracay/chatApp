@@ -7,9 +7,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.Args
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
+import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.GroupInfo
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
 import com.example.learnandroidproject.domain.remote.dating.DatingApiRepository
 import com.example.learnandroidproject.ui.base.BaseViewModel
+import com.example.learnandroidproject.ui.welcome.groupChattingFragment.GroupChattingPageViewState
 import com.github.michaelbull.result.get
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.socket.client.Ack
@@ -38,7 +40,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
     private val _newMessageOnTheChatLiveData: MutableLiveData<Boolean> = MutableLiveData()
     val newMessageOnTheChatLiveData: LiveData<Boolean> = _newMessageOnTheChatLiveData
 
-    var user: UserInfo = UserInfo(0,"","","null",null,null,true)
+    var user: UserInfo = UserInfo(0,"","","null",null,null,true) // Userchat ise buası dolar
     var pageId = 1
     var isNewChat = true
     var isMessageOver = false
@@ -106,7 +108,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
         if (message.isNotEmpty() && message.isNotBlank()){
 
             val messageJson = JSONObject()
-            messageJson.put("senderId", user.uId)
+            messageJson.put("receiverId", user.uId)
             messageJson.put("message", message)
 
             mSocket.emit("message",messageJson.toString(), Ack{ args ->

@@ -77,6 +77,7 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
         with(welcomeViewModel){
             isFriendsListRecording.observeNonNull(viewLifecycleOwner){
                 viewModel.clickedUsersList = welcomeViewModel.getClickedUsersList()
+                Log.e("listupdateee","$it")
 
                 viewModel.listUpdate(it,requireContext())
             }
@@ -99,7 +100,7 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
         with(recyclerAdapter){
             setItemClickListener{
                 welcomeViewModel.fillUserInfoData(it.uId,it.uName,it.uStatu,it.uPhoto)
-                viewModel.updateSeenInfo(it.uId)
+                //viewModel.updateSeenInfo(it.uId) gerek yok gibi
                 welcomeViewModel.goToChattingPage()
             }
             setPhotoItemClickListener {

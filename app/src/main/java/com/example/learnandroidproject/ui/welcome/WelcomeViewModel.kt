@@ -27,7 +27,9 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     private val _closePageSingleLiveEvent: SingleLiveEvent<Any?> = SingleLiveEvent()
     private val _additionalDataSingleLiveEvent: SingleLiveEvent<Boolean> = SingleLiveEvent()
     private val _messageSingleLiveEvent: SingleLiveEvent<Args> = SingleLiveEvent()
+    private val _groupMessageSingleLiveEvent: SingleLiveEvent<Args> = SingleLiveEvent()
     private val _isFriendsListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = MutableLiveData()
+    private val _isGroupListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = MutableLiveData()
     private val _isMessageSended: MutableLiveData<Any> = MutableLiveData()
 
     private val _testSingleLiveEvent: SingleLiveEvent<String> = SingleLiveEvent()
@@ -37,7 +39,9 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     val navigateUpSingleLiveEvent: LiveData<Any?> = _navigateUpSingleLiveEvent
     val additionalDataSingleLiveEvent: SingleLiveEvent<Boolean> = _additionalDataSingleLiveEvent
     val messageSingleLiveEvent: SingleLiveEvent<Args> = _messageSingleLiveEvent
+    val groupMessageSingleLiveEvent: SingleLiveEvent<Args> = _groupMessageSingleLiveEvent
     val isFriendsListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = _isFriendsListRecording
+    val isGroupListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = _isGroupListRecording
     val isMessageSended: MutableLiveData<Any> = _isMessageSended
 
     val testSingleLiveEvent: LiveData<String> = _testSingleLiveEvent
@@ -48,6 +52,7 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     private var groupInfo = GroupInfo(0,"null","null","null","null",null)
     private var clickedUserPhoto: String? = null
     private var isExitChatRoom: Boolean = false
+    val groupMessages: MutableMap<String, MutableList<Args>> = mutableMapOf()
     val userMessages: MutableMap<String, MutableList<Args>> = mutableMapOf()
     var sendedMessages: MutableMap<String, MutableList<Args>> = mutableMapOf()
     private var clickedUsers: MutableList<Int> = arrayListOf()
@@ -183,6 +188,36 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
                 }
                 viewModelScope.launch(Dispatchers.Main) {
                     _messageSingleLiveEvent.value = argsModel
+                }
+            }else{
+                Log.e("socketOn","else düştü")
+            }
+        }
+
+        mSocket.on("message:group"){ args ->
+            if (args[0] != null){
+                val json = JSONObject(args[0].toString())
+
+                val senderIdFromServer = json.getInt("senderId")
+                val message = json.getString("message")
+                val messageDate = json.getString("sendTime")
+                val receiverIdFromServer = json.getInt("receiverId")
+                val isSeen = json.getBoolean("isSeen")
+
+                val argsModel = Args(message, senderIdFromServer.toString(), receiverIdFromServer.toString(), messageDate ,isSeen.equals(Boolean))
+
+                if (groupMessages.containsKey(receiverIdFromServer.toString())) {
+                    Log.e("socketListener","ifedüştü")
+                    groupMessages[receiverIdFromServer.toString()]?.add(argsModel)
+                } else {
+                    Log.e("socketListener","elsedüştü")
+                    groupMessages[receiverIdFromServer.toString()] = mutableListOf(argsModel)
+                }
+                viewModelScope.launch(Dispatchers.Main) {
+                    _isGroupListRecording.value = groupMessages
+                }
+                viewModelScope.launch(Dispatchers.Main) {
+                    _groupMessageSingleLiveEvent.value = argsModel
                 }
             }else{
                 Log.e("socketOn","else düştü")
