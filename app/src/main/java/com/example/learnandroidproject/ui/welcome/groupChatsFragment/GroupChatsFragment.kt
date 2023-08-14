@@ -57,6 +57,13 @@ class GroupChatsFragment : BaseFragment<FragmentGroupChatsBinding>() {
             Log.e("gelen model fragmen","$it")
             viewModel.listUpdate(it,requireContext())
         }
+        welcomeViewModel.isNewGroupCreated.observeNonNull(viewLifecycleOwner){
+            if (it){
+                Log.e("gelen listeeeee","${welcomeViewModel.getNewGroupListResponse()}")
+                viewModel.fetchGroupListWithNewGroups(welcomeViewModel.getNewGroupListResponse())
+
+            }
+        }
         adapterListener()
 
     }

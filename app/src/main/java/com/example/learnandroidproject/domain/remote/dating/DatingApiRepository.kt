@@ -44,7 +44,7 @@ interface DatingApiRepository {
 
     suspend fun exit(): GenericResult<ResponseBody>
 
-    suspend fun createGroup(group: GroupData): GenericResult<ResponseBody>
+    suspend fun createGroup(group: GroupData): GenericResult<List<GroupInfo>>
 
     suspend fun register(user: User): GenericResult<ResponseBody>
 

@@ -51,7 +51,7 @@ interface DatingApiService {
     @POST("auth/logout")
     suspend fun exit(): ResponseBody
     @POST("auth/createGroup")
-    suspend fun createGroup(@Body group: GroupData): ResponseBody
+    suspend fun createGroup(@Body group: GroupData): List<GroupInfo>//ResponseBody
 
     @Headers("Content-Type: application/json")
     @POST("auth/register")

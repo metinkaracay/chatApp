@@ -1,16 +1,23 @@
 package com.example.learnandroidproject.ui.welcome.completeGroupCreate
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.learnandroidproject.common.isSuccess
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.GroupData
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
+import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.GroupInfo
 import com.example.learnandroidproject.domain.remote.dating.DatingApiRepository
 import com.example.learnandroidproject.ui.base.BaseViewModel
+import com.github.michaelbull.result.get
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONException
+import org.json.JSONObject
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,19 +29,24 @@ class CompleteGroupCreateViewModel @Inject constructor(private val datingApiRepo
     private val _errorMessagesLiveData: MutableLiveData<String> = MutableLiveData()
     val errorMessagesLiveData: LiveData<String> = _errorMessagesLiveData
 
-    private var group = GroupData("", arrayListOf())
+    private val _newGroupCreatedLiveData: MutableLiveData<List<GroupInfo>> = MutableLiveData()
+    val newGroupCreatedLiveData: LiveData<List<GroupInfo>> = _newGroupCreatedLiveData
 
-    init {
-        _completeGroupCreatePageViewStateLiveData.value = CompleteGroupCreatePageViewState()
+    var groupMembers: List<UserInfo> = arrayListOf()
+    private var group = GroupData("", arrayListOf())
+    var newGroupList: List<GroupInfo> = arrayListOf()
+
+    fun fillMembers(list: List<UserInfo>){
+        _completeGroupCreatePageViewStateLiveData.value = CompleteGroupCreatePageViewState(list)
     }
 
     fun createGroup(){
         viewModelScope.launch(Dispatchers.IO){
-            val result = datingApiRepository.createGroup(group)
-            if (result.isSuccess()){
-                _errorMessagesLiveData.postValue("Kayıt Başarılı")
-            }else{
-                _errorMessagesLiveData.postValue("Bağlantı hatası. Lütfen internetinizi kontrol edin")
+            datingApiRepository.createGroup(group).get()?.let {
+                viewModelScope.launch(Dispatchers.Main){
+                    newGroupList = it
+                    _newGroupCreatedLiveData.postValue(it)
+                }
             }
         }
     }

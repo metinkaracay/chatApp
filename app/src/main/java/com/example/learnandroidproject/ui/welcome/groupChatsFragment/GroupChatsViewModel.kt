@@ -48,6 +48,12 @@ class GroupChatsViewModel@Inject constructor(private val datingApiRepository: Da
         }
     }
 
+    fun fetchGroupListWithNewGroups(list: List<GroupInfo>){
+        groupList.clear()
+        groupList.addAll(list)
+        _groupChatsPageViewStateLiveData.value = GroupChatsPageViewState(groupList)
+    }
+
     fun updateSeenInfo(id: Int) {
         if (id != 0) {
             viewModelScope.launch(Dispatchers.IO) {
@@ -58,6 +64,8 @@ class GroupChatsViewModel@Inject constructor(private val datingApiRepository: Da
     fun listUpdate(userMessages: MutableMap<String, MutableList<Args>>, context: Context) {
         val sharedPreferences = context.getSharedPreferences("LoggedUserID", Context.MODE_PRIVATE)
         val loggedUserId = sharedPreferences.getString("LoggedUserId","")
+
+        val processedGroupIds = mutableListOf<String>()
 
         Log.e("gelen model ","$userMessages")
         for (i in 0 until groupList.size) {
@@ -82,57 +90,31 @@ class GroupChatsViewModel@Inject constructor(private val datingApiRepository: Da
                                 groupList[i].isSeen = message.seen
                             }
                             //currentMessages.add(message)
+                            processedGroupIds.add(groupId.toString())
                             userMessages1.clear()
                         }
                     }
                     counter++
                 }
             }
-            /*for (message in currentMessages) {
-                Log.e("userMessages1","$userMessages1")
-                userMessages1?.remove(message)
-            }*/
         }
-        /*// FriendList'te olmayan birinden mesaj alına yapılan işlemler
+        processedGroupIds.forEach {
+            userMessages.remove(it)
+        }
+        // FriendList'te olmayan birinden mesaj alına yapılan işlemler
         if (userMessages.isNotEmpty()) {
-            Log.e("userMessagesçökerten", "$userMessages")// sender
-            Log.e("userMessId", "${userMessages[loggedUserId]}")
-            var senderId: String? = null
-            var messageTime: String? = null
-            var lastMessage: String? = null
+            Log.e("userMessId", "${userMessages}")
 
-            val userMesReceiver = userMessages[loggedUserId]
-            //val userMessageSender = userMessages[clickedUserId.toString()] soketten kendi mesajımı dinlediğimde
-            Log.e("userMessages", "$userMesReceiver")
-            if (!userMesReceiver.isNullOrEmpty()) {
-                for (message in userMesReceiver) {
-                    senderId = message.senderId
-                    messageTime = formatMessageTime(message.messageTime)
-                    lastMessage = message.message
-                    userMesReceiver.clear()
-
-                }
-                viewModelScope.launch(Dispatchers.IO) {
-                    datingApiRepository.getUserProfile(senderId!!).get()?.let {
-                        withContext(Dispatchers.Main) {
-                            newUserInfo = UserInfo(senderId.toInt(), it.userName!!, it.status!!, it.photo!!, lastMessage, messageTime,false)
-                            if (groupList.contains(newUserInfo)) {
-                                Log.e("zaten vardı yine geldi", "$newUserInfo")
-                            } else {
-                                groupList.add(newUserInfo)
-                            }
-                            Log.e("userMesTEst", "çalışmış olmalı : ${groupList.size}")
-                            withContext(Dispatchers.Main) {
-                                groupList.sortByDescending { it.elapsedTime }
-                                _friendsChatUsersPageViewStateLiveData.postValue(
-                                    FriendsChatUsersPageViewState(groupList)
-                                )
-                            }
-                        }
+            viewModelScope.launch(Dispatchers.IO) {
+                datingApiRepository.fetchGroups().get()?.let {
+                    withContext(Dispatchers.Main) {
+                        _groupChatsPageViewStateLiveData.value = GroupChatsPageViewState(it)
+                        groupList.clear()
+                        groupList.addAll(it)
                     }
                 }
             }
-        }*/
+        }
 
         viewModelScope.launch(Dispatchers.IO) {
             withContext(Dispatchers.Main) {

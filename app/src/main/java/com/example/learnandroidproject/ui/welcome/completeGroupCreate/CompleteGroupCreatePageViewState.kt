@@ -4,8 +4,11 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
 import com.example.learnandroidproject.R
+import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
 
-class CompleteGroupCreatePageViewState {
+data class CompleteGroupCreatePageViewState(
+    val members: List<UserInfo>
+) {
 
     fun toolbarColor(context: Context): Int = ContextCompat.getColor(context, R.color.toolbar_color)
 

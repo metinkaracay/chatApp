@@ -31,6 +31,7 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     private val _isFriendsListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = MutableLiveData()
     private val _isGroupListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = MutableLiveData()
     private val _isMessageSended: MutableLiveData<Any> = MutableLiveData()
+    private val _isNewGroupCreated: SingleLiveEvent<Boolean> = SingleLiveEvent()
 
     private val _testSingleLiveEvent: SingleLiveEvent<String> = SingleLiveEvent()
 
@@ -43,6 +44,7 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     val isFriendsListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = _isFriendsListRecording
     val isGroupListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = _isGroupListRecording
     val isMessageSended: MutableLiveData<Any> = _isMessageSended
+    val isNewGroupCreated: SingleLiveEvent<Boolean> = _isNewGroupCreated
 
     val testSingleLiveEvent: LiveData<String> = _testSingleLiveEvent
 
@@ -59,6 +61,16 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     private var additionId: String? = null
     private var currentFragment: Int? = null
     private var selectedUsersForGroupChat: List<UserInfo> = arrayListOf()
+    private var newGroupListResponse: List<GroupInfo> = arrayListOf()// Yeni grup oluşturduğumuz
+
+    fun fillNewGroupListResponse(list: List<GroupInfo>){
+        _isNewGroupCreated.value = true
+        newGroupListResponse = list
+    }
+
+    fun getNewGroupListResponse(): List<GroupInfo>{
+        return newGroupListResponse
+    }
 
     fun fillSelectedUsersForGroupChat(userList: List<UserInfo>){
         selectedUsersForGroupChat = userList

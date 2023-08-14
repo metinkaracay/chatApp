@@ -9,15 +9,22 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.learnandroidproject.R
 import com.example.learnandroidproject.common.extensions.observeNonNull
 import com.example.learnandroidproject.databinding.FragmentCompleteGroupCreateBinding
 import com.example.learnandroidproject.ui.base.BaseFragment
 import com.example.learnandroidproject.ui.welcome.WelcomeViewModel
+import com.example.learnandroidproject.ui.welcome.completeGroupCreate.adapter.GroupMembersAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CompleteGroupCreateFragment : BaseFragment<FragmentCompleteGroupCreateBinding>() {
+
+    @Inject
+    lateinit var recyclerAdapter: GroupMembersAdapter
 
     private val viewModel: CompleteGroupCreateViewModel by viewModels()
     private val welcomeViewModel: WelcomeViewModel by activityViewModels()
@@ -26,19 +33,27 @@ class CompleteGroupCreateFragment : BaseFragment<FragmentCompleteGroupCreateBind
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.e("gelen liste","${welcomeViewModel.getSelectedUsersForGroupChat()}")
+        val users = welcomeViewModel.getSelectedUsersForGroupChat()
+        viewModel.groupMembers = users
+        viewModel.fillMembers(users)
         handleViewOption()
+        initResultsItemsRecyclerView()
         with(viewModel){
             completeGroupCreatePageViewStateLiveData.observeNonNull(viewLifecycleOwner){
                 with(binding){
                     pageViewState = it
                     executePendingBindings()
                 }
+                recyclerAdapter.setItems(it.members)
             }
             errorMessagesLiveData.observeNonNull(viewLifecycleOwner){
                 Toast.makeText(requireContext(),it,Toast.LENGTH_SHORT).show()
             }
+            newGroupCreatedLiveData.observeNonNull(viewLifecycleOwner){
+                welcomeViewModel.fillNewGroupListResponse(it)
+            }
         }
+        adapterListener()
     }
 
     fun handleViewOption(){
@@ -52,7 +67,24 @@ class CompleteGroupCreateFragment : BaseFragment<FragmentCompleteGroupCreateBind
             if (result){
                 viewModel.editDatas(welcomeViewModel.getSelectedUsersForGroupChat(),groupName)
             }
+        }
+    }
 
+    fun adapterListener(){
+        recyclerAdapter.setItemClickListener {
+            var members = viewModel.groupMembers.toMutableList()
+            members.remove(it)
+
+            viewModel.groupMembers = members.toList()
+        }
+    }
+
+    private fun initResultsItemsRecyclerView() {
+        with(binding.recyclerView) {
+            layoutManager = LinearLayoutManager(requireContext()).apply {
+                orientation = RecyclerView.VERTICAL
+            }
+            adapter = recyclerAdapter
         }
     }
 }

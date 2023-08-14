@@ -47,7 +47,7 @@ class DatingApiRepositoryImpl @Inject constructor(
 
     override suspend fun exit(): GenericResult<ResponseBody> = handleDatingRequest { datingApiService.exit() }
 
-    override suspend fun createGroup(group: GroupData): GenericResult<ResponseBody> = handleDatingRequest { datingApiService.createGroup(group) }
+    override suspend fun createGroup(group: GroupData): GenericResult<List<GroupInfo>> = handleDatingRequest { datingApiService.createGroup(group) }
 
     override suspend fun updateProfile(user: UpdateUser): GenericResult<ResponseBody> = handleDatingRequest { datingApiService.updateProfile(user) }
 
