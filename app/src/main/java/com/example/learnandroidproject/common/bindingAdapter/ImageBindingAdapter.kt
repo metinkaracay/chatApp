@@ -118,10 +118,14 @@ object ImageBindingAdapter {
             imageUri?.let { imageView?.setImageURI(it) }
         } else {
             if (imageUrl.isNullOrEmpty().not()) {
-                try {
-                    imageView?.let { Glide.with(imageView.context).load(imageUrl).into(it) }
-                } catch (e: Exception) {
-                    Log.e("exception_worked", "${e.message}")
+                if (imageUrl == "null"){
+                    imageView?.setImageResource(R.drawable.avatar)
+                }else{
+                    try {
+                        imageView?.let { Glide.with(imageView.context).load(imageUrl).into(it) }
+                    } catch (e: Exception) {
+                        Log.e("exception_worked", "${e.message}")
+                    }
                 }
             }
         }

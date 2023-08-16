@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -64,11 +65,23 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
                 Toast.makeText(requireContext(),it,Toast.LENGTH_SHORT).show()
             }
         }
+        with(welcomeViewModel){
+            raceDataLiveEvent.observeNonNull(viewLifecycleOwner){
+                // Socketten gelen yarışma verileri
+                viewModel.updateUserPoints(it)
+            }
+        }
         viewModel.fetchMessages(requireContext())
     }
 
     fun handleViewOptions(){
         binding.backArrow.setOnClickListener {
+            // Admin, etkinlik bitmeden çıkmak isterse çalışır
+            val result = viewModel.finishEvent(1)
+            if (result){
+                viewModel.startToRace(SocketHandler,"0")
+            }
+
             welcomeViewModel.exitToChatRoomFillData(true)
             welcomeViewModel.navigateUp()
         }
@@ -100,7 +113,24 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
             binding.recyclerView.scrollToPosition(viewModel.messageList.size - 1 )
         }
         binding.buttonRace.setOnClickListener {
-            viewModel.setRaceState(!viewModel.isRaceStart)
+            viewModel.setTimerPopUp(true)
+        }
+        binding.startButton.setOnClickListener {
+            val remainingTime = binding.timeEditText.text.toString()
+            val result = viewModel.checkRemainingTime(remainingTime)
+
+            if (result){
+                // Yarış başlatırken elimizde olması gereken parametreler
+                viewModel.frameLayoutWidth = binding.innerFrameLayout.width
+                viewModel.raceStatus = 0
+                viewModel.userImageViews = listOf(binding.user1, binding.user2, binding.user3)
+                viewModel.startToRace(SocketHandler,remainingTime)
+                viewModel.setTimerPopUp(false)
+
+                // Klavyeyi kapatma işlemi
+                val inputMethodManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
+            }
         }
     }
 

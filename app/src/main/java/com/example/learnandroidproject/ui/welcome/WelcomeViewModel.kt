@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.learnandroidproject.R
 import com.example.learnandroidproject.common.SingleLiveEvent
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.Args
+import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.RaceData
 import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.GroupInfo
@@ -33,6 +34,7 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     private val _isGroupListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = MutableLiveData()
     private val _isMessageSended: MutableLiveData<Any> = MutableLiveData()
     private val _isNewGroupCreated: SingleLiveEvent<Boolean> = SingleLiveEvent()
+    private val _raceDataLiveEvent: MutableLiveData<RaceData> = MutableLiveData()
 
     private val _testSingleLiveEvent: SingleLiveEvent<String> = SingleLiveEvent()
 
@@ -46,6 +48,7 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     val isGroupListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = _isGroupListRecording
     val isMessageSended: MutableLiveData<Any> = _isMessageSended
     val isNewGroupCreated: SingleLiveEvent<Boolean> = _isNewGroupCreated
+    val raceDataLiveEvent: MutableLiveData<RaceData> = _raceDataLiveEvent
 
     val testSingleLiveEvent: LiveData<String> = _testSingleLiveEvent
 
@@ -236,6 +239,25 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
             }else{
                 Log.e("socketOn","else düştü")
             }
+        }
+
+        mSocket.on("event"){args ->
+            if (args[0] != null){
+                val json = JSONObject(args[0].toString())
+
+                val userId = json.getInt("userId")
+                val point = json.getInt("itemCount")
+                val groupId = json.getInt("groupId")
+
+                val raceModel = RaceData(groupId,userId,point)
+
+                viewModelScope.launch(Dispatchers.Main){
+                    _raceDataLiveEvent.value = raceModel
+                }
+            }else{
+                Log.e("socketOn","Dineleme hatası")
+            }
+
         }
     }
     fun onSecondFragmentClicked() {

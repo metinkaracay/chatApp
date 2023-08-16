@@ -70,7 +70,6 @@ class RaceFragment : BaseFragment<FragmentRaceBinding>() {
             val userImageView = userImageViews[i]
             val initialX = userImageView.x
             val targetX = (binding.innerFrameLayout.width - userImageView.width) * positionPercent[i]
-            Log.e("userImageView","$userImageView")
             animateUserPosition(userImageView, initialX, targetX)
         }
     }

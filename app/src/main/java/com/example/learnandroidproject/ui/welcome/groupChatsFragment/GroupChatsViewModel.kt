@@ -110,6 +110,8 @@ class GroupChatsViewModel@Inject constructor(private val datingApiRepository: Da
                         _groupChatsPageViewStateLiveData.value = GroupChatsPageViewState(it)
                         groupList.clear()
                         groupList.addAll(it)
+                        groupList.sortByDescending { it.messageTime }
+                        _groupChatsPageViewStateLiveData.postValue(GroupChatsPageViewState(groupList))
                     }
                 }
             }

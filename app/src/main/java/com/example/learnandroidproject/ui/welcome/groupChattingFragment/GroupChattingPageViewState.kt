@@ -12,7 +12,10 @@ data class GroupChattingPageViewState(
     val group: GroupInfo,
     val messages: List<MessageItem>,
     var isAdmin: Boolean,
-    var isRaceStart: Boolean
+    var isRaceStart: Boolean,
+    var remainingTime: String = "",
+    var popUpVisibility: Boolean = false,
+    var users: List<String> = arrayListOf()
 ) {
     fun backArrow(context: Context) : Drawable? = ContextCompat.getDrawable(context, R.drawable.back_arrow_icon)
 
@@ -32,6 +35,53 @@ data class GroupChattingPageViewState(
     fun sendIcon(context: Context): Drawable? = ContextCompat.getDrawable(context, R.drawable.send_icon)
     fun adminButtonVisibility() = if (isAdmin && !isRaceStart) View.VISIBLE else View.GONE
     fun timerVisibility() = if (isRaceStart) View.VISIBLE else View.GONE
-    fun getTimer() = "100"
+    fun getTimer() = remainingTime
+    fun setTimerPopUp() = if(popUpVisibility) View.VISIBLE else View.GONE
     fun raceAnimation() = if (isRaceStart) View.VISIBLE else View.GONE
+
+    //fun getUser1Name() = users[0]
+    fun getUser1Name(): String {
+        return if (users.isNotEmpty()) {
+            users[0]
+        } else {
+            "User1"
+        }
+    }
+    //fun getUser2Name() = users[1]
+    fun getUser2Name(): String {
+        return if (users.isNotEmpty()) {
+            users[1]
+        } else {
+            "User2"
+        }
+    }
+    //fun getUser3Name() = users[2]
+    fun getUser3Name(): String {
+        return if (users.isNotEmpty()) {
+            users[2]
+        } else {
+            "User3"
+        }
+    }
+    fun userPhoto1(): String {
+        return if (users.isNotEmpty()) {
+            users[0]
+        } else {
+            "null"
+        }
+    }
+    fun userPhoto2(): String {
+        return if (users.isNotEmpty()) {
+            users[1]
+        } else {
+            "null"
+        }
+    }
+    fun userPhoto3(): String {
+        return if (users.isNotEmpty()) {
+            users[2]
+        } else {
+            "null"
+        }
+    }
 }
