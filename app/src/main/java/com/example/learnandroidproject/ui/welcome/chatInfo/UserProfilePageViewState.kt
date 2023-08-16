@@ -1,4 +1,4 @@
-package com.example.learnandroidproject.ui.welcome.userProfileFragment
+package com.example.learnandroidproject.ui.welcome.chatInfo
 
 import android.content.Context
 import android.graphics.drawable.Drawable

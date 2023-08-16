@@ -6,6 +6,7 @@ import com.example.learnandroidproject.data.local.model.dating.db.request.chatAp
 import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
 import com.example.learnandroidproject.data.local.model.dating.db.response.NewsBaseResponse
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
+import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.BaseGroupResponse
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.GroupInfo
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
 import okhttp3.MultipartBody
@@ -33,7 +34,7 @@ interface DatingApiService {
     suspend fun getMessagesFromPage(@Path("id") id: String,
                                     @Query("page") page: Int ) : List<MessageItem>
     @GET("chats/group/{id}")
-    suspend fun getGroupMessagesFromPage(@Path("id") id: String, @Query("page") page: Int) : List<MessageItem>
+    suspend fun getGroupMessagesFromPage(@Path("id") id: String, @Query("page") page: Int) : BaseGroupResponse// List<MessageItem>
     @GET("auth/profile/{id}")
     suspend fun getUserProfile(@Path("id") id: String): User
     @GET("chats/{id}/seen")

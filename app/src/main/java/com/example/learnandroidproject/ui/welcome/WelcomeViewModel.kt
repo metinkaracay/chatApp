@@ -12,6 +12,7 @@ import com.example.learnandroidproject.data.local.model.dating.db.request.chatAp
 import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.GroupInfo
+import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.GroupMember
 import com.example.learnandroidproject.ui.common.navigation.NavigationData
 import com.example.learnandroidproject.ui.welcome.chattingFragment.SocketHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -62,6 +63,7 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     private var currentFragment: Int? = null
     private var selectedUsersForGroupChat: List<UserInfo> = arrayListOf()
     private var newGroupListResponse: List<GroupInfo> = arrayListOf()// Yeni grup oluşturduğumuz
+    var membersList: List<GroupMember> = arrayListOf()
 
     fun fillNewGroupListResponse(list: List<GroupInfo>){
         _isNewGroupCreated.value = true
@@ -276,9 +278,15 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     fun goToUserProfileFragment(){
         _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.userProfileFragment)
     }
+    fun goToChatInfoFragment(){
+        _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.chatInfoFragment)
+    }
 
     fun goToSplashActivity(){
         _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.splashActivity)
+    }
+    fun goToRaceFragment(){
+        _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.raceFragment)
     }
     fun navigateUp() {
         _navigateUpSingleLiveEvent.call()

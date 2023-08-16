@@ -7,6 +7,7 @@ import com.example.learnandroidproject.data.local.model.dating.db.request.chatAp
 import com.example.learnandroidproject.data.local.model.dating.db.response.NewsBaseResponse
 import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
+import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.BaseGroupResponse
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.GroupInfo
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
 import okhttp3.MultipartBody
@@ -28,7 +29,7 @@ interface DatingApiRepository {
 
     suspend fun getMessagesFromPage(id:String, page: Int): GenericResult<List<MessageItem>>
 
-    suspend fun getGroupMessagesFromPage(id: String, page: Int): GenericResult<List<MessageItem>>
+    suspend fun getGroupMessagesFromPage(id: String, page: Int): GenericResult<BaseGroupResponse>//<List<MessageItem>>
 
     suspend fun getUserProfile(id: String): GenericResult<User>
 

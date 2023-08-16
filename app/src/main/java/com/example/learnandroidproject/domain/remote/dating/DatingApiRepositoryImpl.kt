@@ -9,6 +9,7 @@ import com.example.learnandroidproject.data.local.model.dating.db.response.NewsB
 import com.example.learnandroidproject.data.remote.api.dating.DatingApiService
 import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
+import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.BaseGroupResponse
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.GroupInfo
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
 import okhttp3.MultipartBody
@@ -33,7 +34,7 @@ class DatingApiRepositoryImpl @Inject constructor(
 
     override suspend fun getMessagesFromPage(id: String, page: Int): GenericResult<List<MessageItem>> = handleDatingRequest{ datingApiService.getMessagesFromPage(id,page)}
 
-    override suspend fun getGroupMessagesFromPage(id: String, page: Int): GenericResult<List<MessageItem>> = handleDatingRequest { datingApiService.getGroupMessagesFromPage(id,page) }
+    override suspend fun getGroupMessagesFromPage(id: String, page: Int): GenericResult<BaseGroupResponse> = handleDatingRequest { datingApiService.getGroupMessagesFromPage(id,page) }
 
     override suspend fun getUserProfile(id: String): GenericResult<User> = handleDatingRequest { datingApiService.getUserProfile(id) }
 

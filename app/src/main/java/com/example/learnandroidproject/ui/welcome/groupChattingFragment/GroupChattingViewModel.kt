@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.Args
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.GroupInfo
+import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.GroupMember
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
 import com.example.learnandroidproject.domain.remote.dating.DatingApiRepository
 import com.example.learnandroidproject.ui.base.BaseViewModel
@@ -45,14 +46,20 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
     var isNewChat = true
     var fetchSocketData = false // mesajları biriktirdiği için chat'e ilk girdiğinde son mesajı birkaç kez yazdırıyordu. Onu düzeltmek için kontrol
     var sendingMessage: MutableMap<String, MutableList<Args>> = mutableMapOf()
+    var members: List<GroupMember> = arrayListOf()
+
+    var isAdmin = false
+    var isRaceStart = false
 
     init {
-        _messageFetchRequestLiveData.postValue(true)
-        fetchMessages()
+        //_messageFetchRequestLiveData.postValue(true) // TODO geçici çözümü düzeltince bunu aç fetcten sil
+        //fetchMessages()
     }
 
-    fun fetchMessages(){
-        viewModelScope.launch(Dispatchers.IO){
+    fun fetchMessages(context: Context){
+        val sharedPreferences = context.getSharedPreferences("LoggedUserID", Context.MODE_PRIVATE)
+        val loggedUserId = sharedPreferences.getString("LoggedUserId","")
+        /*viewModelScope.launch(Dispatchers.IO){
             datingApiRepository.getGroupMessagesFromPage(group.groupId.toString(),pageId).get()?.let {
                 withContext(Dispatchers.Main){
                     _groupChattingPageViewStateLiveData.value = GroupChattingPageViewState(group,it)
@@ -61,11 +68,35 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
                     fetchSocketData = true
                 }
             }
+        }*/
+        viewModelScope.launch(Dispatchers.IO){
+            datingApiRepository.getGroupMessagesFromPage(group.groupId.toString(),pageId).get()?.let {
+                withContext(Dispatchers.Main){
+                    val messages = it.messageList
+                    members = it.userList
+
+                    for (i in 0 until members.size){
+                        if (members[i].uRole == "Admin"){
+                            Log.e("admin","admin Id, ${members[i].uName}, admin role ${members[i].uRole}")
+                            if (loggedUserId!!.toInt() == members[i].uId){
+                                isAdmin = true
+                            }
+                        }
+                    }
+
+                    _groupChattingPageViewStateLiveData.value = GroupChattingPageViewState(group,messages,isAdmin,isRaceStart)
+                    messageList = messages + messageList
+                    pageId++
+                    fetchSocketData = true
+                    Log.e("gelen members","$members")
+                    _messageFetchRequestLiveData.postValue(true)
+                }
+            }
         }
     }
 
     fun sendMessagesToPageViewState(list: List<MessageItem>){
-        _groupChattingPageViewStateLiveData.value = GroupChattingPageViewState(group,list)
+        _groupChattingPageViewStateLiveData.value = GroupChattingPageViewState(group,list,isAdmin,isRaceStart)
         if (!list.isNullOrEmpty()){
             isNewChat = false
         }
@@ -130,5 +161,11 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
         }else{
             _errorMessageLiveData.postValue("Lütfen Bir Mesaj Girin")
         }
+    }
+
+    fun setRaceState(state: Boolean){
+        Log.e("gelen race state","$state")
+        isRaceStart = state
+        _groupChattingPageViewStateLiveData.value = _groupChattingPageViewStateLiveData.value?.copy(isRaceStart = isRaceStart)
     }
 }

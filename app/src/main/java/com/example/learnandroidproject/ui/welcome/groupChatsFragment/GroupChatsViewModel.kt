@@ -67,7 +67,6 @@ class GroupChatsViewModel@Inject constructor(private val datingApiRepository: Da
 
         val processedGroupIds = mutableListOf<String>()
 
-        Log.e("gelen model ","$userMessages")
         for (i in 0 until groupList.size) {
             val groupId = groupList[i].groupId
             var userMessages1 = userMessages[groupId.toString()] //soketten kendi mesajımı dinlediğimde

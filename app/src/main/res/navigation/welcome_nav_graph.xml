@@ -55,7 +55,7 @@
         android:label="GeneralChatUsersFragment" />
     <fragment
         android:id="@+id/userProfileFragment"
-        android:name="com.example.learnandroidproject.ui.welcome.userProfileFragment.UserProfileFragment"
+        android:name="com.example.learnandroidproject.ui.welcome.chatInfo.UserProfileFragment"
         android:label="UserProfileFragment" />
     <activity
         android:id="@+id/splashActivity"
@@ -77,4 +77,12 @@
         android:id="@+id/groupChattingFragment"
         android:name="com.example.learnandroidproject.ui.welcome.groupChattingFragment.GroupChattingFragment"
         android:label="GroupChattingFragment" />
+    <fragment
+        android:id="@+id/chatInfoFragment"
+        android:name="com.example.learnandroidproject.ui.welcome.chatInfo.ChatInfoFragment"
+        android:label="ChatInfoFragment" />
+    <fragment
+        android:id="@+id/raceFragment"
+        android:name="com.example.learnandroidproject.ui.welcome.testRace.RaceFragment"
+        android:label="RaceFragment" />
 </navigation>

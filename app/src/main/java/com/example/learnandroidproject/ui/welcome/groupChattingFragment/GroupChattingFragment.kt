@@ -64,6 +64,7 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
                 Toast.makeText(requireContext(),it,Toast.LENGTH_SHORT).show()
             }
         }
+        viewModel.fetchMessages(requireContext())
     }
 
     fun handleViewOptions(){
@@ -78,10 +79,13 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
 
             welcomeViewModel.fillTestSingleEvent(message)
         }
+        binding.groupInfo.setOnClickListener {
+            welcomeViewModel.goToChatInfoFragment()
+        }
         viewModel.messageFetchRequestLiveData.observe(viewLifecycleOwner){
             if (it){
                 binding.swipeRefreshLayout.setOnRefreshListener {
-                    viewModel.fetchMessages()
+                    viewModel.fetchMessages(requireContext())
                     binding.swipeRefreshLayout.isRefreshing = false
                 }
             }else{
@@ -90,9 +94,13 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
                     Toast.makeText(requireContext(),"Tüm Mesajlar Yüklendi", Toast.LENGTH_SHORT).show()
                 }
             }
+            welcomeViewModel.membersList = viewModel.members // TODO geçici çözüm
         }
         binding.editText.setOnClickListener {
             binding.recyclerView.scrollToPosition(viewModel.messageList.size - 1 )
+        }
+        binding.buttonRace.setOnClickListener {
+            viewModel.setRaceState(!viewModel.isRaceStart)
         }
     }
 

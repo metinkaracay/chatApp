@@ -1,10 +1,9 @@
-package com.example.learnandroidproject.ui.welcome.userProfileFragment
+package com.example.learnandroidproject.ui.welcome.chatInfo
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
 import com.example.learnandroidproject.domain.remote.dating.DatingApiRepository
 import com.example.learnandroidproject.ui.base.BaseViewModel
 import com.github.michaelbull.result.get
@@ -21,7 +20,6 @@ class UserProfileViewModel @Inject constructor(private val datingApiRepository: 
     val userProfilePageViewStateLiveData: LiveData<UserProfilePageViewState> = _userProfilePageViewStateLiveData
 
     fun fetchUserData(userId: String){
-        Log.e("FetchUserData","$userId")
         viewModelScope.launch(Dispatchers.IO){
             datingApiRepository.getUserProfile(userId).get()?.let {
                 withContext(Dispatchers.Main){

@@ -17,6 +17,10 @@
     <dimen name="text_size_xxxxxlarge">64sp</dimen>
     <dimen name="text_size_xxxxxxlarge">72sp</dimen>
 
+    <dimen name="user_image_size">30dp</dimen>
+    <dimen name="user_image_margin">10dp</dimen>
+
+
     <dimen name="dimen_8dp">8dp</dimen>
     <dimen name="dimen_12dp">12dp</dimen>
     <dimen name="dimen_16dp">16dp</dimen>
