@@ -70,7 +70,7 @@
                 android:id="@+id/tabInternet"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Genel"
+                android:text="Gruplar"
                 android:textSize="17sp"
                 android:layout_marginTop="4dp"
                 android:layout_marginEnd="40dp"
@@ -81,7 +81,7 @@
                 android:id="@+id/tabLocal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Yerel"
+                android:text="Kişisel"
                 android:layout_marginTop="4dp"
                 android:textSize="17sp"
                 android:fontFamily="@font/gotham_book"
@@ -94,7 +94,7 @@
         android:layout_width="58dp"
         android:layout_height="5dp"
         android:background="@drawable/tab_indicator"
-        android:translationX="370px"/>
+        android:translationX="340px"/>
 
         <FrameLayout
             android:layout_width="match_parent"

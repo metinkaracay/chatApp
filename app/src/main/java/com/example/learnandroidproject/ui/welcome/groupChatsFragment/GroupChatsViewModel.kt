@@ -78,17 +78,15 @@ class GroupChatsViewModel@Inject constructor(private val datingApiRepository: Da
                 for (message in userMessages1) {
                     // Bir kullanıcı birden fazla kez mesaj attığında biriktiriyor. Mapin son elemanını almak için kullanıyoruz burayı
                     if (counter == listSize - 1) {
-                        val currentTime = formatMessageTime(message.messageTime)
                         Log.e("Messagefriends", "Sender: ${message.senderId}, Receiver: ${message.receiverId}, Content: ${message.message}, Date: ${message.messageTime}, Seen: ${message.seen}")
                         if (groupList[i].groupId.toString() == message.receiverId) {
                             groupList[i].lastMessage = message.message
-                            groupList[i].messageTime = currentTime
+                            groupList[i].messageTime = message.messageTime
                             if (loggedUserId == message.senderId){
                                 groupList[i].isSeen == true
                             }else{
                                 groupList[i].isSeen = message.seen
                             }
-                            //currentMessages.add(message)
                             processedGroupIds.add(groupId.toString())
                             userMessages1.clear()
                         }
@@ -119,6 +117,7 @@ class GroupChatsViewModel@Inject constructor(private val datingApiRepository: Da
 
         viewModelScope.launch(Dispatchers.IO) {
             withContext(Dispatchers.Main) {
+                Log.e("friendlissst","$groupList")
                 groupList.sortByDescending { it.messageTime }
                 _groupChatsPageViewStateLiveData.postValue(GroupChatsPageViewState(groupList))
             }
@@ -134,16 +133,5 @@ class GroupChatsViewModel@Inject constructor(private val datingApiRepository: Da
                 _listUpdated.postValue(false)
             }
         }
-    }
-    // Sunucudan gelen mesaj tarihlerini client için uygun formata çevirir
-    fun formatMessageTime(messageTime: String): String{
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy, HH:mm:ss", Locale.getDefault())
-
-        val messageTime = dateFormat.parse(messageTime)
-
-        val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-        val currentTime = timeFormat.format(messageTime)
-        Log.e("friendsFormatTime","$currentTime")
-        return currentTime
     }
 }

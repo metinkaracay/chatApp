@@ -101,10 +101,10 @@ class BaseChatRoomsFragment : BaseFragment<FragmentBaseChatRoomsBinding>() {
 
         if(tabId == 0){
 
-            binding.tabInternet.textSize = 24f
+            binding.tabInternet.textSize = 20f
             binding.tabInternet.setTextColor(ContextCompat.getColor(requireContext(), R.color.register_title_color))
             binding.tabInternet.typeface = ResourcesCompat.getFont(requireContext(), R.font.gotham_black)
-            binding.scrollLine.x = 350f
+            binding.scrollLine.x = 320f
 
             //Diğer sekmenin özelliklerini düzeltir
             binding.tabLocal.textSize = 17f
@@ -113,10 +113,10 @@ class BaseChatRoomsFragment : BaseFragment<FragmentBaseChatRoomsBinding>() {
 
         }else if(tabId == 1){
 
-            binding.tabLocal.textSize = 24f
+            binding.tabLocal.textSize = 20f
             binding.tabLocal.setTextColor(ContextCompat.getColor(requireContext(), R.color.register_title_color))
             binding.tabLocal.typeface = ResourcesCompat.getFont(requireContext(), R.font.gotham_black)
-            binding.scrollLine.x = 588f
+            binding.scrollLine.x = 610f
 
             //Diğer sekmenin özelliklerini düzeltir
             binding.tabInternet.textSize = 17f

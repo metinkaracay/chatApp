@@ -31,9 +31,8 @@ class ChatInfoFragment : BaseFragment<FragmentChatInfoBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         handleViewOption()
-        //val user = welcomeViewModel.getUserInfo()
         val group = welcomeViewModel.getGroupInfo()
-        val members = welcomeViewModel.membersList // TODO geçici çözüm2
+        val members = welcomeViewModel.membersList
         initResultsItemsRecyclerView()
         with(viewModel){
             chatInfoPageViewStateLiveData.observeNonNull(viewLifecycleOwner){

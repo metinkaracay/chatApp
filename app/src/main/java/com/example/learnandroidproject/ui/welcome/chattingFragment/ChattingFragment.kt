@@ -86,9 +86,6 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
 
             welcomeViewModel.fillTestSingleEvent(message)
         }
-        binding.userInfo.setOnClickListener{
-            welcomeViewModel.goToUserProfileFragment()
-        }
         viewModel.messageFetchRequestLiveData.observe(viewLifecycleOwner){
             if (it){
                 binding.swipeRefreshLayout.setOnRefreshListener {

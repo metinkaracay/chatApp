@@ -199,7 +199,7 @@
                 android:layout_marginEnd="20dp">
 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/user1"
+                    android:id="@+id/user3"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_gravity="center_vertical"
@@ -210,7 +210,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:scaleType="centerCrop"
-                        imageUrl="@{pageViewState.userPhoto1}"/>
+                        imageUrl="@{pageViewState.userPhoto3}"/>
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
@@ -229,7 +229,7 @@
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/user3"
+                    android:id="@+id/user1"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_gravity="center_vertical"
@@ -240,7 +240,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:scaleType="centerCrop"
-                        imageUrl="@{pageViewState.userPhoto3}"/>
+                        imageUrl="@{pageViewState.userPhoto1}"/>
                 </androidx.cardview.widget.CardView>
             </FrameLayout>
 

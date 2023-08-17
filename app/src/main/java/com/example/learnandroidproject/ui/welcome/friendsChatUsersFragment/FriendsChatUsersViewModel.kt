@@ -93,12 +93,12 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
                 val listSize = userMessages1.size
                 for (message in userMessages1) {
                     if (counter == listSize - 1) {
-                        val currentTime = formatMessageTime(message.messageTime)
+                        //val currentTime = formatMessageTime(message.messageTime)
                         Log.e("Messagefriends", "Sender1: ${message.senderId}, Receiver: ${message.receiverId}, Content: ${message.message}, Date: ${message.messageTime}, Seen: ${message.seen}")
 
                         if (friendList[i].uId.toString() == message.receiverId) {
                             friendList[i].lastMessage = message.message
-                            friendList[i].elapsedTime = currentTime
+                            friendList[i].elapsedTime = message.messageTime
                             friendList[i].seen = true
                             userMessages1.clear()
                         }
@@ -139,11 +139,11 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
                 for (message in userMessages2) {
                     // Bir kullanıcı birden fazla kez mesaj attığında biriktiriyor. Mapin son elemanını almak için kullanıyoruz burayı
                     if (counter == listSize - 1) {
-                        val currentTime = formatMessageTime(message.messageTime)
+                        //val currentTime = formatMessageTime(message.messageTime)
                         Log.e("Messagefriends", "Sender: ${message.senderId}, Receiver: ${message.receiverId}, Content: ${message.message}, Date: ${message.messageTime}, Seen: ${message.seen}")
                         if (friendList[i].uId.toString() == message.senderId) {
                             friendList[i].lastMessage = message.message
-                            friendList[i].elapsedTime = currentTime
+                            friendList[i].elapsedTime = message.messageTime//currentTime
                             friendList[i].seen = message.seen
                             userMessages2.clear()
                         }
@@ -195,6 +195,8 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
 
         viewModelScope.launch(Dispatchers.IO) {
             withContext(Dispatchers.Main) {
+                Log.e("friendlissst","$friendList")
+
                 friendList.sortByDescending { it.elapsedTime }
                 _friendsChatUsersPageViewStateLiveData.postValue(FriendsChatUsersPageViewState(friendList))
             }

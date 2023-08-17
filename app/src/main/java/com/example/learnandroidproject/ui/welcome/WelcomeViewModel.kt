@@ -1,6 +1,7 @@
 package com.example.learnandroidproject.ui.welcome
 
 import android.content.Context
+import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -296,9 +297,6 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     }
     fun goToCompleteGroupFragment(){
         _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.completeGroupCreateFragment)
-    }
-    fun goToUserProfileFragment(){
-        _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.userProfileFragment)
     }
     fun goToChatInfoFragment(){
         _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.chatInfoFragment)

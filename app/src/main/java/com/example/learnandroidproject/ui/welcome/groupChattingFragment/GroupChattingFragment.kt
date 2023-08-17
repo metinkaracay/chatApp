@@ -1,11 +1,17 @@
 package com.example.learnandroidproject.ui.welcome.groupChattingFragment
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ValueAnimator
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.cardview.widget.CardView
+import androidx.core.view.doOnLayout
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,6 +37,8 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
     private val viewModel: GroupChattingViewModel by viewModels()
     private val welcomeViewModel: WelcomeViewModel by activityViewModels()
 
+    private var currentAnimation: ValueAnimator? = null
+
     override fun getLayoutResId(): Int = R.layout.fragment_group_chatting
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -42,7 +50,6 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
         }
         val group = welcomeViewModel.getGroupInfo()
         viewModel.group = group // Tıklanan grup bilgilerini çeker
-        Log.e("gelen grupp","$group")
         recyclerAdapter = GroupChattingMessagesAdapter()
         initResultsItemsRecyclerView()
         handleViewOptions()
@@ -61,9 +68,15 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
                     binding.recyclerView.scrollToPosition(this.messageList.size - 1)
                 }
             }
-            viewModel.errorMessageLiveData.observe(viewLifecycleOwner){
+            errorMessageLiveData.observe(viewLifecycleOwner){
                 Toast.makeText(requireContext(),it,Toast.LENGTH_SHORT).show()
             }
+            /*positionPercentsCalculatedLiveData.observeNonNull(viewLifecycleOwner){
+                if (it){
+                    Log.e("calculate","çalıştı")
+                    calculateLocation()
+                }
+            }*/
         }
         with(welcomeViewModel){
             raceDataLiveEvent.observeNonNull(viewLifecycleOwner){
@@ -72,6 +85,11 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
             }
         }
         viewModel.fetchMessages(requireContext())
+
+        binding.user1.doOnLayout {
+            viewModel.userImageViews = listOf(binding.user1, binding.user2, binding.user3)
+            viewModel.frameLayoutWidth = binding.innerFrameLayout.width
+        }
     }
 
     fun handleViewOptions(){
@@ -107,7 +125,8 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
                     Toast.makeText(requireContext(),"Tüm Mesajlar Yüklendi", Toast.LENGTH_SHORT).show()
                 }
             }
-            welcomeViewModel.membersList = viewModel.members // TODO geçici çözüm
+            // Grup Ayrıntılarına tıklandığında gruptaki kişileri görebilmesi için verileri yollar
+            welcomeViewModel.membersList = viewModel.members
         }
         binding.editText.setOnClickListener {
             binding.recyclerView.scrollToPosition(viewModel.messageList.size - 1 )
@@ -121,9 +140,8 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
 
             if (result){
                 // Yarış başlatırken elimizde olması gereken parametreler
-                viewModel.frameLayoutWidth = binding.innerFrameLayout.width
+
                 viewModel.raceStatus = 0
-                viewModel.userImageViews = listOf(binding.user1, binding.user2, binding.user3)
                 viewModel.startToRace(SocketHandler,remainingTime)
                 viewModel.setTimerPopUp(false)
 
@@ -132,6 +150,43 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
                 inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
             }
         }
+    }
+
+    fun calculateLocation(){
+        val userImageViews = listOf(binding.user1, binding.user2, binding.user3)
+
+        for (j in 0 until userImageViews.size) {
+
+            val cardView = userImageViews[j]
+            val initialX = cardView.x
+            val targetX = (binding.innerFrameLayout.width - cardView.width) * viewModel.userPositionPercentages[j]
+            Log.e("frameLAyout","${binding.innerFrameLayout.width}")
+            Log.e("frameLayout1","${cardView.width}")
+            animateUserPosition(cardView, initialX, targetX)
+        }
+    }
+
+    fun animateUserPosition(userImageView: CardView, initialX: Float, targetX: Float) {
+        Log.e("gelen imageView","$userImageView")
+        Log.e("gelen initialx","$initialX")
+        Log.e("gelen targetX","$targetX")
+        val animator = ValueAnimator.ofFloat(initialX, targetX)
+        animator.duration = 100
+        animator.interpolator = AccelerateDecelerateInterpolator()
+
+        animator.addUpdateListener { valueAnimator ->
+            val animatedValue = valueAnimator.animatedValue as Float
+            userImageView.x = animatedValue
+        }
+
+        animator.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                currentAnimation = null
+            }
+        })
+
+        currentAnimation = animator
+        animator.start()
     }
 
     private fun initResultsItemsRecyclerView() {
