@@ -29,7 +29,8 @@ class GroupsAdapter : RecyclerView.Adapter<GroupsAdapter.GroupsItemViewHolder>()
     }
     fun setItems(page: List<GroupInfo>) {
         list = page
-        notifyDataSetChanged()
+        notifyItemRangeChanged(0,list.size)
+        //notifyDataSetChanged()
     }
 
     fun formattedDate(date: String): String{
@@ -119,7 +120,7 @@ class GroupsAdapter : RecyclerView.Adapter<GroupsAdapter.GroupsItemViewHolder>()
         }
         fun itemSelect(position: Int) {
             binding.userItem.setOnClickListener {
-                val group = GroupInfo(list[position].groupId,list[position].groupName,list[position].groupPhoto,list[position].messageTime,list[position].lastMessage,null)
+                val group = GroupInfo(list[position].groupId,list[position].groupName,list[position].groupPhoto,list[position].messageTime,list[position].lastMessage,null, list[position].isEvent)
                 itemClickListener?.invoke(group)
             }
            /*binding.userPhoto.setOnClickListener {

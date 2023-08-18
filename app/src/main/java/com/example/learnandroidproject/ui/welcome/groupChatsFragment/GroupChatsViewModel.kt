@@ -124,6 +124,21 @@ class GroupChatsViewModel@Inject constructor(private val datingApiRepository: Da
         }
     }
 
+    fun refreshEventState(args: MutableMap<Int, Int>){
+
+        for (i in 0 until groupList.size){ // Event bitti groupList'i güncelle
+            var groupId = groupList[i].groupId
+            if (args[groupId] == 0){
+                val group = groupList.find { it.groupId == groupId }
+                group?.isEvent = true
+            }else if (args[groupId] == -1){ // Event bitti groupList'i güncelle
+                val group = groupList.find { it.groupId == groupId }
+                group?.isEvent = false
+            }
+        }
+        _groupChatsPageViewStateLiveData.postValue(GroupChatsPageViewState(groupList))
+        args.clear()
+    }
     // Bir chatten çıkıldığında o chati görüldü yapar
     fun updateSeenStateClickedUser(id: Int?){
         for (i in 0 until groupList.size){

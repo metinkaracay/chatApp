@@ -30,4 +30,8 @@ data class GroupsItemPageViewState(
         R.font.montserrat_bold) else ResourcesCompat.getFont(context, R.font.montserrat_regular)
 
     fun getElapsedTime() = messageElapsedTime
+
+    fun eventStateVisibility() = if (!group.isEvent) View.GONE else View.VISIBLE
+
+    fun raceIcon(context: Context): Drawable? = ContextCompat.getDrawable(context, R.drawable.race_flag_icon)
 }

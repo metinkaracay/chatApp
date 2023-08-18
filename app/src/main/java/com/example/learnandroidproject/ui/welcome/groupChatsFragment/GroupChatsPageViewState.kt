@@ -7,7 +7,7 @@ import androidx.core.content.ContextCompat
 import com.example.learnandroidproject.R
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.GroupInfo
 
-class GroupChatsPageViewState(
+data class GroupChatsPageViewState(
     val groups: List<GroupInfo>
 ) {
 

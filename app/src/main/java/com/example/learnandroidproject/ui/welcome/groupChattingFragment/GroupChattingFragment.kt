@@ -71,6 +71,10 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
             errorMessageLiveData.observe(viewLifecycleOwner){
                 Toast.makeText(requireContext(),it,Toast.LENGTH_SHORT).show()
             }
+            eventStateLiveData.observeNonNull(viewLifecycleOwner){
+                Log.e("giden args","$it")
+                welcomeViewModel.adminStartedEvent(it)
+            }
             /*positionPercentsCalculatedLiveData.observeNonNull(viewLifecycleOwner){
                 if (it){
                     Log.e("calculate","çalıştı")
@@ -81,7 +85,9 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
         with(welcomeViewModel){
             raceDataLiveEvent.observeNonNull(viewLifecycleOwner){
                 // Socketten gelen yarışma verileri
-                viewModel.updateUserPoints(it)
+                if (viewModel.group.groupId == it.groupId){
+                    viewModel.updateUserPoints(it)
+                }
             }
         }
         viewModel.fetchMessages(requireContext())
@@ -94,12 +100,6 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
 
     fun handleViewOptions(){
         binding.backArrow.setOnClickListener {
-            // Admin, etkinlik bitmeden çıkmak isterse çalışır
-            val result = viewModel.finishEvent(1)
-            if (result){
-                viewModel.startToRace(SocketHandler,"0")
-            }
-
             welcomeViewModel.exitToChatRoomFillData(true)
             welcomeViewModel.navigateUp()
         }

@@ -77,8 +77,8 @@ class BaseChatRoomsFragment : BaseFragment<FragmentBaseChatRoomsBinding>() {
 
     fun handleViewOption(socket: SocketHandler){
         binding.profile.setOnClickListener {
-            //welcomeViewModel.goToProfilePage()
-            welcomeViewModel.goToRaceFragment()
+            welcomeViewModel.goToProfilePage()
+            //welcomeViewModel.goToRaceFragment()
         }
         binding.exitButton.setOnClickListener {
             //showExitPopUpDialog(4)

@@ -26,6 +26,7 @@ import com.example.learnandroidproject.ui.welcome.chattingFragment.SocketHandler
 import com.github.michaelbull.result.get
 import com.google.android.material.imageview.ShapeableImageView
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.reactivex.rxjava3.core.Single
 import io.socket.client.Ack
 import kotlinx.coroutines.*
 import org.json.JSONObject
@@ -51,8 +52,11 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
     private val _errorMessageLiveData: MutableLiveData<String> = MutableLiveData()
     val errorMessageLiveData: LiveData<String> = _errorMessageLiveData
 
+    private val _eventStateLiveData: SingleLiveEvent<MutableMap<Int,Int>> = SingleLiveEvent()
+    val eventStateLiveData: LiveData<MutableMap<Int,Int>> = _eventStateLiveData
+
     var messageList: List<MessageItem> = arrayListOf()
-    var group: GroupInfo = GroupInfo(0,"","","null","null",false) // TODO seeni düzeltmen gerekebilir
+    var group: GroupInfo = GroupInfo(0,"","","null","null",true, false) // TODO seeni düzeltmen gerekebilir
     private var pageId = 1
     var isNewChat = true
     var fetchSocketData = false // mesajları biriktirdiği için chat'e ilk girdiğinde son mesajı birkaç kez yazdırıyordu. Onu düzeltmek için kontrol
@@ -73,6 +77,7 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
     private var userPoints: MutableMap<Int, Int> = mutableMapOf()
     var users: List<Int> = mutableListOf(0,0,0)
     var userPositionPercentages = mutableListOf<Float>()
+
 
     // sayaç
     private var countdownJob: Job? = null
@@ -100,24 +105,33 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
                     }
 
                     // Yarış varken odaya giren kullanıcıların yarışı izleyebilmesini sağlar
-                    if (isAdmin == false && raceDatas.isNotEmpty()){
+                    if (raceDatas.isNotEmpty()){
                         setRaceState(true)
                         startCountdown(raceRemainingTime.toString())
+                        setupUsersForSpectator(raceDatas)
                         Log.e("raceDatas","$raceDatas")
+                    }else{
+                        setRaceState(true)
+                        startCountdown(raceRemainingTime.toString())
                     }
 
-                    _groupChattingPageViewStateLiveData.value = GroupChattingPageViewState(group,messages,isAdmin,isRaceStart)
+
                     messageList = messages + messageList
-                    pageId++
                     fetchSocketData = true
                     _messageFetchRequestLiveData.postValue(true)
+                    if (pageId == 1){
+                        _groupChattingPageViewStateLiveData.value = GroupChattingPageViewState(group,messages,isAdmin,isRaceStart, isLoaded = true)
+                    }else{
+                        _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(messages = messageList)
+                    }
+                    pageId++
                 }
             }
         }
     }
 
     fun sendMessagesToPageViewState(list: List<MessageItem>){
-        _groupChattingPageViewStateLiveData.value = _groupChattingPageViewStateLiveData.value?.copy(messages = list)
+        _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(messages = list)
         if (!list.isNullOrEmpty()){
             isNewChat = false
         }
@@ -185,17 +199,6 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
         }
     }
 
-    fun finishEvent(statusCode: Int): Boolean{
-        // Adminse ve etkinlik bitmeden odadan çıkmaya çalışıyorsa etkinliği erken bitirir
-        if (isAdmin){
-            raceStatus = statusCode
-            cancelCountdown()
-        }else{
-            return false
-        }
-        return true
-    }
-
     fun startToRace(Socket: SocketHandler, remainingTime: String){
         val mSocket = Socket.getSocket()
 
@@ -217,6 +220,9 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
             if (ackReceiver == 0 && members.size > 3){
                 setRaceState(true)
                 startCountdown(remainingTime)
+                var model: MutableMap<Int,Int> = mutableMapOf()
+                model[group.groupId] = 0
+                _eventStateLiveData.postValue(model)
             }else if (members.size <= 3){
                 _errorMessageLiveData.postValue("Yarış başlatabilmek için siz hariç en az 3 üye daha olmalı")
             }else{
@@ -228,30 +234,70 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
     fun setRaceState(state: Boolean){
         isRaceStart = state
         viewModelScope.launch(Dispatchers.Main){
-            _groupChattingPageViewStateLiveData.value = _groupChattingPageViewStateLiveData.value?.copy(isRaceStart = isRaceStart)
+            _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(isRaceStart = isRaceStart)
         }
         setupUsers()
     }
 
     fun setTimerPopUp(state: Boolean){
         Log.e("gelen race state","$state")
-        _groupChattingPageViewStateLiveData.value = _groupChattingPageViewStateLiveData.value?.copy(popUpVisibility = state)
+        _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(popUpVisibility = state)
     }
 
     fun setupUsers() {
         userPoints.clear()
-        members.filter { it.uRole == "User" }.forEach { user ->
+        members.filter { it.uRole == "User" }.forEachIndexed { index, user ->
             userPoints[user.uId] = 0
         }
         Log.e("race_users","$userPoints")
     }
 
+    fun setupUsersForSpectator(dataset: List<RaceData>) {
+        userPoints.clear()
+
+        val membersWithoutAdmin = members.filter { it.uRole == "User" }
+        val datasetUserIds = dataset.map { it.userId }.toSet()
+        for (user in membersWithoutAdmin) {
+            val userId = user.uId
+            val point = if (datasetUserIds.contains(userId)) {
+                dataset.find { it.userId == userId }?.point ?: 0
+            } else {
+                0
+            }
+            userPoints[userId] = point
+        }
+        Log.e("race_users2","$userPoints")
+
+        Log.e("race_puanlar","${userPoints.values.toList()}")
+
+        val sortedUserPoints = userPoints.entries.sortedByDescending { it.value }
+        Log.e("sorted","$sortedUserPoints")
+
+        // En yüksek puana sahip ilk 3 kişiyi alıyor
+        val topThreeUsers = sortedUserPoints.take(3)
+
+        val topThreeUserIds = topThreeUsers.map { it.key }
+        Log.e("top_three_users", "$topThreeUserIds")
+        updateUsersPosition(topThreeUserIds)
+    }
+
     fun updateUserPoints(args: RaceData) {
         Log.e("race_args","$args")
         val userId = args.userId
-        val point = args.point ?: 0
+        val point = args.point
 
-        if (userPoints.containsKey(userId.toInt())) {
+        // Admin koptu yarışı bitir
+        if(args.userId == -1 && args.point == -1){
+            userPositionPercentages.clear()
+            _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(isRaceStart = false)
+        }else if (args.userId == 0){
+            setRaceState(true)
+            startCountdown(args.point.toString())
+        }
+
+        if (userPoints.containsKey(userId)) {
+            Log.e("userId","$userId")
+            Log.e("userId","$point")
             userPoints[userId] = point
         }
         Log.e("race_puanlar","${userPoints.values.toList()}")
@@ -268,8 +314,8 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
 
     private fun updateUsersPosition(topThreeUserIds: List<Int>) {
         var totalPoint = 0
-        userPositionPercentages = mutableListOf<Float>()
-        var userNamesList = mutableListOf<String>()
+        userPositionPercentages.clear()
+        var userPhotoList = mutableListOf<String>()
 
         for (i in 0 until topThreeUserIds.size){
             Log.e("race_total_öncesi","gelen : ${userPoints[topThreeUserIds[i]]}")
@@ -279,34 +325,41 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
         for (userId in topThreeUserIds) {
             val user = members.find { it.uId == userId }
             val photoUrl = user?.uPhoto ?: "null"
-            userNamesList.add(photoUrl)
+            userPhotoList.add(photoUrl)
         }
 
         for (userId in topThreeUserIds) {
-            val positionPercent = userPoints[userId]!!.toFloat() / totalPoint
+            val positionPercent = if (userPoints[userId]!!.toFloat() != 0.0f){
+                Log.e("mat kontrol","tanımsız değil")
+                userPoints[userId]!!.toFloat() / totalPoint
+            }else{
+                Log.e("mat kontrol","tanımsız")
+                0.0f
+            }
             userPositionPercentages.add(positionPercent)
             Log.e("race_user_percent","user: $userId,percent = $userPositionPercentages")
         }
 
         _positionPercentsCalculatedLiveData.postValue(true)
 
-        for (j in 0 until userImageViews.size) {
+        if (!userPositionPercentages.isNullOrEmpty()){
 
-            val cardView = userImageViews[j]
-            val initialX = cardView.x
-            Log.e("frameLAyout","${frameLayoutWidth}")
-            Log.e("frameLayout1","${cardView.width}")
-            Log.e("frameLayout2","${userPositionPercentages[j]}")
-            val targetX = (frameLayoutWidth - cardView.width) * userPositionPercentages[j]
-            animateUserPosition(cardView, initialX, targetX)
+            for (j in 0 until userImageViews.size) {
+
+                val cardView = userImageViews[j]
+                val initialX = cardView.x
+                Log.e("frameLAyout","${frameLayoutWidth}")
+                Log.e("frameLayout1","${cardView.width}")
+                val targetX = (frameLayoutWidth - cardView.width) * userPositionPercentages[j]
+                animateUserPosition(cardView, initialX, targetX)
+            }
         }
-        _groupChattingPageViewStateLiveData.value = _groupChattingPageViewStateLiveData.value?.copy(users = userNamesList.toList())
+        viewModelScope.launch(Dispatchers.Main){
+            _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(users = userPhotoList.toList())
+        }
     }
 
     private fun animateUserPosition(userImageView: CardView, initialX: Float, targetX: Float) {
-        Log.e("gelen imageView","$userImageView")
-        Log.e("gelen initialx","$initialX")
-        Log.e("gelen targetX","$targetX")
         val animator = ValueAnimator.ofFloat(initialX, targetX)
         animator.duration = 100
         animator.interpolator = AccelerateDecelerateInterpolator()
@@ -332,9 +385,15 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
         countdownJob = viewModelScope.launch(Dispatchers.IO) {
             for (i in remainingTime.toInt() downTo 0) {
                 withContext(Dispatchers.Main) {
-                    _groupChattingPageViewStateLiveData.value = _groupChattingPageViewStateLiveData.value?.copy(remainingTime = i.toString())
+                    _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(remainingTime = i.toString())
                 }
                 if (i == 0 ){
+                    // Yeni yarışma açmadan önce eldeki verileri sıfırlar
+                    //userPoints.clear()
+                    userPositionPercentages.clear()
+                    for (card in userImageViews){
+                        card.x = 0.0f // Userların cardlarını en başa çeker
+                    }
                     cancelCountdown()
                 }
                 delay(1000)
@@ -342,10 +401,9 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
         }
     }
     fun cancelCountdown() {
-        Log.e("countDowner","canceled")
         countdownJob?.cancel()
         viewModelScope.launch(Dispatchers.Main){
-            _groupChattingPageViewStateLiveData.value = _groupChattingPageViewStateLiveData.value?.copy(isRaceStart = false)
+            _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(isRaceStart = false)
         }
     }
 

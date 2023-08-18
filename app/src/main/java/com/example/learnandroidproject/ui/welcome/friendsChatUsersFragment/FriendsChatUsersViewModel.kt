@@ -93,7 +93,6 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
                 val listSize = userMessages1.size
                 for (message in userMessages1) {
                     if (counter == listSize - 1) {
-                        //val currentTime = formatMessageTime(message.messageTime)
                         Log.e("Messagefriends", "Sender1: ${message.senderId}, Receiver: ${message.receiverId}, Content: ${message.message}, Date: ${message.messageTime}, Seen: ${message.seen}")
 
                         if (friendList[i].uId.toString() == message.receiverId) {
@@ -139,7 +138,6 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
                 for (message in userMessages2) {
                     // Bir kullanıcı birden fazla kez mesaj attığında biriktiriyor. Mapin son elemanını almak için kullanıyoruz burayı
                     if (counter == listSize - 1) {
-                        //val currentTime = formatMessageTime(message.messageTime)
                         Log.e("Messagefriends", "Sender: ${message.senderId}, Receiver: ${message.receiverId}, Content: ${message.message}, Date: ${message.messageTime}, Seen: ${message.seen}")
                         if (friendList[i].uId.toString() == message.senderId) {
                             friendList[i].lastMessage = message.message
@@ -166,7 +164,7 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
             if (!userMesReceiver.isNullOrEmpty()) {
                 for (message in userMesReceiver) {
                     senderId = message.senderId
-                    messageTime = formatMessageTime(message.messageTime)
+                    messageTime = message.messageTime
                     lastMessage = message.message
                     userMesReceiver.clear()
 
@@ -216,7 +214,7 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
             var counter = 0
             for (message in userMessageSender){
                 if (counter == listSize - 1){
-                    messageTime = formatMessageTime(message.messageTime)
+                    messageTime =  message.messageTime
                     lastMessage = message.message
                     userMessageSender.remove(message)
                 }
@@ -250,16 +248,5 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
                 _listUpdated.postValue(false)
             }
         }
-    }
-    // Sunucudan gelen mesaj tarihlerini client için uygun formata çevirir
-    fun formatMessageTime(messageTime: String): String{
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy, HH:mm:ss", Locale.getDefault())
-
-        val messageTime = dateFormat.parse(messageTime)
-
-        val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-        val currentTime = timeFormat.format(messageTime)
-        Log.e("friendsFormatTime","$currentTime")
-        return currentTime
     }
 }

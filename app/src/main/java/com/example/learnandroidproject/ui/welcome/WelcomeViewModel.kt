@@ -36,6 +36,7 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     private val _isMessageSended: MutableLiveData<Any> = MutableLiveData()
     private val _isNewGroupCreated: SingleLiveEvent<Boolean> = SingleLiveEvent()
     private val _raceDataLiveEvent: MutableLiveData<RaceData> = MutableLiveData()
+    private val _groupEventRecording: MutableLiveData<MutableMap<Int, Int>> = MutableLiveData()
 
     private val _testSingleLiveEvent: SingleLiveEvent<String> = SingleLiveEvent()
 
@@ -50,17 +51,19 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     val isMessageSended: MutableLiveData<Any> = _isMessageSended
     val isNewGroupCreated: SingleLiveEvent<Boolean> = _isNewGroupCreated
     val raceDataLiveEvent: MutableLiveData<RaceData> = _raceDataLiveEvent
+    val groupEventRecording: MutableLiveData<MutableMap<Int, Int>> = _groupEventRecording
 
     val testSingleLiveEvent: LiveData<String> = _testSingleLiveEvent
 
 
     private var user: User = User(null, null, null, null, null, null, null,null,null)
     private var userInfo = UserInfo(0,"null","null","null",null,null,false)
-    private var groupInfo = GroupInfo(0,"null","null","null","null",null)
+    private var groupInfo = GroupInfo(0,"null","null","null","null",null,false)
     private var clickedUserPhoto: String? = null
     private var isExitChatRoom: Boolean = false
     val groupMessages: MutableMap<String, MutableList<Args>> = mutableMapOf()
     val userMessages: MutableMap<String, MutableList<Args>> = mutableMapOf()
+    val eventStates: MutableMap<Int, Int> = mutableMapOf()
     var sendedMessages: MutableMap<String, MutableList<Args>> = mutableMapOf()
     private var clickedUsers: MutableList<Int> = arrayListOf()
     private var additionId: String? = null
@@ -68,6 +71,12 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     private var selectedUsersForGroupChat: List<UserInfo> = arrayListOf()
     private var newGroupListResponse: List<GroupInfo> = arrayListOf()// Yeni grup oluşturduğumuz
     var membersList: List<GroupMember> = arrayListOf()
+
+    fun adminStartedEvent(map: MutableMap<Int, Int>){
+        viewModelScope.launch(Dispatchers.Main){
+            _groupEventRecording.value = map
+        }
+    }
 
     fun fillNewGroupListResponse(list: List<GroupInfo>){
         _isNewGroupCreated.value = true
@@ -153,13 +162,14 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
         return userInfo
     }
 
-    fun fillGroupInfoData(id: Int,gName: String, photo: String) {
+    fun fillGroupInfoData(id: Int,gName: String, photo: String, event: Boolean) {
         if (!clickedUsers.contains(id)){
             clickedUsers.add(id)
         }
         groupInfo.groupId = id
         groupInfo.groupName = gName
         groupInfo.groupPhoto = photo
+        groupInfo.isEvent = event
     }
     fun getGroupInfo(): GroupInfo {
         return groupInfo
@@ -252,8 +262,15 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
 
                 val raceModel = RaceData(groupId,userId,point)
 
+                if (userId == 0 || userId == -1){
+                    eventStates[groupId] = userId
+                }
+
                 viewModelScope.launch(Dispatchers.Main){
                     _raceDataLiveEvent.value = raceModel
+                }
+                viewModelScope.launch(Dispatchers.Main){
+                    _groupEventRecording.value = eventStates
                 }
             }else{
                 Log.e("socketOn","Dineleme hatası")

@@ -62,6 +62,10 @@ class GroupChatsFragment : BaseFragment<FragmentGroupChatsBinding>() {
                 viewModel.fetchGroupListWithNewGroups(welcomeViewModel.getNewGroupListResponse())
             }
         }
+        welcomeViewModel.groupEventRecording.observeNonNull(viewLifecycleOwner){
+            Log.e("gelen args","$it")
+            viewModel.refreshEventState(it)
+        }
         adapterListener()
 
     }
@@ -71,7 +75,7 @@ class GroupChatsFragment : BaseFragment<FragmentGroupChatsBinding>() {
 
     fun adapterListener(){
         recyclerAdapter.setItemClickListener {
-            welcomeViewModel.fillGroupInfoData(it.groupId,it.groupName,it.groupPhoto)
+            welcomeViewModel.fillGroupInfoData(it.groupId,it.groupName,it.groupPhoto,it.isEvent)
             viewModel.updateSeenInfo(it.groupId)
             welcomeViewModel.goToGroupChattingPage()
         }

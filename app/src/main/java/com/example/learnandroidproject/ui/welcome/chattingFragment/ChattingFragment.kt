@@ -49,7 +49,6 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
                     pageViewState = it
                     executePendingBindings()
                 }
-                //chattingMessagesAdapter.setItems(it.messages,it.userInfo.uId) eski
                 chattingMessagesAdapter.setItems(it.messages,loggedUserId!!.toInt())
             }
             newMessageOnTheChatLiveData.observeNonNull(viewLifecycleOwner){
