@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.example.learnandroidproject.R
+import com.example.learnandroidproject.common.extensions.dp
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.GroupInfo
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
 
@@ -17,7 +18,8 @@ data class GroupChattingPageViewState(
     var remainingTime: String = "",
     var popUpVisibility: Boolean = false,
     var isLoaded: Boolean = false,
-    var users: List<String> = arrayListOf()
+    var userPhoto: List<String> = arrayListOf(),
+    var loggedUserRank: Int = 4
 ) {
     fun loadingScreenVisibility() = if (!isLoaded) View.VISIBLE else View.GONE
 
@@ -48,24 +50,27 @@ data class GroupChattingPageViewState(
     fun raceAnimation() = if (!isRaceStart) View.GONE else View.VISIBLE
 
     fun userPhoto1(): String {
-        return if (users.isNotEmpty()) {
-            users[0]
+        return if (userPhoto.isNotEmpty()) {
+            userPhoto[0]
         } else {
             "null"
         }
     }
     fun userPhoto2(): String {
-        return if (users.isNotEmpty()) {
-            users[1]
+        return if (userPhoto.isNotEmpty()) {
+            userPhoto[1]
         } else {
             "null"
         }
     }
     fun userPhoto3(): String {
-        return if (users.isNotEmpty()) {
-            users[2]
+        return if (userPhoto.isNotEmpty()) {
+            userPhoto[2]
         } else {
             "null"
         }
     }
+    fun getUserStroke1() = if (loggedUserRank == 1) 2.dp else 0.dp
+    fun getUserStroke2() = if (loggedUserRank == 2) 2.dp else 0.dp
+    fun getUserStroke3() = if (loggedUserRank == 3) 2.dp else 0.dp
 }

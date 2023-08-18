@@ -223,12 +223,14 @@
                     android:layout_height="match_parent"
                     android:layout_marginEnd="20dp">
 
-                    <androidx.cardview.widget.CardView
+                    <com.google.android.material.card.MaterialCardView
                         android:id="@+id/user3"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginTop="10dp"
+                        app:strokeColor="@color/bronze_color"
+                        app:strokeWidth="@{pageViewState.userStroke3}"
                         app:cardCornerRadius="90dp">
 
                         <ImageView
@@ -236,14 +238,16 @@
                             android:layout_height="match_parent"
                             android:scaleType="centerCrop"
                             imageUrl="@{pageViewState.userPhoto3}"/>
-                    </androidx.cardview.widget.CardView>
+                    </com.google.android.material.card.MaterialCardView>
 
-                    <androidx.cardview.widget.CardView
+                    <com.google.android.material.card.MaterialCardView
                         android:id="@+id/user2"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginBottom="10dp"
+                        app:strokeColor="@color/silver_color"
+                        app:strokeWidth="@{pageViewState.userStroke2}"
                         app:cardCornerRadius="90dp">
 
                         <ImageView
@@ -251,14 +255,16 @@
                             android:layout_height="match_parent"
                             android:scaleType="centerCrop"
                             imageUrl="@{pageViewState.userPhoto2}"/>
-                    </androidx.cardview.widget.CardView>
+                    </com.google.android.material.card.MaterialCardView>
 
-                    <androidx.cardview.widget.CardView
+                    <com.google.android.material.card.MaterialCardView
                         android:id="@+id/user1"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginBottom="30dp"
+                        app:strokeColor="@color/gold_color"
+                        strokeWidth="@{pageViewState.userStroke1}"
                         app:cardCornerRadius="90dp">
 
                         <ImageView
@@ -266,7 +272,7 @@
                             android:layout_height="match_parent"
                             android:scaleType="centerCrop"
                             imageUrl="@{pageViewState.userPhoto1}"/>
-                    </androidx.cardview.widget.CardView>
+                    </com.google.android.material.card.MaterialCardView>
                 </FrameLayout>
 
                 <View
@@ -305,6 +311,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:hint="Süre giriniz"
+                        android:maxLength="5"
+                        android:imeOptions="actionDone"
                         android:inputType="number"/>
 
                     <androidx.cardview.widget.CardView

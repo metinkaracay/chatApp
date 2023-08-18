@@ -24,13 +24,9 @@ class GroupsAdapter : RecyclerView.Adapter<GroupsAdapter.GroupsItemViewHolder>()
     fun setItemClickListener(listener: (GroupInfo) -> Unit) {
         itemClickListener = listener
     }
-    fun setPhotoItemClickListener(listener: (String) -> Unit) {
-        photoIemClickListener = listener
-    }
     fun setItems(page: List<GroupInfo>) {
         list = page
         notifyItemRangeChanged(0,list.size)
-        //notifyDataSetChanged()
     }
 
     fun formattedDate(date: String): String{
@@ -123,9 +119,6 @@ class GroupsAdapter : RecyclerView.Adapter<GroupsAdapter.GroupsItemViewHolder>()
                 val group = GroupInfo(list[position].groupId,list[position].groupName,list[position].groupPhoto,list[position].messageTime,list[position].lastMessage,null, list[position].isEvent)
                 itemClickListener?.invoke(group)
             }
-           /*binding.userPhoto.setOnClickListener {
-                photoIemClickListener?.invoke(list[position].uPhoto)
-            }*/
         }
     }
 }

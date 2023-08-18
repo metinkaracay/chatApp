@@ -63,7 +63,6 @@ class GroupChatsFragment : BaseFragment<FragmentGroupChatsBinding>() {
             }
         }
         welcomeViewModel.groupEventRecording.observeNonNull(viewLifecycleOwner){
-            Log.e("gelen args","$it")
             viewModel.refreshEventState(it)
         }
         adapterListener()

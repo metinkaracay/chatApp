@@ -67,17 +67,13 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
 
     var isAdmin = false
     var isRaceStart = false
-    var timerPopUpVisibility = false
-    private var currentAnimation: ValueAnimator? = null //Fragmentta kontrol et
 
     // Yarışta sıralama hesaplamak ve animasyonu oynatabilmek için gerken değerler
-    //var userImageViews: List<ShapeableImageView> = arrayListOf()
     var userImageViews: List<CardView> = arrayListOf()
     var frameLayoutWidth = 0
     private var userPoints: MutableMap<Int, Int> = mutableMapOf()
     var users: List<Int> = mutableListOf(0,0,0)
     var userPositionPercentages = mutableListOf<Float>()
-
 
     // sayaç
     private var countdownJob: Job? = null
@@ -207,7 +203,6 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
         json.put("seconds", remainingTime.toInt())
         json.put("status", raceStatus)
 
-
         Log.e("gönderilen json","$json")
         mSocket.emit("event:status",json.toString(), Ack { args ->
 
@@ -216,7 +211,6 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
 
             val ackReceiver = json.get("status")
 
-            Log.e("gelen ack","$ackReceiver")
             if (ackReceiver == 0 && members.size > 3){
                 setRaceState(true)
                 startCountdown(remainingTime)
@@ -249,7 +243,7 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
         members.filter { it.uRole == "User" }.forEachIndexed { index, user ->
             userPoints[user.uId] = 0
         }
-        Log.e("race_users","$userPoints")
+        Log.e("race_users","$userPoints") // TODO burayı dene
     }
 
     fun setupUsersForSpectator(dataset: List<RaceData>) {
@@ -289,6 +283,7 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
         // Admin koptu yarışı bitir
         if(args.userId == -1 && args.point == -1){
             userPositionPercentages.clear()
+            cancelCountdown()
             _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(isRaceStart = false)
         }else if (args.userId == 0){
             setRaceState(true)
@@ -314,12 +309,26 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
 
     private fun updateUsersPosition(topThreeUserIds: List<Int>) {
         var totalPoint = 0
+        var loggedId = 0
         userPositionPercentages.clear()
         var userPhotoList = mutableListOf<String>()
 
         for (i in 0 until topThreeUserIds.size){
             Log.e("race_total_öncesi","gelen : ${userPoints[topThreeUserIds[i]]}")
             totalPoint += userPoints[topThreeUserIds[i]] ?: 0
+            if (loggedUserid == topThreeUserIds[i]){
+                loggedId = i+1
+            }
+        }
+        viewModelScope.launch(Dispatchers.IO){
+            withContext(Dispatchers.Main){
+
+                _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(loggedUserRank = loggedId)
+            }
+        }
+
+        viewModelScope.launch(Dispatchers.Main){
+            _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(loggedUserRank = loggedId)
         }
 
         for (userId in topThreeUserIds) {
@@ -342,41 +351,9 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
 
         _positionPercentsCalculatedLiveData.postValue(true)
 
-        if (!userPositionPercentages.isNullOrEmpty()){
-
-            for (j in 0 until userImageViews.size) {
-
-                val cardView = userImageViews[j]
-                val initialX = cardView.x
-                Log.e("frameLAyout","${frameLayoutWidth}")
-                Log.e("frameLayout1","${cardView.width}")
-                val targetX = (frameLayoutWidth - cardView.width) * userPositionPercentages[j]
-                animateUserPosition(cardView, initialX, targetX)
-            }
-        }
         viewModelScope.launch(Dispatchers.Main){
-            _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(users = userPhotoList.toList())
+            _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(userPhoto = userPhotoList.toList())
         }
-    }
-
-    private fun animateUserPosition(userImageView: CardView, initialX: Float, targetX: Float) {
-        val animator = ValueAnimator.ofFloat(initialX, targetX)
-        animator.duration = 100
-        animator.interpolator = AccelerateDecelerateInterpolator()
-
-        animator.addUpdateListener { valueAnimator ->
-            val animatedValue = valueAnimator.animatedValue as Float
-            userImageView.x = animatedValue
-        }
-
-        animator.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator) {
-                currentAnimation = null
-            }
-        })
-
-        currentAnimation = animator
-        animator.start()
     }
 
     fun startCountdown(remainingTime: String) {
@@ -384,8 +361,12 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
 
         countdownJob = viewModelScope.launch(Dispatchers.IO) {
             for (i in remainingTime.toInt() downTo 0) {
+                val minute = i / 60
+                val remainingSeconds = i % 60
+                val formattedTime = String.format("%02d:%02d", minute, remainingSeconds)
+                Log.e("Süreee","$minute:$remainingSeconds")
                 withContext(Dispatchers.Main) {
-                    _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(remainingTime = i.toString())
+                    _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(remainingTime = formattedTime)
                 }
                 if (i == 0 ){
                     // Yeni yarışma açmadan önce eldeki verileri sıfırlar
@@ -408,7 +389,7 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
     }
 
     fun checkRemainingTime(remainingTime: String): Boolean{
-        if (remainingTime.isNullOrEmpty()){
+        if (remainingTime.isNullOrEmpty() || remainingTime.toInt() == 0){
             _errorMessageLiveData.postValue("Süre Belirlemediniz")
             return false
         }else if(remainingTime.toInt() > 301){

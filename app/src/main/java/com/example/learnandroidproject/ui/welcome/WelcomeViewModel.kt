@@ -3,6 +3,7 @@ package com.example.learnandroidproject.ui.welcome
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,6 +19,7 @@ import com.example.learnandroidproject.data.local.model.dating.db.response.chatA
 import com.example.learnandroidproject.ui.common.navigation.NavigationData
 import com.example.learnandroidproject.ui.welcome.chattingFragment.SocketHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.socket.client.Socket
 import kotlinx.coroutines.*
 import org.json.JSONObject
 import javax.inject.Inject
@@ -275,6 +277,12 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
             }else{
                 Log.e("socketOn","Dineleme hatası")
             }
+
+        }
+
+        mSocket.on("disconnect"){reason ->
+            Log.e("Socket durumu","Socketten düştü")
+            Log.e("Socket durumu","reason : ${reason[0]}")
 
         }
     }

@@ -29,6 +29,9 @@
     <color name="toolbar_color">#F4EDDA</color>
     <color name="grey">#808080</color>
     <color name="send_message_color">#38A34A</color>
+    <color name="gold_color">#FFD700</color>
+    <color name="silver_color">#C0C0C0</color>
+    <color name="bronze_color">#CD7F32</color>
 
     <!-- Register -->
     <color name="register_title_color">#313154</color>

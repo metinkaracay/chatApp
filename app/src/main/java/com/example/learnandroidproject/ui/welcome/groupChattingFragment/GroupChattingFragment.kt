@@ -10,6 +10,7 @@ import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.activityViewModels
@@ -72,15 +73,14 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
                 Toast.makeText(requireContext(),it,Toast.LENGTH_SHORT).show()
             }
             eventStateLiveData.observeNonNull(viewLifecycleOwner){
-                Log.e("giden args","$it")
                 welcomeViewModel.adminStartedEvent(it)
             }
-            /*positionPercentsCalculatedLiveData.observeNonNull(viewLifecycleOwner){
+            positionPercentsCalculatedLiveData.observeNonNull(viewLifecycleOwner){
                 if (it){
                     Log.e("calculate","çalıştı")
                     calculateLocation()
                 }
-            }*/
+            }
         }
         with(welcomeViewModel){
             raceDataLiveEvent.observeNonNull(viewLifecycleOwner){
@@ -155,21 +155,18 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
     fun calculateLocation(){
         val userImageViews = listOf(binding.user1, binding.user2, binding.user3)
 
-        for (j in 0 until userImageViews.size) {
+        if (!viewModel.userPositionPercentages.isNullOrEmpty()){
+            for (j in 0 until userImageViews.size) {
 
-            val cardView = userImageViews[j]
-            val initialX = cardView.x
-            val targetX = (binding.innerFrameLayout.width - cardView.width) * viewModel.userPositionPercentages[j]
-            Log.e("frameLAyout","${binding.innerFrameLayout.width}")
-            Log.e("frameLayout1","${cardView.width}")
-            animateUserPosition(cardView, initialX, targetX)
+                val cardView = userImageViews[j]
+                val initialX = cardView.x
+                val targetX = (binding.innerFrameLayout.width - cardView.width) * viewModel.userPositionPercentages[j]
+                animateUserPosition(cardView, initialX, targetX)
+            }
         }
     }
 
-    fun animateUserPosition(userImageView: CardView, initialX: Float, targetX: Float) {
-        Log.e("gelen imageView","$userImageView")
-        Log.e("gelen initialx","$initialX")
-        Log.e("gelen targetX","$targetX")
+    private fun animateUserPosition(userImageView: CardView, initialX: Float, targetX: Float) {
         val animator = ValueAnimator.ofFloat(initialX, targetX)
         animator.duration = 100
         animator.interpolator = AccelerateDecelerateInterpolator()
@@ -184,7 +181,6 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
                 currentAnimation = null
             }
         })
-
         currentAnimation = animator
         animator.start()
     }
