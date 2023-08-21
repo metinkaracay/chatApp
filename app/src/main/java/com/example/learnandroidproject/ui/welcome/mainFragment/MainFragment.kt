@@ -18,7 +18,6 @@ import com.example.learnandroidproject.ui.welcome.WelcomeViewModel
 class MainFragment : BaseFragment<FragmentMainBinding>() {
 
     private val welcomeViewModel: WelcomeViewModel by activityViewModels()
-    private val splashViewModel: SplashViewModel by activityViewModels()
     private val viewModel: MainFragmentViewModel by viewModels()
 
     override fun getLayoutResId(): Int = R.layout.fragment_main

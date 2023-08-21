@@ -19,7 +19,10 @@ data class CreateGroupUserItemPageViewState(
 
     fun defaultPhoto(context: Context): Drawable? = if (selectedUsers.contains(user.uId)) ContextCompat.getDrawable(context, R.drawable.check_icon) else ContextCompat.getDrawable(context, R.drawable.avatar)
 
-    fun selectedPhotoVisibility() = if (user.uPhoto != "null") View.VISIBLE else View.GONE
+    fun selectedPhotoVisibility() = if (user.uPhoto != "null" && !selectedUsers.contains(user.uId)) View.VISIBLE else View.GONE
+
+    fun checkMark(context: Context) : Drawable? = ContextCompat.getDrawable(context, R.drawable.check_icon)
+    fun checkMarkVisibility() = if (selectedUsers.contains(user.uId)) View.VISIBLE else View.GONE
 
     fun checkBackgroundColor(context: Context): Int = ContextCompat.getColor(context, R.color.online_color)
 

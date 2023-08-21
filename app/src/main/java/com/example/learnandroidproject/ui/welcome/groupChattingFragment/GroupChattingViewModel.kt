@@ -61,6 +61,7 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
     var isNewChat = true
     var fetchSocketData = false // mesajları biriktirdiği için chat'e ilk girdiğinde son mesajı birkaç kez yazdırıyordu. Onu düzeltmek için kontrol
     var sendingMessage: MutableMap<String, MutableList<Args>> = mutableMapOf()
+    var senderUserName: MutableMap<Int, String> = mutableMapOf()
     var members: List<GroupMember> = arrayListOf()
     var loggedUserid = 0
     var raceStatus = 0
@@ -84,6 +85,7 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
     fun fetchMessages(context: Context){
         val sharedPreferences = context.getSharedPreferences("LoggedUserID", Context.MODE_PRIVATE)
         val loggedUserId = sharedPreferences.getString("LoggedUserId","")
+
         viewModelScope.launch(Dispatchers.IO){
             datingApiRepository.getGroupMessagesFromPage(group.groupId.toString(),pageId).get()?.let {
                 withContext(Dispatchers.Main){
@@ -101,12 +103,12 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
                     }
 
                     // Yarış varken odaya giren kullanıcıların yarışı izleyebilmesini sağlar
-                    if (raceDatas.isNotEmpty()){
+                    if (raceDatas.isNotEmpty() && raceRemainingTime > 0){
                         setRaceState(true)
                         startCountdown(raceRemainingTime.toString())
                         setupUsersForSpectator(raceDatas)
                         Log.e("raceDatas","$raceDatas")
-                    }else{
+                    }else if (raceRemainingTime > 0){
                         setRaceState(true)
                         startCountdown(raceRemainingTime.toString())
                     }
@@ -116,9 +118,13 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
                     fetchSocketData = true
                     _messageFetchRequestLiveData.postValue(true)
                     if (pageId == 1){
-                        _groupChattingPageViewStateLiveData.value = GroupChattingPageViewState(group,messages,isAdmin,isRaceStart, isLoaded = true)
+                        setMembersNameById()
+                        _groupChattingPageViewStateLiveData.value = GroupChattingPageViewState(group,messages,isAdmin,isRaceStart, isLoaded = true,membersNameList = senderUserName)
                     }else{
                         _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(messages = messageList)
+                        if (messages.isNullOrEmpty()){ // Son mesaj çekildikten sonra istek atmasını engeller
+                            isNewChat = false
+                        }
                     }
                     pageId++
                 }
@@ -126,11 +132,16 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
         }
     }
 
+    fun setMembersNameById(){
+        senderUserName.clear()
+
+        for (member in members) {
+            senderUserName[member.uId] = member.uName ?: ""
+        }
+    }
+
     fun sendMessagesToPageViewState(list: List<MessageItem>){
         _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(messages = list)
-        if (!list.isNullOrEmpty()){
-            isNewChat = false
-        }
     }
 
     fun fetchMessagesOnSocket(args: Args){
@@ -138,14 +149,12 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
         val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
         val currentTime = timeFormat.format(dateNow)
 
-        Log.e("mesaj geldi1","gelen son mesaj ${args}")
         if (group.groupId == args.receiverId.toInt() && fetchSocketData){
 
 
             val newMessage = MessageItem(args.message,args.senderId,args.receiverId,currentTime)
 
             viewModelScope.launch(Dispatchers.Main) {
-                Log.e("mesaj geldi2","gelen son mesaj ${args}")
 
                 _newMessageOnTheChatLiveData.postValue(true)
                 messageList = messageList + newMessage

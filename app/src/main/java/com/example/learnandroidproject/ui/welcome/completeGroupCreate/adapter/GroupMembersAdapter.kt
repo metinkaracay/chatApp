@@ -55,9 +55,9 @@ class GroupMembersAdapter : RecyclerView.Adapter<GroupMembersAdapter.MemberItemV
         fun itemSelect(position: Int) {
             binding.crossIcon.setOnClickListener {
                 val user = UserInfo(list[position].uId,list[position].uName,list[position].uStatu,list[position].uPhoto,null,null,true)
+                Log.e("tıklanan kişi","$user")
                 itemClickListener?.invoke(user)
             }
-
         }
     }
 }

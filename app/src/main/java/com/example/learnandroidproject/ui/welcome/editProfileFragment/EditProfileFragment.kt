@@ -56,8 +56,8 @@ class EditProfileFragment : BaseFragment<FragmentEditProfileBinding>() {
         }
         binding.saveButton.setOnClickListener {
             val statu = binding.status.text.toString()
-            val firstName = binding.firstName.text.toString()
-            val lastName = binding.lastName.text.toString()
+            val firstName = binding.firstName.text.toString().trim()
+            val lastName = binding.lastName.text.toString().trim()
             val age = binding.age.text.toString()
             val user = UpdateUser(statu,firstName,lastName,age)
 

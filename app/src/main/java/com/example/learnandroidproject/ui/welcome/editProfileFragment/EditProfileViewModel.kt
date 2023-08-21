@@ -57,12 +57,13 @@ class EditProfileViewModel @Inject constructor(private val datingApiRepository: 
         _editProfilePageViewStateLiveData.value = _editProfilePageViewStateLiveData.value?.copy(isEditting = isChanged)
     }
     fun checkFields(user: UpdateUser): Boolean{
+        val namesPattern = Regex("^[a-zA-ZÇçĞğİıÖöŞşÜü]+( [a-zA-ZÇçĞğİıÖöŞşÜü]+)*$")
+
 
         val userFields = listOf(
             user.uFirstName to "Ad",
             user.uLastName to "Soyad",
-            user.uStatus to "Durum",
-            user.uAge to "Yaş"
+            user.uStatus to "Durum"
         )
 
         for ((field, fieldName) in userFields) {
@@ -70,9 +71,13 @@ class EditProfileViewModel @Inject constructor(private val datingApiRepository: 
                 _errorMessageLiveData.value = "$fieldName Boş Bırakılamaz"
                 return false
             }
+            if (field.matches(namesPattern) == false){
+                _errorMessageLiveData.value = "$fieldName Sadece Alfabetik Karakterler İçerebilir"
+                return false
+            }
         }
 
-        if (user.uAge!!.toInt() !in 15..100) {
+        if (user.uAge.isNullOrEmpty() || user.uAge.toInt() !in 15..100) {
             _errorMessageLiveData.value = "Geçerli Bir Yaş Giriniz"
             return false
         }

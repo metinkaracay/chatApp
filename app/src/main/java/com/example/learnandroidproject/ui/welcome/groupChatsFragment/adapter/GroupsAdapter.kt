@@ -1,14 +1,11 @@
 package com.example.learnandroidproject.ui.welcome.groupChatsFragment.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.learnandroidproject.R
-import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.GroupInfo
-import com.example.learnandroidproject.databinding.FriendsUsersItemBinding
 import com.example.learnandroidproject.databinding.GroupItemBinding
 import java.text.SimpleDateFormat
 import java.util.*

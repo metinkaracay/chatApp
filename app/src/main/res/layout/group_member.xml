@@ -7,60 +7,44 @@
             name="pageViewState"
             type="com.example.learnandroidproject.ui.welcome.completeGroupCreate.adapter.GroupMemberPageViewState" />
     </data>
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:orientation="horizontal">
+        android:layout_height="80dp">
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:visibility="@{pageViewState.defaultPhotoVisibility}"
-                android:layout_gravity="center|start"
-                android:layout_marginStart="20dp"
-                app:cardCornerRadius="90dp">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@{pageViewState.userPhotoDefault(context)}"/>
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:visibility="@{pageViewState.selectedPhotoVisibility}"
-                android:layout_gravity="center|start"
-                android:layout_marginStart="20dp"
-                app:cardCornerRadius="90dp">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    imageUrl="@{pageViewState.userPhoto}"/>
-            </androidx.cardview.widget.CardView>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{pageViewState.userName}"
-                android:layout_gravity="center"
-                android:layout_marginEnd="30dp"
-                android:textSize="17sp"/>
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:visibility="@{pageViewState.selectedPhotoVisibility}"
+            android:layout_gravity="center|start"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            app:cardCornerRadius="90dp">
 
             <ImageView
-                android:id="@+id/crossIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@{pageViewState.cancelIcon(context)}"
-                android:layout_gravity="end|center"
-                android:layout_marginEnd="20dp"/>
-        </FrameLayout>
-    </LinearLayout>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                imageUrl="@{pageViewState.userPhoto}"/>
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/cardView"
+            android:text="@{pageViewState.userName}"
+            android:layout_gravity="center"
+            android:layout_marginTop="25dp"
+            android:layout_marginStart="10dp"
+            android:textSize="17sp"/>
+
+        <ImageView
+            android:id="@+id/crossIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@{pageViewState.cancelIcon(context)}"
+            android:layout_marginTop="25dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="20dp"/>
+    </RelativeLayout>
 </layout>

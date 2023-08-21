@@ -62,7 +62,7 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
                     pageViewState = it
                     executePendingBindings()
                 }
-                recyclerAdapter.setItems(it.messages,loggedUserId!!.toInt())
+                recyclerAdapter.setItems(it.messages,loggedUserId!!.toInt(),it.membersNameList)
             }
             newMessageOnTheChatLiveData.observeNonNull(viewLifecycleOwner){
                 if (it){
@@ -114,16 +114,13 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
             welcomeViewModel.goToChatInfoFragment()
         }
         viewModel.messageFetchRequestLiveData.observe(viewLifecycleOwner){
-            if (it){
-                binding.swipeRefreshLayout.setOnRefreshListener {
-                    viewModel.fetchMessages(requireContext())
-                    binding.swipeRefreshLayout.isRefreshing = false
-                }
-            }else{
-                if (!viewModel.isNewChat){
-                    binding.swipeRefreshLayout.isEnabled = false
-                    Toast.makeText(requireContext(),"Tüm Mesajlar Yüklendi", Toast.LENGTH_SHORT).show()
-                }
+            binding.swipeRefreshLayout.setOnRefreshListener {
+                viewModel.fetchMessages(requireContext())
+                binding.swipeRefreshLayout.isRefreshing = false
+            }
+            if (!viewModel.isNewChat){
+                binding.swipeRefreshLayout.isEnabled = false
+                Toast.makeText(requireContext(),"Tüm Mesajlar Yüklendi", Toast.LENGTH_SHORT).show()
             }
             // Grup Ayrıntılarına tıklandığında gruptaki kişileri görebilmesi için verileri yollar
             welcomeViewModel.membersList = viewModel.members

@@ -51,13 +51,17 @@ class CompleteGroupCreateViewModel @Inject constructor(private val datingApiRepo
         }
     }
 
-    fun editDatas(selectedUsers: List<UserInfo>, groupName: String){
+    fun editDatas(groupName: String){
         var userIds = arrayListOf<Int>()
-        for (i in 0 until selectedUsers.size){
-            userIds.add(selectedUsers[i].uId)
+        for (i in 0 until groupMembers.size){
+            userIds.add(groupMembers[i].uId)
         }
         group = GroupData(groupName,userIds)
-        createGroup()
+        if (groupMembers.size >= 2){
+            createGroup()
+        }else{
+            _errorMessagesLiveData.postValue("En az 2 kişi seçmelisiniz")
+        }
     }
 
     fun checkField(groupName: String): Boolean{

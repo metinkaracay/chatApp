@@ -1,5 +1,6 @@
 package com.example.learnandroidproject.ui.welcome.groupChattingFragment.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -15,11 +16,13 @@ import java.util.*
 class GroupChattingMessagesAdapter : RecyclerView.Adapter<GroupChattingMessagesAdapter.MessageItemViewHolder>() {
 
     private var list: List<MessageItem> = emptyList()
+    private var senderNamesById: MutableMap<Int,String> = mutableMapOf()
     private var loggedUserId: Int? = null
 
-    fun setItems(page: List<MessageItem>,userId: Int) {
+    fun setItems(page: List<MessageItem>,userId: Int, senders: MutableMap<Int,String>) {
         loggedUserId = userId
         list = page
+        senderNamesById = senders
         notifyItemRangeInserted(list.size,10)
     }
 
@@ -62,15 +65,17 @@ class GroupChattingMessagesAdapter : RecyclerView.Adapter<GroupChattingMessagesA
 
     override fun onBindViewHolder(holder: GroupChattingMessagesAdapter.MessageItemViewHolder, position: Int) {
         val message = list[position]
+        val senderName = senderNamesById[list[position].senderUser.toInt()]
+        Log.e("sender Name ","$senderName")
         list[position].messageTime = formattedDate(list[position].messageTime)
-        holder.bind(message)
+        holder.bind(message,senderName!!)
     }
 
     inner class MessageItemViewHolder(private var binding: GroupMessageItemBinding) : RecyclerView.ViewHolder(binding.root){
 
-        fun bind(messages : MessageItem){
+        fun bind(messages : MessageItem, senderName: String){
             with(binding){
-                pageViewState = GroupMessageItemPageViewState(messages,loggedUserId!!)
+                pageViewState = GroupMessageItemPageViewState(messages,loggedUserId!!,senderName)
             }
         }
     }

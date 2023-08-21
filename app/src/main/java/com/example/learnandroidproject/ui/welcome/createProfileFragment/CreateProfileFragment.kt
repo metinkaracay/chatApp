@@ -42,7 +42,7 @@ class CreateProfileFragment() : BaseFragment<FragmentCreateProfileBinding>() {
     fun handleViewOptions(user: User){
         binding.sendButton.setOnClickListener {
             val user: User = user
-            user.firstName = binding.firstName.text.toString()
+            user.firstName = binding.firstName.text.toString().trim()
             user.lastName = binding.lastName.text.toString().trim()
             user.age = binding.age.text.toString()
 

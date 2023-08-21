@@ -66,7 +66,6 @@ class GeneralChatUsersFragment : BaseFragment<FragmentGeneralChatUsersBinding>()
         }
         recyclerAdapter.setPhotoItemClickListener {
             welcomeViewModel.fillClickedUserPhoto(it)
-            Log.e("deffoto","$it")
             showUserProfilePhotoDialog(3)
         }
     }

@@ -39,6 +39,12 @@
                     android:scaleType="centerCrop"
                     imageUrl="@{pageViewState.selectedPhoto}"
                     android:visibility="@{pageViewState.selectedPhotoVisibility}"/>
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@{pageViewState.checkMark(context)}"
+                    android:visibility="@{pageViewState.checkMarkVisibility}"/>
             </androidx.cardview.widget.CardView>
 
             <LinearLayout
@@ -52,7 +58,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@{pageViewState.userName}"
-                    android:layout_gravity="center|start"
+                    android:layout_gravity="start"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"

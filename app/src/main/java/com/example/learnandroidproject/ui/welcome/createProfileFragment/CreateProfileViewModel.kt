@@ -33,25 +33,30 @@ class CreateProfileViewModel@Inject constructor(private val datingApiRepository:
     val loginStateLiveData: LiveData<Boolean> = _loginStateLiveData
 
     fun checkFields(user: User): Boolean{
+        val namesPattern = Regex("^[a-zA-ZÇçĞğİıÖöŞşÜü]+( [a-zA-ZÇçĞğİıÖöŞşÜü]+)*$")
 
         val userFields = listOf(
             user.firstName to "Ad",
             user.lastName to "Soyad",
-            user.gender to "Cinsiyet",
-            user.age to "Yaş"
+            user.gender to "Cinsiyet"
         )
 
         for ((field, fieldName) in userFields) {
+            Log.e("fieldName","$field, name: $fieldName")
             if (field.isNullOrEmpty()) {
                 _errorMessageLiveData.value = "$fieldName Boş Bırakılamaz"
                 return false
             }
+            else if (!field.matches(namesPattern)){
+                _errorMessageLiveData.value = "$fieldName Yalnızca Alfabetik Karakterler İçerebilir"
+                return false
+            }
         }
-
-        if (user.age!!.toInt() !in 15..100) {
+        if (user.age!!.toInt() !in 15..100 || user.age == "") {
             _errorMessageLiveData.value = "Geçerli Bir Yaş Giriniz"
             return false
         }
+
         return true
     }
 

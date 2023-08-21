@@ -49,10 +49,11 @@ class CompleteGroupCreateFragment : BaseFragment<FragmentCompleteGroupCreateBind
             }
             errorMessagesLiveData.observeNonNull(viewLifecycleOwner){
                 Toast.makeText(requireContext(),it,Toast.LENGTH_SHORT).show()
+                binding.completeButton.isEnabled = true // Eğer grup oluşturamazsa tekrar deneyebilmesi için butonu aktif eder
             }
             newGroupCreatedLiveData.observeNonNull(viewLifecycleOwner){
                 welcomeViewModel.fillNewGroupListResponse(it)
-                welcomeViewModel.navigateUp()
+                welcomeViewModel.goToBaseChatRoomsPage()
             }
         }
         adapterListener()
@@ -67,8 +68,9 @@ class CompleteGroupCreateFragment : BaseFragment<FragmentCompleteGroupCreateBind
             val result = viewModel.checkField(groupName)
 
             if (result){
-                viewModel.editDatas(welcomeViewModel.getSelectedUsersForGroupChat(),groupName)
+                viewModel.editDatas(groupName)
             }
+            binding.completeButton.isEnabled = false // Birden fazla grup oluşturmasın diye
         }
     }
 
@@ -78,6 +80,7 @@ class CompleteGroupCreateFragment : BaseFragment<FragmentCompleteGroupCreateBind
             members.remove(it)
 
             viewModel.groupMembers = members.toList()
+            viewModel.fillMembers(members)
         }
     }
 

@@ -10,12 +10,13 @@ import com.example.learnandroidproject.data.local.model.dating.db.response.chatA
 
 class GroupMessageItemPageViewState(
     val message: MessageItem,
-    val loggedUserId: Int
+    val loggedUserId: Int,
+    val senderName: String
 ) {
 
     fun layoutGravity() = if (message.senderUser.toInt() == loggedUserId) Gravity.END else Gravity.START
 
-    fun getMessageSenderName() = message.senderUser
+    fun getMessageSenderName() = senderName//message.senderUser
 
     fun userNameTextColor(context: Context): Int = ContextCompat.getColor(context, R.color.black)
 
