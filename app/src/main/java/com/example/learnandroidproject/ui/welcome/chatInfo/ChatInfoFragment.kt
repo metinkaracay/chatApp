@@ -64,7 +64,6 @@ class ChatInfoFragment : BaseFragment<FragmentChatInfoBinding>() {
         with(binding.recyclerView) {
             layoutManager = LinearLayoutManager(requireContext()).apply {
                 orientation = RecyclerView.VERTICAL
-                stackFromEnd= true
             }
             adapter = recyclerAdapter
         }

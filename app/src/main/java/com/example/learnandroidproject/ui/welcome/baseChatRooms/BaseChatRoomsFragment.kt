@@ -81,16 +81,7 @@ class BaseChatRoomsFragment : BaseFragment<FragmentBaseChatRoomsBinding>() {
             //welcomeViewModel.goToRaceFragment()
         }
         binding.exitButton.setOnClickListener {
-            //showExitPopUpDialog(4)
-            viewModel.exitToServer(requireContext())
-            viewModel.exitResponseLiveData.observe(viewLifecycleOwner){
-                if (it){
-                    welcomeViewModel.goToMainPage()
-                    socket.closeConnection()
-                }else{
-                    Toast.makeText(requireContext(),"Çıkış Başarısız Lütfen Daha Sonra Tekrar Deneyiniz",Toast.LENGTH_SHORT).show()
-                }
-            }
+            showExitPopUpDialog(4)
         }
         binding.allUsersButton.setOnClickListener {
             welcomeViewModel.goToGenerelChatUsersFragment()

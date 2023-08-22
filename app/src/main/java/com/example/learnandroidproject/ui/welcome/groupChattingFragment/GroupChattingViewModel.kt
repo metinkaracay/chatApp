@@ -1,13 +1,7 @@
 package com.example.learnandroidproject.ui.welcome.groupChattingFragment
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.ValueAnimator
 import android.content.Context
 import android.util.Log
-import android.view.animation.AccelerateDecelerateInterpolator
-import android.widget.Button
-import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,18 +9,14 @@ import androidx.lifecycle.viewModelScope
 import com.example.learnandroidproject.common.SingleLiveEvent
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.Args
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.RaceData
-import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.GroupInfo
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.GroupMember
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
 import com.example.learnandroidproject.domain.remote.dating.DatingApiRepository
 import com.example.learnandroidproject.ui.base.BaseViewModel
-import com.example.learnandroidproject.ui.welcome.chattingFragment.ChattingFragmentPageViewState
 import com.example.learnandroidproject.ui.welcome.chattingFragment.SocketHandler
 import com.github.michaelbull.result.get
-import com.google.android.material.imageview.ShapeableImageView
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.rxjava3.core.Single
 import io.socket.client.Ack
 import kotlinx.coroutines.*
 import org.json.JSONObject
@@ -257,6 +247,7 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
 
     fun setupUsersForSpectator(dataset: List<RaceData>) {
         userPoints.clear()
+        userPoints.values.clear()
 
         val membersWithoutAdmin = members.filter { it.uRole == "User" }
         val datasetUserIds = dataset.map { it.userId }.toSet()
@@ -293,18 +284,14 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
         if(args.userId == -1 && args.point == -1){
             userPositionPercentages.clear()
             cancelCountdown()
-            _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(isRaceStart = false)
         }else if (args.userId == 0){
             setRaceState(true)
             startCountdown(args.point.toString())
         }
 
         if (userPoints.containsKey(userId)) {
-            Log.e("userId","$userId")
-            Log.e("userId","$point")
             userPoints[userId] = point
         }
-        Log.e("race_puanlar","${userPoints.values.toList()}")
 
         val sortedUserPoints = userPoints.entries.sortedByDescending { it.value }
 
@@ -323,7 +310,6 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
         var userPhotoList = mutableListOf<String>()
 
         for (i in 0 until topThreeUserIds.size){
-            Log.e("race_total_öncesi","gelen : ${userPoints[topThreeUserIds[i]]}")
             totalPoint += userPoints[topThreeUserIds[i]] ?: 0
             if (loggedUserid == topThreeUserIds[i]){
                 loggedId = i+1
@@ -347,15 +333,12 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
         }
 
         for (userId in topThreeUserIds) {
-            val positionPercent = if (userPoints[userId]!!.toFloat() != 0.0f){
-                Log.e("mat kontrol","tanımsız değil")
+            val positionPercent = if (userPoints[userId]!!.toFloat() != 0.0f){ // Tanımsız değil
                 userPoints[userId]!!.toFloat() / totalPoint
-            }else{
-                Log.e("mat kontrol","tanımsız")
+            }else{ // Tanımsız
                 0.0f
             }
             userPositionPercentages.add(positionPercent)
-            Log.e("race_user_percent","user: $userId,percent = $userPositionPercentages")
         }
 
         _positionPercentsCalculatedLiveData.postValue(true)
@@ -373,24 +356,21 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
                 val minute = i / 60
                 val remainingSeconds = i % 60
                 val formattedTime = String.format("%02d:%02d", minute, remainingSeconds)
-                Log.e("Süreee","$minute:$remainingSeconds")
                 withContext(Dispatchers.Main) {
                     _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(remainingTime = formattedTime)
-                }
-                if (i == 0 ){
-                    // Yeni yarışma açmadan önce eldeki verileri sıfırlar
-                    //userPoints.clear()
-                    userPositionPercentages.clear()
-                    for (card in userImageViews){
-                        card.x = 0.0f // Userların cardlarını en başa çeker
-                    }
-                    cancelCountdown()
                 }
                 delay(1000)
             }
         }
     }
     fun cancelCountdown() {
+        // Yarış bittiğinde eldeki verileri sıfırlar
+        userPoints.clear()
+        userPoints.values.clear()
+        userPositionPercentages.clear()
+        for (card in userImageViews){
+            card.x = 0.0f // Userların cardlarını en başa çeker
+        }
         countdownJob?.cancel()
         viewModelScope.launch(Dispatchers.Main){
             _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(isRaceStart = false)

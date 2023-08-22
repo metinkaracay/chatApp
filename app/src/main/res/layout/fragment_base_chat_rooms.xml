@@ -32,12 +32,6 @@
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:src="@{pageViewState.defaultProfilePhoto(context)}"
-                    android:visibility="@{pageViewState.defaultPhotoVisibility}"/>
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
                     android:scaleType="centerCrop"
                     app:imageUrl="@{pageViewState.selectedProfilePhoto}"
                     android:visibility="@{pageViewState.selectedPhotoVisibility}"/>

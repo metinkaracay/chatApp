@@ -20,8 +20,6 @@ class BaseChatRoomsViewModel @Inject constructor(private val datingApiRepository
     private val _baseChatRoomsPageViewStateLiveData: MutableLiveData<BaseChatRoomsPageViewState> = MutableLiveData()
     val baseChatRoomsPageViewStateLiveData: LiveData<BaseChatRoomsPageViewState> = _baseChatRoomsPageViewStateLiveData
 
-    private val _exitResponseLiveData: MutableLiveData<Boolean> = MutableLiveData()
-    val exitResponseLiveData: LiveData<Boolean> = _exitResponseLiveData
 
     fun getLoggedUser(){
         viewModelScope.launch(Dispatchers.IO){
@@ -29,28 +27,6 @@ class BaseChatRoomsViewModel @Inject constructor(private val datingApiRepository
                 withContext(Dispatchers.Main){
                     _baseChatRoomsPageViewStateLiveData.value = BaseChatRoomsPageViewState(it.photo!!)
                 }
-            }
-        }
-    }
-    fun exitToServer(context: Context){
-        viewModelScope.launch(Dispatchers.IO){
-            val result = datingApiRepository.exit()
-            if (result.isSuccess()){
-                val sharedPreferences = context.getSharedPreferences("accessTokenShared",Context.MODE_PRIVATE)
-                sharedPreferences.edit().remove("accessTokenKey").apply()
-                _exitResponseLiveData.postValue(true)
-            }else{
-                val error = result.component2()
-                if (error != null && error is retrofit2.HttpException) {
-                    if (error.code() == 401) {
-                        _exitResponseLiveData.postValue(false)
-                    } else {
-                        _exitResponseLiveData.postValue(false)
-                    }
-                } else {
-                    _exitResponseLiveData.postValue(false)
-                }
-                _exitResponseLiveData.postValue(false)
             }
         }
     }

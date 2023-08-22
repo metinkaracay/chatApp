@@ -45,7 +45,7 @@ class PopUpViewModel @Inject constructor(private val datingApiRepository: Dating
     }
 
     fun logoutToAccount(){
-        PopUpPageViewState(PopUpPageViewState.PopUpType.LOGOUT,null)
+        _popUpPageViewStateLiveData.value = PopUpPageViewState(PopUpPageViewState.PopUpType.LOGOUT,null)
     }
 
     fun countDownTimer(){
@@ -103,6 +103,14 @@ class PopUpViewModel @Inject constructor(private val datingApiRepository: Dating
                     }
                 }
             }
+        }
+    }
+    fun exitToServer(context: Context){
+        viewModelScope.launch(Dispatchers.IO){
+            datingApiRepository.exit()
+            val sharedPreferences = context.getSharedPreferences("accessTokenShared",Context.MODE_PRIVATE)
+            sharedPreferences.edit().remove("accessTokenKey").apply()
+
         }
     }
 }

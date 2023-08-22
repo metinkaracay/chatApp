@@ -24,6 +24,7 @@ import com.example.learnandroidproject.common.extensions.observeNonNull
 import com.example.learnandroidproject.databinding.FragmentPopUpBinding
 import com.example.learnandroidproject.ui.base.BaseDialogFragment
 import com.example.learnandroidproject.ui.welcome.WelcomeViewModel
+import com.example.learnandroidproject.ui.welcome.chattingFragment.SocketHandler
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -88,10 +89,13 @@ class PopUpFragment : BaseDialogFragment<FragmentPopUpBinding>() {
         binding.closeButton.setOnClickListener {
             dismiss()
         }
-        binding.logoutAcceptButton.setOnClickListener {
+        binding.logoutRejectButton.setOnClickListener {
             dismiss()
         }
         binding.logoutAcceptButton.setOnClickListener {
+            viewModel.exitToServer(requireContext())
+            welcomeViewModel.goToMainPage()
+            SocketHandler.closeConnection()
             dismiss()
         }
     }
