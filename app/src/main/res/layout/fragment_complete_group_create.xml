@@ -51,6 +51,7 @@
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:maxLength="30"
                 android:hint="@{pageViewState.hint}"/>
 
             <androidx.cardview.widget.CardView

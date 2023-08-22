@@ -3,6 +3,7 @@ package com.example.learnandroidproject.ui.welcome.createGroupFragment
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -40,7 +41,6 @@ class CreateGroupFragment : BaseFragment<FragmentCreateGroupBinding>() {
                 recyclerAdapter.setItems(it.users)
             }
         }
-        adapterListener()
     }
 
     fun handleViewOption(){
@@ -48,14 +48,13 @@ class CreateGroupFragment : BaseFragment<FragmentCreateGroupBinding>() {
             welcomeViewModel.navigateUp()
         }
         binding.nextButton.setOnClickListener {
-            welcomeViewModel.fillSelectedUsersForGroupChat(recyclerAdapter.getSelectedUserList())
-            welcomeViewModel.goToCompleteGroupFragment()
+            if (recyclerAdapter.getSelectedUserList().size > 1){
+                welcomeViewModel.fillSelectedUsersForGroupChat(recyclerAdapter.getSelectedUserList())
+                welcomeViewModel.goToCompleteGroupFragment()
+            }else{
+                Toast.makeText(requireContext(),"En az 2 kişi seçmelisiz",Toast.LENGTH_SHORT).show()
+            }
         }
-    }
-    fun adapterListener(){
-        /*recyclerAdapter.setIsItemSelectedListener {
-            viewModel.setNextButtonState(it)
-        }*/
     }
 
     private fun initResultsItemsRecyclerView() {

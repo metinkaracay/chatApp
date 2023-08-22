@@ -32,6 +32,7 @@
             android:layout_width="300dp"
             android:layout_marginBottom="20dp"
             android:layout_height="wrap_content"
+            android:maxLength="30"
             android:hint="Adınız"/>
 
         <EditText
@@ -39,6 +40,7 @@
             android:layout_width="300dp"
             android:layout_marginBottom="20dp"
             android:layout_height="wrap_content"
+            android:maxLength="15"
             android:hint="Soyadınız"/>
 
         <EditText
@@ -47,6 +49,7 @@
             android:layout_marginBottom="20dp"
             android:layout_height="wrap_content"
             android:inputType="number"
+            android:maxLength="3"
             android:hint="Yaşınız"/>
 
         <RadioGroup

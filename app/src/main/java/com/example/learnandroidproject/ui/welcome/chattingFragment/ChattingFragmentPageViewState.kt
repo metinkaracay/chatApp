@@ -14,9 +14,9 @@ data class ChattingFragmentPageViewState(
     )
 {
     fun backArrow(context: Context) : Drawable? = ContextCompat.getDrawable(context, R.drawable.back_arrow_icon)
-    fun defaultPhotoVisibility() = if (userInfo.uPhoto == "null") View.VISIBLE else View.GONE
-    fun defaultPhoto(context:Context) : Drawable? = ContextCompat.getDrawable(context, R.drawable.avatar)
-    fun selectedPhotoVisibility() = if (userInfo.uPhoto != "null") View.VISIBLE else View.GONE
+    //fun defaultPhotoVisibility() = if (userInfo.uPhoto == "null") View.VISIBLE else View.GONE
+    //fun defaultPhoto(context:Context) : Drawable? = ContextCompat.getDrawable(context, R.drawable.avatar)
+    //fun selectedPhotoVisibility() = if (userInfo.uPhoto != "null") View.VISIBLE else View.GONE
     fun selectedPhoto() = userInfo.uPhoto
     fun getUserName() = userInfo.uName
     fun editTextHint() = "Mesaj"

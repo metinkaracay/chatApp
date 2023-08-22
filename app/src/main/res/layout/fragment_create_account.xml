@@ -33,6 +33,7 @@
             android:layout_marginBottom="20dp"
             android:layout_height="wrap_content"
             android:inputType="textEmailAddress"
+            android:maxLength="15"
             android:hint="Kullanıcı Adı"/>
 
         <EditText
@@ -41,6 +42,7 @@
             android:layout_marginBottom="20dp"
             android:layout_height="wrap_content"
             android:inputType="textEmailAddress"
+            android:maxLength="30"
             android:hint="Email"/>
 
         <EditText
@@ -49,6 +51,7 @@
             android:layout_marginBottom="20dp"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
+            android:maxLength="15"
             android:hint="Şifre"/>
 
         <androidx.cardview.widget.CardView

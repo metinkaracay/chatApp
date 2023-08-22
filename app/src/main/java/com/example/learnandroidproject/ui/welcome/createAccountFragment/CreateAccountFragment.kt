@@ -13,7 +13,6 @@ import com.example.learnandroidproject.ui.welcome.WelcomeViewModel
 
 class CreateAccountFragment : BaseFragment<FragmentCreateAccountBinding>() {
     private val viewModel: CreateAccountViewModel by viewModels()
-
     private val welcomeViewModel: WelcomeViewModel by activityViewModels()
 
     override fun getLayoutResId(): Int = R.layout.fragment_create_account

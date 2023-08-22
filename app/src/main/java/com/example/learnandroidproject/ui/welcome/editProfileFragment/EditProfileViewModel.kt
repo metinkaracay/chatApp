@@ -1,9 +1,12 @@
 package com.example.learnandroidproject.ui.welcome.editProfileFragment
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.UpdateUser
+import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
+import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
 import com.example.learnandroidproject.domain.remote.dating.DatingApiRepository
 import com.example.learnandroidproject.ui.base.BaseViewModel
 import com.github.michaelbull.result.get
@@ -26,6 +29,7 @@ class EditProfileViewModel @Inject constructor(private val datingApiRepository: 
     private val _userPhotoLiveData: MutableLiveData<String> = MutableLiveData()
     val userPhotoLiveData: LiveData<String> = _userPhotoLiveData
 
+    var currentUser = User(null,null,null,null,null,null,null,null,null)
     init {
         fetchUserData()
     }
@@ -34,7 +38,9 @@ class EditProfileViewModel @Inject constructor(private val datingApiRepository: 
         viewModelScope.launch(Dispatchers.IO){
             datingApiRepository.fetchUserData().get()?.let {
                 withContext(Dispatchers.Main){
-                    _editProfilePageViewStateLiveData.value = EditProfilePageViewState(it,null,false)
+                    currentUser = it
+                    _editProfilePageViewStateLiveData.value = EditProfilePageViewState(it,false)
+                    // Açılan popUp'a kullanıcının fotoğrafını gönderir
                     if (it.photo != null){
                         _userPhotoLiveData.value = it.photo!!
                     }else{
@@ -49,7 +55,8 @@ class EditProfileViewModel @Inject constructor(private val datingApiRepository: 
             delay(1500L)
             withContext(Dispatchers.Main) {
                 _userPhotoLiveData.value = link
-                _editProfilePageViewStateLiveData.value = editProfilePageViewStateLiveData.value?.copy(image = link)
+                currentUser.photo = link
+                _editProfilePageViewStateLiveData.value = editProfilePageViewStateLiveData.value?.copy(user = currentUser)
             }
         }
     }
@@ -58,7 +65,6 @@ class EditProfileViewModel @Inject constructor(private val datingApiRepository: 
     }
     fun checkFields(user: UpdateUser): Boolean{
         val namesPattern = Regex("^[a-zA-ZÇçĞğİıÖöŞşÜü]+( [a-zA-ZÇçĞğİıÖöŞşÜü]+)*$")
-
 
         val userFields = listOf(
             user.uFirstName to "Ad",
@@ -71,7 +77,7 @@ class EditProfileViewModel @Inject constructor(private val datingApiRepository: 
                 _errorMessageLiveData.value = "$fieldName Boş Bırakılamaz"
                 return false
             }
-            if (field.matches(namesPattern) == false){
+            if (field.matches(namesPattern) == false && field != user.uStatus){
                 _errorMessageLiveData.value = "$fieldName Sadece Alfabetik Karakterler İçerebilir"
                 return false
             }

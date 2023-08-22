@@ -24,12 +24,11 @@ class BaseChatRoomsFragment : BaseFragment<FragmentBaseChatRoomsBinding>() {
 
     private val viewModel: BaseChatRoomsViewModel by viewModels()
     private val welcomeViewModel: WelcomeViewModel by activityViewModels()
-    var socketHandler: SocketHandler? = null
     override fun getLayoutResId(): Int = R.layout.fragment_base_chat_rooms
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        handleViewOption(socketHandler!!)
+        handleViewOption()
         with(viewModel){
             baseChatRoomsPageViewStateLiveData.observeNonNull(viewLifecycleOwner){
                 with(binding){
@@ -71,11 +70,11 @@ class BaseChatRoomsFragment : BaseFragment<FragmentBaseChatRoomsBinding>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        socketHandler = SocketHandler
-        welcomeViewModel.socketListener(socketHandler!!,requireContext())
+         val socketHandler = SocketHandler
+        welcomeViewModel.socketListener(socketHandler,requireContext())
     }
 
-    fun handleViewOption(socket: SocketHandler){
+    fun handleViewOption(){
         binding.profile.setOnClickListener {
             welcomeViewModel.goToProfilePage()
             //welcomeViewModel.goToRaceFragment()
@@ -92,27 +91,27 @@ class BaseChatRoomsFragment : BaseFragment<FragmentBaseChatRoomsBinding>() {
 
         if(tabId == 0){
 
-            binding.tabInternet.textSize = 20f
-            binding.tabInternet.setTextColor(ContextCompat.getColor(requireContext(), R.color.register_title_color))
-            binding.tabInternet.typeface = ResourcesCompat.getFont(requireContext(), R.font.gotham_black)
+            binding.tabGroups.textSize = 20f
+            binding.tabGroups.setTextColor(ContextCompat.getColor(requireContext(), R.color.register_title_color))
+            binding.tabGroups.typeface = ResourcesCompat.getFont(requireContext(), R.font.gotham_black)
             binding.scrollLine.x = 320f
 
             //Diğer sekmenin özelliklerini düzeltir
-            binding.tabLocal.textSize = 17f
-            binding.tabLocal.setTextColor(ContextCompat.getColor(requireContext(), R.color.register_title_color))
-            binding.tabLocal.typeface = ResourcesCompat.getFont(requireContext(), R.font.gotham_book)
+            binding.tabPersonal.textSize = 17f
+            binding.tabPersonal.setTextColor(ContextCompat.getColor(requireContext(), R.color.register_title_color))
+            binding.tabPersonal.typeface = ResourcesCompat.getFont(requireContext(), R.font.gotham_book)
 
         }else if(tabId == 1){
 
-            binding.tabLocal.textSize = 20f
-            binding.tabLocal.setTextColor(ContextCompat.getColor(requireContext(), R.color.register_title_color))
-            binding.tabLocal.typeface = ResourcesCompat.getFont(requireContext(), R.font.gotham_black)
+            binding.tabPersonal.textSize = 20f
+            binding.tabPersonal.setTextColor(ContextCompat.getColor(requireContext(), R.color.register_title_color))
+            binding.tabPersonal.typeface = ResourcesCompat.getFont(requireContext(), R.font.gotham_black)
             binding.scrollLine.x = 610f
 
             //Diğer sekmenin özelliklerini düzeltir
-            binding.tabInternet.textSize = 17f
-            binding.tabInternet.setTextColor(ContextCompat.getColor(requireContext(), R.color.register_title_color))
-            binding.tabInternet.typeface = ResourcesCompat.getFont(requireContext(), R.font.gotham_book)
+            binding.tabGroups.textSize = 17f
+            binding.tabGroups.setTextColor(ContextCompat.getColor(requireContext(), R.color.register_title_color))
+            binding.tabGroups.typeface = ResourcesCompat.getFont(requireContext(), R.font.gotham_book)
         }
     }
     private fun showExitPopUpDialog(requestCode: Int) {

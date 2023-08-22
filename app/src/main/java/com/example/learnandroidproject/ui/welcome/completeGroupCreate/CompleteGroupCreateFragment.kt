@@ -1,13 +1,10 @@
 package com.example.learnandroidproject.ui.welcome.completeGroupCreate
 
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -57,6 +54,7 @@ class CompleteGroupCreateFragment : BaseFragment<FragmentCompleteGroupCreateBind
             }
         }
         adapterListener()
+        editTextController()
     }
 
     fun handleViewOption(){
@@ -64,7 +62,9 @@ class CompleteGroupCreateFragment : BaseFragment<FragmentCompleteGroupCreateBind
             welcomeViewModel.navigateUp()
         }
         binding.completeButton.setOnClickListener {
-            val groupName = binding.groupName.text.toString()
+
+
+            val groupName = binding.groupName.text.toString().trim()
             val result = viewModel.checkField(groupName)
 
             if (result){
@@ -72,6 +72,35 @@ class CompleteGroupCreateFragment : BaseFragment<FragmentCompleteGroupCreateBind
             }
             binding.completeButton.isEnabled = false // Birden fazla grup oluşturmasın diye
         }
+    }
+
+    fun editTextController(){
+        binding.groupName.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val inputText = s.toString()
+                val trimmedText = inputText.replace("\\s+".toRegex(), " ")
+
+                // Eğer başta boşluk varsa, boşlukları temizleyin
+                if (inputText.startsWith(" ")) {
+                    val trimText = inputText.trimStart()
+                    binding.groupName.setText(trimText)
+                    binding.groupName.setSelection(trimText.length) // Cursor'ı doğru konuma getirin
+                }
+                // Birden fazla boşluk bırakılmasını engeller
+                if (inputText != trimmedText) {
+                    binding.groupName.setText(trimmedText)
+                    binding.groupName.setSelection(trimmedText.length) // Cursor'ı doğru konuma getirin
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+        })
     }
 
     fun adapterListener(){

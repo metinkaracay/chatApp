@@ -52,18 +52,10 @@
                     app:cardCornerRadius="90dp">
 
                     <ImageView
-                        android:id="@+id/defaultUserPhoto"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:visibility="@{pageViewState.defaultPhotoVisibility}"
-                        android:src="@{pageViewState.defaultPhoto(context)}"
-                        android:scaleType="centerCrop"/>
-
-                    <ImageView
                         android:id="@+id/selectedUserPhoto"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:visibility="@{pageViewState.selectedPhotoVisibility}"
+                        android:scaleType="centerCrop"
                         imageUrl="@{pageViewState.selectedPhoto}"/>
                 </androidx.cardview.widget.CardView>
 
@@ -134,6 +126,7 @@
                         android:textSize="15sp"
                         android:background="@null"
                         android:hint="@{pageViewState.editTextHint}"
+                        android:maxLength="250"
                         android:layout_gravity="center"
                         android:layout_marginStart="9dp"/>
 

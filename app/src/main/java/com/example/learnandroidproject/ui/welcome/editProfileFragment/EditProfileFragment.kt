@@ -1,6 +1,7 @@
 package com.example.learnandroidproject.ui.welcome.editProfileFragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
@@ -43,6 +44,7 @@ class EditProfileFragment : BaseFragment<FragmentEditProfileBinding>() {
     }
 
     fun handleViewOption(){
+        binding.saveButton.isEnabled = false
 
         binding.backArrow.setOnClickListener {
             welcomeViewModel.navigateUp()
@@ -53,8 +55,11 @@ class EditProfileFragment : BaseFragment<FragmentEditProfileBinding>() {
         binding.editButton.setOnClickListener {
             viewModel.editButtonListener(true)
             fieldsController(true)
+            binding.saveButton.isEnabled = true
+            binding.editButton.isEnabled = false
         }
         binding.saveButton.setOnClickListener {
+            binding.editButton.isEnabled = true
             val statu = binding.status.text.toString()
             val firstName = binding.firstName.text.toString().trim()
             val lastName = binding.lastName.text.toString().trim()
