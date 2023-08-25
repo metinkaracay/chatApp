@@ -14,60 +14,95 @@
             android:id="@+id/baseFrameLayout"
             android:layout_width="match_parent"
             android:layout_height="100dp">
-            
+
+            <VideoView
+                android:id="@+id/road"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_gravity="bottom"/>
+
             <FrameLayout
                 android:id="@+id/innerFrameLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="20dp">
 
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/user"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_gravity="center_vertical"
-                    android:adjustViewBounds="true"
-                    android:layout_marginTop="10dp"
-                    android:scaleType="centerCrop"
-                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
-                    android:src="@drawable/avatar" />
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/user1"
+                    android:layout_width="60dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="bottom"
+                    app:cardBackgroundColor="@android:color/transparent"
+                    app:cardElevation="0dp">
 
-                <com.google.android.material.imageview.ShapeableImageView
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center|top"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerCrop"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
+                        android:src="@drawable/avatar" />
+
+                    <com.alphamovie.lib.AlphaMovieView
+                        android:id="@+id/video"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="bottom"
+                        android:layout_marginBottom="10dp"
+                        app:packed="true" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
                     android:id="@+id/user2"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_gravity="center_vertical"
-                    android:adjustViewBounds="true"
-                    android:scaleType="centerCrop"
-                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
-                    android:src="@drawable/avatar" />
+                    android:layout_width="60dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="bottom"
+                    app:cardBackgroundColor="@android:color/transparent"
+                    app:cardElevation="0dp">
 
-                <com.google.android.material.imageview.ShapeableImageView
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center|top"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerCrop"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
+                        android:src="@drawable/avatar" />
+
+                    <com.alphamovie.lib.AlphaMovieView
+                        android:id="@+id/video2"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="bottom"
+                        app:packed="true" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
                     android:id="@+id/user3"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_gravity="center_vertical"
-                    android:adjustViewBounds="true"
-                    android:scaleType="centerCrop"
-                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
-                    android:src="@drawable/avatar" />
-            </FrameLayout>
+                    android:layout_width="60dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="bottom"
+                    app:cardBackgroundColor="@android:color/transparent"
+                    app:cardElevation="0dp">
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="10dp"
-                android:layout_gravity="bottom"
-                android:background="@color/black"/>
-            <androidx.cardview.widget.CardView
-                android:layout_width="20dp"
-                android:layout_height="30dp"
-                android:layout_gravity="end|bottom">
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/race_flag"/>
-            </androidx.cardview.widget.CardView>
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center|top"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerCrop"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
+                        android:src="@drawable/avatar" />
+
+                    <com.alphamovie.lib.AlphaMovieView
+                        android:id="@+id/video3"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="bottom"
+                        app:packed="true" />
+                </com.google.android.material.card.MaterialCardView>
+            </FrameLayout>
         </FrameLayout>
 
         <LinearLayout

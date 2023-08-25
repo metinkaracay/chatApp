@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.learnandroidproject.R
 import com.example.learnandroidproject.common.SingleLiveEvent
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.Args
+import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.BaseRaceData
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.RaceData
 import com.example.learnandroidproject.data.local.model.dating.db.request.userRequest.User
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
@@ -21,6 +22,7 @@ import com.example.learnandroidproject.ui.welcome.chattingFragment.SocketHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.socket.client.Socket
 import kotlinx.coroutines.*
+import org.json.JSONArray
 import org.json.JSONObject
 import javax.inject.Inject
 
@@ -37,7 +39,7 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     private val _isGroupListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = MutableLiveData()
     private val _isMessageSended: MutableLiveData<Any> = MutableLiveData()
     private val _isNewGroupCreated: SingleLiveEvent<Boolean> = SingleLiveEvent()
-    private val _raceDataLiveEvent: MutableLiveData<RaceData> = MutableLiveData()
+    private val _raceDataLiveEvent: MutableLiveData<List<RaceData>> = MutableLiveData()
     private val _groupEventRecording: MutableLiveData<MutableMap<Int, Int>> = MutableLiveData()
 
     private val _testSingleLiveEvent: SingleLiveEvent<String> = SingleLiveEvent()
@@ -52,7 +54,7 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     val isGroupListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = _isGroupListRecording
     val isMessageSended: MutableLiveData<Any> = _isMessageSended
     val isNewGroupCreated: SingleLiveEvent<Boolean> = _isNewGroupCreated
-    val raceDataLiveEvent: MutableLiveData<RaceData> = _raceDataLiveEvent
+    val raceDataLiveEvent: MutableLiveData<List<RaceData>> = _raceDataLiveEvent
     val groupEventRecording: MutableLiveData<MutableMap<Int, Int>> = _groupEventRecording
 
     val testSingleLiveEvent: LiveData<String> = _testSingleLiveEvent
@@ -256,20 +258,66 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
 
         mSocket.on("event"){args ->
             if (args[0] != null){
-                val json = JSONObject(args[0].toString())
+                val raceDataList = mutableListOf<RaceData>()
 
-                val userId = json.getInt("userId")
+
+                /*val json = JSONObject(args[0].toString()) // TODO kapanınca çökmüyorsa sil
+                if (args[0].toString().contains("Array")){
+                    val jsonArray = json.getJSONArray("Array")
+
+                    for (i in 0 until jsonArray.length()) {
+                        val raceDataJson = jsonArray.getJSONObject(i)
+
+                        val groupId = raceDataJson.getInt("groupId")
+                        val userId = raceDataJson.getInt("userId")
+                        val itemCount = raceDataJson.getInt("itemCount")
+                        val carId = raceDataJson.getInt("carId")
+
+                        val raceData = RaceData(groupId, userId, itemCount, carId)
+                        raceDataList.add(raceData)
+                    }
+                }else{
+                    val userId = json.getInt("userId")
+                    val groupId = json.getInt("groupId")
+
+                    if (userId == 0 || userId == -1){
+                        eventStates[groupId] = userId
+                    }
+                }*/
+
+                val json = JSONObject(args[0].toString())
+                val jsonArray = json.getJSONArray("Array")
+
+                for (i in 0 until jsonArray.length()) {
+                    val raceDataJson = jsonArray.getJSONObject(i)
+
+                    val groupId = raceDataJson.getInt("groupId")
+                    val userId = raceDataJson.getInt("userId")
+                    val itemCount = raceDataJson.getInt("itemCount")
+                    val carId = raceDataJson.getInt("carId")
+
+                    val raceData = RaceData(groupId, userId, itemCount, carId)
+                    raceDataList.add(raceData)
+
+                    if (userId == 0 || userId == -1){
+                        eventStates[groupId] = userId
+                    }
+                }
+
+
+                /*val userId = json.getInt("userId")
                 val point = json.getInt("itemCount")
                 val groupId = json.getInt("groupId")
+                val carId = json.getInt("carId")
 
-                val raceModel = RaceData(groupId,userId,point)
+                val raceModel = RaceData(groupId,userId,point,carId)
 
                 if (userId == 0 || userId == -1){
                     eventStates[groupId] = userId
-                }
+                }*/
 
                 viewModelScope.launch(Dispatchers.Main){
-                    _raceDataLiveEvent.value = raceModel
+                    _raceDataLiveEvent.value = raceDataList
                 }
                 viewModelScope.launch(Dispatchers.Main){
                     _groupEventRecording.value = eventStates
@@ -332,6 +380,9 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     }
     fun goToRaceFragment(){
         _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.raceFragment)
+    }
+    fun goToVideoFragment(){
+        _navigateToDestinationSingleLiveEvent.value = NavigationData(destinationId = R.id.videoViewFragment)
     }
     fun navigateUp() {
         _navigateUpSingleLiveEvent.call()

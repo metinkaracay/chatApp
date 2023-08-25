@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.learnandroidproject.R
@@ -50,7 +51,8 @@ class CompleteGroupCreateFragment : BaseFragment<FragmentCompleteGroupCreateBind
             }
             newGroupCreatedLiveData.observeNonNull(viewLifecycleOwner){
                 welcomeViewModel.fillNewGroupListResponse(it)
-                welcomeViewModel.goToBaseChatRoomsPage()
+                val navController = findNavController()
+                navController.popBackStack(R.id.baseChatRoomsFragment, false)
             }
         }
         adapterListener()

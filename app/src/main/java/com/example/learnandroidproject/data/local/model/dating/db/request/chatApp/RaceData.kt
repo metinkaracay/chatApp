@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class RaceData(
     @SerializedName("groupId") var groupId: Int,
     @SerializedName("userId") var userId: Int,
-    @SerializedName("itemCount") var point: Int
+    @SerializedName("itemCount") var point: Int,
+    @SerializedName("carId") var carId: Int
 ) {
 }

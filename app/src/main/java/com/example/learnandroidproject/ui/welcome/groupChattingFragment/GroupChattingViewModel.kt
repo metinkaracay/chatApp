@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.learnandroidproject.common.SingleLiveEvent
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.Args
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.RaceData
+import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.UserRaceDatas
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.GroupInfo
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.GroupMember
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
@@ -16,6 +17,7 @@ import com.example.learnandroidproject.domain.remote.dating.DatingApiRepository
 import com.example.learnandroidproject.ui.base.BaseViewModel
 import com.example.learnandroidproject.ui.welcome.chattingFragment.SocketHandler
 import com.github.michaelbull.result.get
+import com.google.android.material.card.MaterialCardView
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.socket.client.Ack
 import kotlinx.coroutines.*
@@ -23,6 +25,7 @@ import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.math.log
 
 @HiltViewModel
 class GroupChattingViewModel @Inject constructor(private val datingApiRepository: DatingApiRepository) : BaseViewModel() {
@@ -60,9 +63,10 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
     var isRaceStart = false
 
     // Yarışta sıralama hesaplamak ve animasyonu oynatabilmek için gerken değerler
-    var userImageViews: List<CardView> = arrayListOf()
+    var userImageViews: List<CardView> = arrayListOf() // Eski sil
     var frameLayoutWidth = 0
-    private var userPoints: MutableMap<Int, Int> = mutableMapOf()
+    private var userPoints: MutableMap<Int, Int> = mutableMapOf() // TODO eski
+    private val userRaceDatas: MutableList<UserRaceDatas> = mutableListOf()
     var users: List<Int> = mutableListOf(0,0,0)
     var userPositionPercentages = mutableListOf<Float>()
 
@@ -272,11 +276,11 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
 
         val topThreeUserIds = topThreeUsers.map { it.key }
         Log.e("top_three_users", "$topThreeUserIds")
-        updateUsersPosition(topThreeUserIds)
+        updateUsersPosition()//updateUsersPosition(topThreeUserIds) // TODO buraya dikkat eski hali sağda
     }
 
-    fun updateUserPoints(args: RaceData) {
-        Log.e("race_args","$args")
+    /*fun updateUserPoints(args2: List<RaceData>) {
+        var args = args2[0] // Geçici çözüm
         val userId = args.userId
         val point = args.point
 
@@ -301,9 +305,58 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
         val topThreeUserIds = topThreeUsers.map { it.key }
         Log.e("top_three_users", "$topThreeUserIds")
         updateUsersPosition(topThreeUserIds)
+    }*/
+
+    fun updateUserPoints(args: List<RaceData>) {
+        for (i in 0 until args.size){
+            val userId = args[i].userId
+            val point = args[i].point
+
+            // Gelen datadaki kişi ilk üçte var mı kontrol et
+            val existingUser = userRaceDatas.find { it.userId == userId }
+
+            if (existingUser != null) { // Varsa çalışır
+                existingUser.point = point
+                existingUser.carId = args[i].carId
+            } else { // Yoksa çalışır
+                val newUser = UserRaceDatas(userId, point, args[i].carId)
+                userRaceDatas.add(newUser)
+            }
+        }
+
+        // ilk mesaj atıldığında 1 veri geliyor. Bize 3 kişi lazım olduğu için 2 tane boş hesap ekler
+        if (userRaceDatas.size < 3){
+            for (i in 0 until 3 - userRaceDatas.size){
+                val emptyUser = UserRaceDatas(0,0,0)// Todo Boş user oluştururken verdiğim datalar patlatabilir
+                userRaceDatas.add(emptyUser)
+
+                Log.e("userRaceDataForsayaç","${i+1}")
+            }
+        }else if (userRaceDatas.size > 3){
+            val lowestPoint = userRaceDatas.minByOrNull { it.point }
+            Log.e("userRaceDataForelse","silindi : ${lowestPoint?.userId}")
+
+            if (lowestPoint != null){
+                userRaceDatas.remove(lowestPoint)
+                for (i in 0 until userRaceDatas.size){ // TODO top 3teki kişileri yazdırır işin bitince sil algoritmayı etkilemiyor
+                    Log.e("userRaceDatakişiler","${userRaceDatas[i].userId}")
+                }
+            }
+        }
+
+        updateUsersPosition()
+
+        // Admin koptu yarışı bitir
+        if(args[0].userId == -1 && args[0].point == -1){
+            userPositionPercentages.clear()
+            cancelCountdown()
+        }else if (args[0].userId == 0){
+            setRaceState(true)
+            startCountdown(args[0].point.toString())
+        }
     }
 
-    private fun updateUsersPosition(topThreeUserIds: List<Int>) {
+    /*private fun updateUsersPosition(topThreeUserIds: List<Int>) {
         var totalPoint = 0
         var loggedId = 0
         userPositionPercentages.clear()
@@ -335,6 +388,53 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
         for (userId in topThreeUserIds) {
             val positionPercent = if (userPoints[userId]!!.toFloat() != 0.0f){ // Tanımsız değil
                 userPoints[userId]!!.toFloat() / totalPoint
+            }else{ // Tanımsız
+                0.0f
+            }
+            userPositionPercentages.add(positionPercent)
+        }
+
+        _positionPercentsCalculatedLiveData.postValue(true)
+
+        viewModelScope.launch(Dispatchers.Main){
+            _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(userPhoto = userPhotoList.toList())
+        }
+    }*/
+
+    private fun updateUsersPosition() {
+        var totalPoint = 0
+        var loggedId = 0
+        userPositionPercentages.clear()
+        var userPhotoList = mutableListOf<String>()
+
+        for (i in 0 until userRaceDatas.size){
+            totalPoint += userRaceDatas[i].point ?: 0
+            if (loggedUserid == userRaceDatas[i].userId){ // izleyici ilk üçe girdiğinde etrafına halka çizmek için
+                loggedId = i+1
+            }
+        }
+        viewModelScope.launch(Dispatchers.IO){
+            withContext(Dispatchers.Main){
+
+                _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(loggedUserRank = loggedId)
+            }
+        }
+
+        viewModelScope.launch(Dispatchers.Main){
+            _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(loggedUserRank = loggedId)
+        }
+
+        for (userId in 0 until userRaceDatas.size) {
+            val user = members.find { it.uId == userId }
+            val photoUrl = user?.uPhoto ?: "null"
+            userPhotoList.add(photoUrl)
+        }
+
+        for (i in 0 until userRaceDatas.size){ // Tanımsız değil
+            Log.e("gelen_sayı","${userRaceDatas[i].point.toFloat()}")
+            Log.e("gelen_sayı2","${totalPoint}")
+            val positionPercent = if (userRaceDatas[i].point.toFloat() != 0.0f){
+                userRaceDatas[i].point.toFloat() / totalPoint
             }else{ // Tanımsız
                 0.0f
             }

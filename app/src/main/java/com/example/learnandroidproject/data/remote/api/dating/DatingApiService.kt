@@ -20,15 +20,15 @@ interface DatingApiService {
     @GET("top-headlines?country=tr&apiKey=b13c7e532d894c6991d797f87385c876")
     suspend fun news(): NewsBaseResponse
 
-    @GET("auth/mainPage")
+    @GET("chats/mainPage")
     suspend fun fetchUsersForChatRooms(): List<UserInfo>
-    @GET("auth/friends")
+    @GET("chats/friends")
     suspend fun fetchFriendsUsers(): List<UserInfo>
-    @GET("auth/groups")
+    @GET("chats/groups")
     suspend fun fetchGroups(): List<GroupInfo>
     @GET("auth/profile")
     suspend fun fetchUserData(): User
-    @GET("auth/allUsers")
+    @GET("chats/allUsers")
     suspend fun fetchAllUsers(): List<UserInfo>
     @GET("chats/{id}")
     suspend fun getMessagesFromPage(@Path("id") id: String,
@@ -51,7 +51,7 @@ interface DatingApiService {
     suspend fun updateProfile(@Body user: UpdateUser): ResponseBody
     @POST("auth/logout")
     suspend fun exit(): ResponseBody
-    @POST("auth/createGroup")
+    @POST("chats/createGroup")
     suspend fun createGroup(@Body group: GroupData): List<GroupInfo>//ResponseBody
 
     @Headers("Content-Type: application/json")

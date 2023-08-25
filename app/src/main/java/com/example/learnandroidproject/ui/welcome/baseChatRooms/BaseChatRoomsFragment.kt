@@ -66,18 +66,27 @@ class BaseChatRoomsFragment : BaseFragment<FragmentBaseChatRoomsBinding>() {
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+        readAndUseFile("example_video")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-         val socketHandler = SocketHandler
+        val socketHandler = SocketHandler
         welcomeViewModel.socketListener(socketHandler,requireContext())
+
+    }
+
+    private fun readAndUseFile(fileName: String) {
+        //val inputStream = requireContext().openFileInput(fileName)
+        //Log.e("gelen video","$inputStream")
+        // Use the inputStream to read and process the file content
     }
 
     fun handleViewOption(){
         binding.profile.setOnClickListener {
-            welcomeViewModel.goToProfilePage()
-            //welcomeViewModel.goToRaceFragment()
+            //welcomeViewModel.goToProfilePage()
+            welcomeViewModel.goToRaceFragment()
+            //welcomeViewModel.goToVideoFragment()
         }
         binding.exitButton.setOnClickListener {
             showExitPopUpDialog(4)

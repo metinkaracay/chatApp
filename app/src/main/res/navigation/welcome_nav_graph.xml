@@ -85,4 +85,8 @@
         android:id="@+id/raceFragment"
         android:name="com.example.learnandroidproject.ui.welcome.testRace.RaceFragment"
         android:label="RaceFragment" />
+    <fragment
+        android:id="@+id/videoViewFragment"
+        android:name="com.example.learnandroidproject.ui.welcome.videoViewTest.VideoViewFragment"
+        android:label="VideoViewFragment" />
 </navigation>
