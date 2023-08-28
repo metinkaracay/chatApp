@@ -44,8 +44,6 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
     private var currentAnimation: ValueAnimator? = null
 
     private var videoIndex = 0
-    private val videoFiles = listOf("yellow_car", "red_car", "green_car")
-
     override fun getLayoutResId(): Int = R.layout.fragment_group_chatting
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -101,7 +99,7 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
             viewModel.userImageViews = listOf(binding.user1, binding.user2, binding.user3)
             viewModel.frameLayoutWidth = binding.innerFrameLayout.width
         }
-        createVideoWithDelay()
+        //createVideoWithDelay()
         setCardStartLocation()
         roadVideo()
     }
@@ -158,21 +156,55 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
     }
 
     fun calculateLocation(){
-        //val userImageViews = listOf(binding.user1, binding.user2, binding.user3) Eski
-        val userImageViews = listOf(binding.user1, binding.user2, binding.user3) // isim düzelt
+        val cards = listOf(binding.user1, binding.user2, binding.user3,binding.user4)
+        val cars = mutableListOf(0,1,2,3)
+        val currentCars = mutableListOf<Int>()
+        val topThree = viewModel.userRaceDatas
 
-        Log.e("userPosition","${viewModel.userPositionPercentages}")
-        Log.e("userPosition2","${userImageViews.size}")
-        if (!viewModel.userPositionPercentages.isNullOrEmpty()){
-            for (j in 0 until userImageViews.size) {
-
-                val cardView = userImageViews[j]
+        if (!viewModel.userRaceDatas.isNullOrEmpty()) {
+            for (i in 0 until topThree.size) {
+                Log.e("userPercent", "${viewModel.userRaceDatas[i].racePercent}")
+                val cardId = topThree[i].carId
+                val cardView = cards[cardId]
                 val initialX = cardView.x
-                val targetX = (binding.innerFrameLayout.width - cardView.width) * viewModel.userPositionPercentages[j]
-                if (targetX !=0.0f){
+                val targetX = (binding.innerFrameLayout.width - cardView.width) * viewModel.userRaceDatas[i].racePercent
+                if (targetX != 0.0f) {
                     animateUserPosition(cardView, initialX, targetX)
                 }
-                //animateUserPosition(cardView, initialX, targetX) eski
+                currentCars.add(topThree[i].carId)
+
+                playCarVideo(cardId, topThree[i].userId)
+            }
+            // Yarışa 4. girdiği zaman önceki ilk 3'ten düşeni çıkarır
+            for (i in 0 until cars.size){
+                if (!currentCars.contains(cars[i])){
+                    val card = cards[cars[i]]
+                    animateUserPosition(card, card.x, -190f)
+                }
+            }
+            Log.e("userPercent","-----------------------------------")
+        }
+    }
+
+    private fun playCarVideo(carId: Int, uId: Int) {
+        Log.e("playCarVideo","id: $uId, carıd: $carId")
+
+        val carIdToVideoMapping = mapOf(
+            0 to "green_car",
+            1 to "red_car",
+            2 to "yellow_car",
+            3 to "black_car"
+        )
+
+        val videoFile = carIdToVideoMapping[carId]
+        if (videoFile != null) {
+            val videoResourceID = resources.getIdentifier(videoFile, "raw", requireContext().packageName)
+            val videoUri = Uri.parse("android.resource://${requireContext().packageName}/$videoResourceID")
+            when (carId) {
+                0 -> playVideo(binding.video, videoUri)
+                1 -> playVideo(binding.video2, videoUri)
+                2 -> playVideo(binding.video3, videoUri)
+                3 -> playVideo(binding.video4, videoUri)
             }
         }
     }
@@ -196,25 +228,6 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
         animator.start()
     }
 
-    private fun createVideoWithDelay() {
-        if (videoIndex < videoFiles.size) {
-            val videoFile = videoFiles[videoIndex]
-            val videoResourceID = resources.getIdentifier(videoFile, "raw", requireContext().packageName)
-            val videoUri = Uri.parse("android.resource://${requireContext().packageName}/$videoResourceID")
-
-            when (videoFile) {
-                "yellow_car" -> playVideo(binding.video, videoUri)
-                "red_car" -> playVideo(binding.video2, videoUri)
-                "green_car" -> playVideo(binding.video3, videoUri)
-            }
-            videoIndex++
-
-            Handler().postDelayed({
-                createVideoWithDelay()
-            }, 500)
-        }
-    }
-
     private fun playVideo(videoView: AlphaMovieView, videoUri: Uri) {
         try {
             videoView.setVideoFromUri(requireContext(), videoUri)
@@ -225,7 +238,7 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
     }
 
     fun setCardStartLocation(){
-        val cards = listOf(binding.user1, binding.user2, binding.user3) // geçici çözüm
+        val cards = listOf(binding.user1, binding.user2, binding.user3, binding.user4) // Geçici Çözüm
         for (i in 0 until cards.size) {
             val card = cards[i]
             card.x = -190f

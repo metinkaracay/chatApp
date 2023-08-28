@@ -18,7 +18,7 @@ data class GroupChattingPageViewState(
     var popUpVisibility: Boolean = false,
     var isLoaded: Boolean = false,
     var userPhoto: List<String> = arrayListOf(),
-    var loggedUserRank: Int = 4,
+    var loggedUserRank: Int = 4, // TODO rank sistemi kalkacak büyük ihtimalle viewModeldan sildim ama kontrol et
     var membersNameList: MutableMap<Int,String>
 ) {
     fun loadingScreenVisibility() = if (!isLoaded) View.VISIBLE else View.GONE

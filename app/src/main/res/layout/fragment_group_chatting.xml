@@ -269,6 +269,7 @@
                             android:layout_width="60dp"
                             android:layout_height="60dp"
                             android:layout_gravity="bottom"
+                            android:layout_marginBottom="10dp"
                             app:packed="true" />
                     </com.google.android.material.card.MaterialCardView>
 
@@ -291,6 +292,31 @@
 
                         <com.alphamovie.lib.AlphaMovieView
                             android:id="@+id/video3"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:layout_gravity="bottom"
+                            app:packed="true" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/user4"
+                        android:layout_width="60dp"
+                        android:layout_height="70dp"
+                        android:layout_gravity="bottom"
+                        app:cardBackgroundColor="@android:color/transparent"
+                        app:cardElevation="0dp">
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_gravity="center|top"
+                            android:adjustViewBounds="true"
+                            android:scaleType="centerCrop"
+                            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
+                            imageUrl="@{pageViewState.userPhoto3}" />
+
+                        <com.alphamovie.lib.AlphaMovieView
+                            android:id="@+id/video4"
                             android:layout_width="60dp"
                             android:layout_height="60dp"
                             android:layout_gravity="bottom"

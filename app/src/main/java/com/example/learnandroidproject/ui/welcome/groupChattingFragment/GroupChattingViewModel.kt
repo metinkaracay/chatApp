@@ -66,7 +66,7 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
     var userImageViews: List<CardView> = arrayListOf() // Eski sil
     var frameLayoutWidth = 0
     private var userPoints: MutableMap<Int, Int> = mutableMapOf() // TODO eski
-    private val userRaceDatas: MutableList<UserRaceDatas> = mutableListOf()
+    val userRaceDatas: MutableList<UserRaceDatas> = mutableListOf()
     var users: List<Int> = mutableListOf(0,0,0)
     var userPositionPercentages = mutableListOf<Float>()
 
@@ -179,6 +179,9 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
 
                 val ackReceiver = json.get("receiverId")
                 val ackMessageTime = json.get("payloadDate")
+                val ackUserItemCount = json.get("itemCount")
+
+                Log.e("gelenack","$ackUserItemCount")
 
                 var model = Args(message,loggedUserId.toString(),ackReceiver.toString(),ackMessageTime.toString(),true)
 
@@ -248,64 +251,28 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
         }
         Log.e("race_users","$userPoints") // TODO burayı dene
     }
-
     fun setupUsersForSpectator(dataset: List<RaceData>) {
         userPoints.clear()
         userPoints.values.clear()
 
-        val membersWithoutAdmin = members.filter { it.uRole == "User" }
-        val datasetUserIds = dataset.map { it.userId }.toSet()
-        for (user in membersWithoutAdmin) {
-            val userId = user.uId
-            val point = if (datasetUserIds.contains(userId)) {
-                dataset.find { it.userId == userId }?.point ?: 0
-            } else {
-                0
+        val totalPoint = dataset.sumOf { it.point }
+        Log.e("percentforön","$totalPoint")
+
+        for (i in 0 until dataset.size){
+            Log.e("percentönc","${dataset[i].point}")
+            val positionPercent = if (userRaceDatas[i].point.toFloat() != 0.0f){
+                userRaceDatas[i].point.toFloat() / totalPoint
+            }else{ // Tanımsız
+                0.0f
             }
-            userPoints[userId] = point
+            Log.e("percentttt","$positionPercent")
+            val newUser = UserRaceDatas(dataset[i].userId, dataset[i].point,dataset[i].carId, positionPercent)
+
+            userRaceDatas.add(newUser)
         }
-        Log.e("race_users2","$userPoints")
 
-        Log.e("race_puanlar","${userPoints.values.toList()}")
-
-        val sortedUserPoints = userPoints.entries.sortedByDescending { it.value }
-        Log.e("sorted","$sortedUserPoints")
-
-        // En yüksek puana sahip ilk 3 kişiyi alıyor
-        val topThreeUsers = sortedUserPoints.take(3)
-
-        val topThreeUserIds = topThreeUsers.map { it.key }
-        Log.e("top_three_users", "$topThreeUserIds")
-        updateUsersPosition()//updateUsersPosition(topThreeUserIds) // TODO buraya dikkat eski hali sağda
+        updateUsersPosition()
     }
-
-    /*fun updateUserPoints(args2: List<RaceData>) {
-        var args = args2[0] // Geçici çözüm
-        val userId = args.userId
-        val point = args.point
-
-        // Admin koptu yarışı bitir
-        if(args.userId == -1 && args.point == -1){
-            userPositionPercentages.clear()
-            cancelCountdown()
-        }else if (args.userId == 0){
-            setRaceState(true)
-            startCountdown(args.point.toString())
-        }
-
-        if (userPoints.containsKey(userId)) {
-            userPoints[userId] = point
-        }
-
-        val sortedUserPoints = userPoints.entries.sortedByDescending { it.value }
-
-        // En yüksek puana sahip ilk 3 kişiyi alıyor
-        val topThreeUsers = sortedUserPoints.take(3)
-
-        val topThreeUserIds = topThreeUsers.map { it.key }
-        Log.e("top_three_users", "$topThreeUserIds")
-        updateUsersPosition(topThreeUserIds)
-    }*/
 
     fun updateUserPoints(args: List<RaceData>) {
         for (i in 0 until args.size){
@@ -319,7 +286,7 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
                 existingUser.point = point
                 existingUser.carId = args[i].carId
             } else { // Yoksa çalışır
-                val newUser = UserRaceDatas(userId, point, args[i].carId)
+                val newUser = UserRaceDatas(userId, point, args[i].carId, 0.0f)
                 userRaceDatas.add(newUser)
             }
         }
@@ -327,7 +294,7 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
         // ilk mesaj atıldığında 1 veri geliyor. Bize 3 kişi lazım olduğu için 2 tane boş hesap ekler
         if (userRaceDatas.size < 3){
             for (i in 0 until 3 - userRaceDatas.size){
-                val emptyUser = UserRaceDatas(0,0,0)// Todo Boş user oluştururken verdiğim datalar patlatabilir
+                val emptyUser = UserRaceDatas(0,0,0, 0.0f)// Todo Boş user oluştururken verdiğim datalar patlatabilir
                 userRaceDatas.add(emptyUser)
 
                 Log.e("userRaceDataForsayaç","${i+1}")
@@ -344,7 +311,20 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
             }
         }
 
-        updateUsersPosition()
+        val totalPoint = userRaceDatas.sumOf { it.point }
+
+        Log.e("percentTotal","${totalPoint}")
+
+        for (i in 0 until userRaceDatas.size){ // Tanımsız değil
+            Log.e("percentAn","${userRaceDatas[i].point.toFloat()}")
+            val positionPercent = if (userRaceDatas[i].point.toFloat() != 0.0f){
+                userRaceDatas[i].point.toFloat() / totalPoint
+            }else{ // Tanımsız
+                0.0f
+            }
+            userRaceDatas[i].racePercent = positionPercent
+            Log.e("percentAdmin","${userRaceDatas[i].racePercent}")
+        }
 
         // Admin koptu yarışı bitir
         if(args[0].userId == -1 && args[0].point == -1){
@@ -354,91 +334,17 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
             setRaceState(true)
             startCountdown(args[0].point.toString())
         }
+        updateUsersPosition()
     }
 
-    /*private fun updateUsersPosition(topThreeUserIds: List<Int>) {
-        var totalPoint = 0
-        var loggedId = 0
-        userPositionPercentages.clear()
-        var userPhotoList = mutableListOf<String>()
-
-        for (i in 0 until topThreeUserIds.size){
-            totalPoint += userPoints[topThreeUserIds[i]] ?: 0
-            if (loggedUserid == topThreeUserIds[i]){
-                loggedId = i+1
-            }
-        }
-        viewModelScope.launch(Dispatchers.IO){
-            withContext(Dispatchers.Main){
-
-                _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(loggedUserRank = loggedId)
-            }
-        }
-
-        viewModelScope.launch(Dispatchers.Main){
-            _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(loggedUserRank = loggedId)
-        }
-
-        for (userId in topThreeUserIds) {
-            val user = members.find { it.uId == userId }
-            val photoUrl = user?.uPhoto ?: "null"
-            userPhotoList.add(photoUrl)
-        }
-
-        for (userId in topThreeUserIds) {
-            val positionPercent = if (userPoints[userId]!!.toFloat() != 0.0f){ // Tanımsız değil
-                userPoints[userId]!!.toFloat() / totalPoint
-            }else{ // Tanımsız
-                0.0f
-            }
-            userPositionPercentages.add(positionPercent)
-        }
-
-        _positionPercentsCalculatedLiveData.postValue(true)
-
-        viewModelScope.launch(Dispatchers.Main){
-            _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(userPhoto = userPhotoList.toList())
-        }
-    }*/
-
     private fun updateUsersPosition() {
-        var totalPoint = 0
-        var loggedId = 0
         userPositionPercentages.clear()
         var userPhotoList = mutableListOf<String>()
-
-        for (i in 0 until userRaceDatas.size){
-            totalPoint += userRaceDatas[i].point ?: 0
-            if (loggedUserid == userRaceDatas[i].userId){ // izleyici ilk üçe girdiğinde etrafına halka çizmek için
-                loggedId = i+1
-            }
-        }
-        viewModelScope.launch(Dispatchers.IO){
-            withContext(Dispatchers.Main){
-
-                _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(loggedUserRank = loggedId)
-            }
-        }
-
-        viewModelScope.launch(Dispatchers.Main){
-            _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(loggedUserRank = loggedId)
-        }
 
         for (userId in 0 until userRaceDatas.size) {
             val user = members.find { it.uId == userId }
             val photoUrl = user?.uPhoto ?: "null"
             userPhotoList.add(photoUrl)
-        }
-
-        for (i in 0 until userRaceDatas.size){ // Tanımsız değil
-            Log.e("gelen_sayı","${userRaceDatas[i].point.toFloat()}")
-            Log.e("gelen_sayı2","${totalPoint}")
-            val positionPercent = if (userRaceDatas[i].point.toFloat() != 0.0f){
-                userRaceDatas[i].point.toFloat() / totalPoint
-            }else{ // Tanımsız
-                0.0f
-            }
-            userPositionPercentages.add(positionPercent)
         }
 
         _positionPercentsCalculatedLiveData.postValue(true)
@@ -468,6 +374,7 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
         userPoints.clear()
         userPoints.values.clear()
         userPositionPercentages.clear()
+        userRaceDatas.clear()
         for (card in userImageViews){
             card.x = 0.0f // Userların cardlarını en başa çeker
         }

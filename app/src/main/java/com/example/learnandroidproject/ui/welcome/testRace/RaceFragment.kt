@@ -16,6 +16,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AlphaAnimation
 import android.widget.*
 import androidx.cardview.widget.CardView
+import com.airbnb.lottie.LottieCompositionFactory
 import com.alphamovie.lib.AlphaMovieView
 import com.example.learnandroidproject.R
 import com.example.learnandroidproject.databinding.FragmentRaceBinding
@@ -61,8 +62,17 @@ class RaceFragment : BaseFragment<FragmentRaceBinding>() {
             }
         }*/
 
+        binding.car1.setImageAssetsFolder("images/")
+        binding.car1.setAnimation("data.json")
+        binding.car1.playAnimation()
+
+        binding.car3.setImageAssetsFolder("images/")
+        binding.car3.setAnimation("data.json")
+        binding.car3.playAnimation()
+
         //userImageViews = listOf(binding.user, binding.user2, binding.user3)
-        cards = listOf(binding.user1, binding.user2, binding.user3)
+        //cards = listOf(binding.user1, binding.user2, binding.user3)
+        cards = listOf(binding.user1, binding.user3)
 
         userButtons = listOf(binding.user1button, binding.user2button, binding.user3button)
         setupButtonClickListeners()
@@ -76,8 +86,8 @@ class RaceFragment : BaseFragment<FragmentRaceBinding>() {
         binding.road.setOnPreparedListener { it.isLooping = true }
 
         // Start creating videos with a delay
-        createVideoWithDelay()
-        setCardStartLocation()
+        //createVideoWithDelay()
+        //setCardStartLocation()
     }
 
     fun setCardStartLocation(){
@@ -87,7 +97,7 @@ class RaceFragment : BaseFragment<FragmentRaceBinding>() {
         }
     }
 
-    private fun createVideoWithDelay() {
+    /*private fun createVideoWithDelay() {
         if (videoIndex < videoFiles.size) {
             val videoFile = videoFiles[videoIndex]
             val videoResourceID = resources.getIdentifier(videoFile, "raw", requireContext().packageName)
@@ -104,7 +114,7 @@ class RaceFragment : BaseFragment<FragmentRaceBinding>() {
                 createVideoWithDelay()
             }, 500)
         }
-    }
+    }*/
 
     private fun playVideo(videoView: AlphaMovieView,videoUri: Uri) {
         try {

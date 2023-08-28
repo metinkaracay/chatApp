@@ -39,7 +39,7 @@ interface DatingApiService {
     suspend fun getUserProfile(@Path("id") id: String): User
     @GET("chats/{id}/seen")
     suspend fun updateSeenInfoForUser(@Path("id") id: String): ResponseBody
-    @GET("chats/group/{id}/seen")
+    @PATCH("chats/group/{id}/seen")
     suspend fun updateSeenInfoForGroup(@Path("id") id: String): ResponseBody
     @Multipart
     @POST("auth/profile/addPhoto")
