@@ -2,6 +2,7 @@ package com.example.learnandroidproject.ui.welcome.groupChattingFragment
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.example.learnandroidproject.R
@@ -18,6 +19,7 @@ data class GroupChattingPageViewState(
     var popUpVisibility: Boolean = false,
     var isLoaded: Boolean = false,
     var userPhoto: List<String> = arrayListOf(),
+    var userPoints: List<String> = arrayListOf(),
     var loggedUserRank: Int = 4, // TODO rank sistemi kalkacak büyük ihtimalle viewModeldan sildim ama kontrol et
     var membersNameList: MutableMap<Int,String>
 ) {
@@ -60,6 +62,36 @@ data class GroupChattingPageViewState(
     fun userPhoto3(): String {
         return if (userPhoto.isNotEmpty()) {
             userPhoto[2]
+        } else {
+            "null"
+        }
+    }
+    fun user1Point(): String {
+        return if (userPoints.isNotEmpty()) {
+            Log.e("gelen_puan","${userPoints[0]}")
+            userPoints[0]
+        } else {
+            "null"
+        }
+    }
+    fun user2Point(): String {
+        return if (userPoints.isNotEmpty()) {
+            userPoints[1]
+        } else {
+            "null"
+        }
+    }
+    fun user3Point(): String {
+        return if (userPoints.isNotEmpty()) {
+            userPoints[2]
+        } else {
+            "null"
+        }
+    }
+
+    fun user4Point(): String {
+        return if (userPoints.isNotEmpty()) {
+            userPoints[3]
         } else {
             "null"
         }

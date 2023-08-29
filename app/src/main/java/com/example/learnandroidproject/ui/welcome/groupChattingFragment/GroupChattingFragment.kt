@@ -43,7 +43,7 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
 
     private var currentAnimation: ValueAnimator? = null
 
-    private var videoIndex = 0
+    private var isFirstData = true
     override fun getLayoutResId(): Int = R.layout.fragment_group_chatting
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -88,15 +88,17 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
         with(welcomeViewModel){
             raceDataLiveEvent.observeNonNull(viewLifecycleOwner){
                 // Socketten gelen yarışma verileri
-                if (viewModel.group.groupId == it[0].groupId){
+                if (viewModel.group.groupId == it[0].groupId && !isFirstData){
                     viewModel.updateUserPoints(it)
+                }else{
+                    isFirstData = false // Grupta değilken mesajları biriktiriyor ve girdiğimde hem get'ten çekiyor hemde sockettekini işliyor. Verilerin hatalı olmasına sebep oluyordu
                 }
             }
         }
         viewModel.fetchMessages(requireContext())
 
-        binding.user1.doOnLayout {
-            viewModel.userImageViews = listOf(binding.user1, binding.user2, binding.user3)
+        binding.user1.doOnLayout {// Süre bittiğinde araçları çekmeyi sağlayan kodu besliyor
+            viewModel.userImageViews = listOf(binding.user1, binding.user2, binding.user3,binding.user4)
             viewModel.frameLayoutWidth = binding.innerFrameLayout.width
         }
         //createVideoWithDelay()

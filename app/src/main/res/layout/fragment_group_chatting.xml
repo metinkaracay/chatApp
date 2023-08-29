@@ -224,15 +224,23 @@
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/user1"
                         android:layout_width="60dp"
-                        android:layout_height="70dp"
+                        android:layout_height="80dp"
                         android:layout_gravity="bottom"
                         app:cardBackgroundColor="@android:color/transparent"
+                        android:layout_marginBottom="10dp"
                         app:cardElevation="0dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{pageViewState.user1Point()}"
+                            android:layout_gravity="center|top"/>
 
                         <com.google.android.material.imageview.ShapeableImageView
                             android:layout_width="30dp"
                             android:layout_height="30dp"
-                            android:layout_gravity="center|top"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="8dp"
                             android:adjustViewBounds="true"
                             android:scaleType="centerCrop"
                             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
@@ -243,24 +251,31 @@
                             android:layout_width="60dp"
                             android:layout_height="60dp"
                             android:layout_gravity="bottom"
-                            android:layout_marginBottom="10dp"
                             app:packed="true" />
                     </com.google.android.material.card.MaterialCardView>
 
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/user2"
                         android:layout_width="60dp"
-                        android:layout_height="70dp"
+                        android:layout_height="80dp"
                         android:layout_gravity="bottom"
                         app:cardBackgroundColor="@android:color/transparent"
+                        android:layout_marginBottom="10dp"
                         app:cardElevation="0dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{pageViewState.user2Point()}"
+                            android:layout_gravity="center|top"/>
 
                         <com.google.android.material.imageview.ShapeableImageView
                             android:layout_width="30dp"
                             android:layout_height="30dp"
-                            android:layout_gravity="center|top"
+                            android:layout_gravity="center"
                             android:adjustViewBounds="true"
                             android:scaleType="centerCrop"
+                            android:layout_marginBottom="8dp"
                             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
                             imageUrl="@{pageViewState.userPhoto2}" />
 
@@ -269,24 +284,30 @@
                             android:layout_width="60dp"
                             android:layout_height="60dp"
                             android:layout_gravity="bottom"
-                            android:layout_marginBottom="10dp"
                             app:packed="true" />
                     </com.google.android.material.card.MaterialCardView>
 
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/user3"
                         android:layout_width="60dp"
-                        android:layout_height="70dp"
+                        android:layout_height="80dp"
                         android:layout_gravity="bottom"
                         app:cardBackgroundColor="@android:color/transparent"
                         app:cardElevation="0dp">
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{pageViewState.user3Point()}"
+                            android:layout_gravity="center|top"/>
+
                         <com.google.android.material.imageview.ShapeableImageView
                             android:layout_width="30dp"
                             android:layout_height="30dp"
-                            android:layout_gravity="center|top"
+                            android:layout_gravity="center"
                             android:adjustViewBounds="true"
                             android:scaleType="centerCrop"
+                            android:layout_marginBottom="8dp"
                             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
                             imageUrl="@{pageViewState.userPhoto3}" />
 
@@ -301,17 +322,24 @@
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/user4"
                         android:layout_width="60dp"
-                        android:layout_height="70dp"
+                        android:layout_height="80dp"
                         android:layout_gravity="bottom"
                         app:cardBackgroundColor="@android:color/transparent"
                         app:cardElevation="0dp">
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{pageViewState.user4Point()}"
+                            android:layout_gravity="center|top"/>
+
                         <com.google.android.material.imageview.ShapeableImageView
                             android:layout_width="30dp"
                             android:layout_height="30dp"
-                            android:layout_gravity="center|top"
+                            android:layout_gravity="center"
                             android:adjustViewBounds="true"
                             android:scaleType="centerCrop"
+                            android:layout_marginBottom="8dp"
                             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
                             imageUrl="@{pageViewState.userPhoto3}" />
 

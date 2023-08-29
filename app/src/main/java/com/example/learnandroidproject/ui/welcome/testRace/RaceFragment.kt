@@ -71,8 +71,8 @@ class RaceFragment : BaseFragment<FragmentRaceBinding>() {
         binding.car3.playAnimation()
 
         //userImageViews = listOf(binding.user, binding.user2, binding.user3)
-        //cards = listOf(binding.user1, binding.user2, binding.user3)
-        cards = listOf(binding.user1, binding.user3)
+        cards = listOf(binding.user1, binding.user2, binding.user3)
+        //cards = listOf(binding.user1, binding.user3)
 
         userButtons = listOf(binding.user1button, binding.user2button, binding.user3button)
         setupButtonClickListeners()
@@ -86,8 +86,9 @@ class RaceFragment : BaseFragment<FragmentRaceBinding>() {
         binding.road.setOnPreparedListener { it.isLooping = true }
 
         // Start creating videos with a delay
-        //createVideoWithDelay()
+        createVideoWithDelay()
         //setCardStartLocation()
+        setCardStartLocation2()
     }
 
     fun setCardStartLocation(){
@@ -95,6 +96,19 @@ class RaceFragment : BaseFragment<FragmentRaceBinding>() {
             val card = cards[i]
             card.x = -190f
         }
+    }
+
+    fun setCardStartLocation2(){
+        val card = cards[2]
+        card.x = 100f
+    }
+
+    private fun createVideoWithDelay() {
+        val videoResourceID = resources.getIdentifier("red_car", "raw", requireContext().packageName)
+        val videoUri = Uri.parse("android.resource://${requireContext().packageName}/$videoResourceID")
+
+         playVideo(binding.video, videoUri)
+
     }
 
     /*private fun createVideoWithDelay() {

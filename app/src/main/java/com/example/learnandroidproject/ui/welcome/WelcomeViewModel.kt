@@ -286,6 +286,7 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
                 }*/
 
                 val json = JSONObject(args[0].toString())
+                Log.e("gelennnnn","${json}")
                 val jsonArray = json.getJSONArray("Array")
 
                 for (i in 0 until jsonArray.length()) {
