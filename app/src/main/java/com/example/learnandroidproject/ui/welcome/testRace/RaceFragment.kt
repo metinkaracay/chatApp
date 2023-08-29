@@ -62,12 +62,20 @@ class RaceFragment : BaseFragment<FragmentRaceBinding>() {
             }
         }*/
 
+        binding.road.setImageAssetsFolder("images/")
+        //binding.road.setAnimation("roadData.json")
+        //binding.road.playAnimation()
+
         binding.car1.setImageAssetsFolder("images/")
-        binding.car1.setAnimation("data.json")
+        binding.car1.setAnimation("yellowCar.json")
         binding.car1.playAnimation()
 
+        binding.car2.setImageAssetsFolder("images/")
+        binding.car2.setAnimation("redCar.json")
+        binding.car2.playAnimation()
+
         binding.car3.setImageAssetsFolder("images/")
-        binding.car3.setAnimation("data.json")
+        binding.car3.setAnimation("blackCar.json")
         binding.car3.playAnimation()
 
         //userImageViews = listOf(binding.user, binding.user2, binding.user3)
@@ -77,18 +85,16 @@ class RaceFragment : BaseFragment<FragmentRaceBinding>() {
         userButtons = listOf(binding.user1button, binding.user2button, binding.user3button)
         setupButtonClickListeners()
 
-        val videoResourceID = resources.getIdentifier("road", "raw", requireContext().packageName)
+        /*val videoResourceID = resources.getIdentifier("road", "raw", requireContext().packageName)
         val videoUri = Uri.parse("android.resource://${requireContext().packageName}/$videoResourceID")
 
         binding.road.setVideoURI(videoUri)
         binding.road.requestFocus()
         binding.road.start()
-        binding.road.setOnPreparedListener { it.isLooping = true }
+        binding.road.setOnPreparedListener { it.isLooping = true }*/
 
         // Start creating videos with a delay
-        createVideoWithDelay()
         //setCardStartLocation()
-        setCardStartLocation2()
     }
 
     fun setCardStartLocation(){
@@ -96,19 +102,6 @@ class RaceFragment : BaseFragment<FragmentRaceBinding>() {
             val card = cards[i]
             card.x = -190f
         }
-    }
-
-    fun setCardStartLocation2(){
-        val card = cards[2]
-        card.x = 100f
-    }
-
-    private fun createVideoWithDelay() {
-        val videoResourceID = resources.getIdentifier("red_car", "raw", requireContext().packageName)
-        val videoUri = Uri.parse("android.resource://${requireContext().packageName}/$videoResourceID")
-
-         playVideo(binding.video, videoUri)
-
     }
 
     /*private fun createVideoWithDelay() {
@@ -165,20 +158,28 @@ class RaceFragment : BaseFragment<FragmentRaceBinding>() {
             val card = cards[i]
             val initialX = card.x
             val targetX = (binding.innerFrameLayout.width - card.width) * positionPercent[i]
-            if (targetX !=0.0f){
-                animateUserPosition(card, initialX, targetX)
+            if (targetX !=0.0f){ // TODO positionY'yi ayarlamak için en yüksek yüzdeye sahip olanı bulmalıyız. Şimdilik aşağıya 0f'leri geçici verdim
+                animateUserPosition(card, initialX, targetX,0f,0f)
             }
         }
     }
 
-    private fun animateUserPosition(card: MaterialCardView, initialX: Float, targetX: Float) {
+    private fun animateUserPosition(card: MaterialCardView, initialX: Float, targetX: Float, initialY: Float, targetY: Float) {
         val animator = ValueAnimator.ofFloat(initialX, targetX)
+        animator.duration = 1000
+        animator.interpolator = AccelerateDecelerateInterpolator()
+
+        val animatorY = ValueAnimator.ofFloat(initialY, targetY)
         animator.duration = 1000
         animator.interpolator = AccelerateDecelerateInterpolator()
 
         animator.addUpdateListener { valueAnimator ->
             val animatedValue = valueAnimator.animatedValue as Float
             card.x = animatedValue
+        }
+        animatorY.addUpdateListener { valueAnimator ->
+            val animatedValue = valueAnimator.animatedValue as Float
+            card.y = animatedValue
         }
 
         animator.addListener(object : AnimatorListenerAdapter() {

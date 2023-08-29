@@ -15,12 +15,26 @@
             android:layout_width="match_parent"
             android:layout_height="100dp">
 
-            <VideoView
-                android:id="@+id/road"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="20dp"
-                android:layout_gravity="bottom"/>
+                android:layout_height="40dp"
+                android:layout_gravity="bottom">
 
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/road"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:scaleType="fitXY"
+                    app:lottie_autoPlay="true"
+                    app:lottie_fileName="roadData.json"
+                    app:lottie_loop="true"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="end"
+                    android:src="@drawable/finish_line"/>
+            </FrameLayout>
             <FrameLayout
                 android:id="@+id/innerFrameLayout"
                 android:layout_width="match_parent"
@@ -29,44 +43,44 @@
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/user1"
-                    android:layout_width="60dp"
-                    android:layout_height="70dp"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
                     android:layout_gravity="bottom"
+                    android:layout_marginBottom="15dp"
                     app:cardBackgroundColor="@android:color/transparent"
                     app:cardElevation="0dp">
 
                     <com.airbnb.lottie.LottieAnimationView
                         android:id="@+id/car1"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_width="80dp"
+                        android:layout_height="40dp"
                         android:layout_gravity="bottom"
                         app:lottie_autoPlay="true"
-                        app:lottie_fileName="data.json"
                         app:lottie_loop="true"/>
                 </com.google.android.material.card.MaterialCardView>
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/user3"
-                    android:layout_width="60dp"
-                    android:layout_height="70dp"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
                     android:layout_gravity="bottom"
                     app:cardBackgroundColor="@android:color/transparent"
                     app:cardElevation="0dp">
 
                     <com.airbnb.lottie.LottieAnimationView
                         android:id="@+id/car3"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_width="80dp"
+                        android:layout_height="40dp"
                         android:layout_gravity="bottom"
+                        android:scaleType="fitXY"
                         app:lottie_autoPlay="true"
-                        app:lottie_fileName="data.json"
                         app:lottie_loop="true"/>
                 </com.google.android.material.card.MaterialCardView>
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/user2"
-                    android:layout_width="60dp"
-                    android:layout_height="90dp"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
                     android:layout_gravity="bottom"
                     app:cardBackgroundColor="@android:color/transparent"
                     app:cardElevation="0dp">
@@ -82,16 +96,16 @@
                         android:layout_height="30dp"
                         android:layout_gravity="center"
                         android:scaleType="centerCrop"
-                        android:layout_marginBottom="10dp"
-                        android:src="@drawable/avatar" />
+                        android:layout_marginBottom="8dp"
+                        android:src="@drawable/avatar"/>
 
-                    <com.alphamovie.lib.AlphaMovieView
-                        android:id="@+id/video"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
+                    <com.airbnb.lottie.LottieAnimationView
+                        android:id="@+id/car2"
+                        android:layout_width="80dp"
+                        android:layout_height="40dp"
+                        android:scaleType="fitXY"
                         android:layout_gravity="bottom"
-                        android:layout_marginBottom="10dp"
-                        app:packed="true" />
+                        app:lottie_loop="true"/>
                 </com.google.android.material.card.MaterialCardView>
             </FrameLayout>
         </FrameLayout>

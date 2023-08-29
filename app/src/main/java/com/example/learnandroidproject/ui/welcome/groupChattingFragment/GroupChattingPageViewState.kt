@@ -7,6 +7,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import com.example.learnandroidproject.R
 import com.example.learnandroidproject.common.extensions.dp
+import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.UserRaceDatas
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.GroupInfo
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
 
@@ -20,6 +21,7 @@ data class GroupChattingPageViewState(
     var isLoaded: Boolean = false,
     var userPhoto: List<String> = arrayListOf(),
     var userPoints: List<String> = arrayListOf(),
+    var inTopThree: Boolean = true,
     var loggedUserRank: Int = 4, // TODO rank sistemi kalkacak büyük ihtimalle viewModeldan sildim ama kontrol et
     var membersNameList: MutableMap<Int,String>
 ) {
@@ -45,6 +47,14 @@ data class GroupChattingPageViewState(
     fun setTimerPopUp() = if(!popUpVisibility) View.GONE else View.VISIBLE
     fun raceAnimation() = if (!isRaceStart) View.GONE else View.VISIBLE
 
+    fun ghostVisibility(): Int {
+        return if (inTopThree){
+            View.VISIBLE
+        }else{
+            View.GONE
+        }
+    }
+
     fun userPhoto1(): String {
         return if (userPhoto.isNotEmpty()) {
             userPhoto[0]
@@ -66,9 +76,15 @@ data class GroupChattingPageViewState(
             "null"
         }
     }
+    fun userPhotoGhost(): String {
+        return if (userPhoto.isNotEmpty()) {
+            userPhoto[3]
+        } else {
+            "null"
+        }
+    }
     fun user1Point(): String {
         return if (userPoints.isNotEmpty()) {
-            Log.e("gelen_puan","${userPoints[0]}")
             userPoints[0]
         } else {
             "null"
@@ -92,6 +108,13 @@ data class GroupChattingPageViewState(
     fun user4Point(): String {
         return if (userPoints.isNotEmpty()) {
             userPoints[3]
+        } else {
+            "null"
+        }
+    }
+    fun userGhostPoint(): String {
+        return if (userPoints.isNotEmpty()) {
+            userPoints[4]
         } else {
             "null"
         }

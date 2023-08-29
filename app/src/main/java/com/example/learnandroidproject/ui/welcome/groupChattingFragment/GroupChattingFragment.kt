@@ -82,6 +82,7 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
             positionPercentsCalculatedLiveData.observeNonNull(viewLifecycleOwner){
                 if (it){
                     calculateLocation()
+                    ghostCarController(loggedUserId!!.toInt())
                 }
             }
         }
@@ -99,11 +100,11 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
 
         binding.user1.doOnLayout {// Süre bittiğinde araçları çekmeyi sağlayan kodu besliyor
             viewModel.userImageViews = listOf(binding.user1, binding.user2, binding.user3,binding.user4)
-            viewModel.frameLayoutWidth = binding.innerFrameLayout.width
         }
-        //createVideoWithDelay()
         setCardStartLocation()
-        roadVideo()
+        //roadVideo()
+        playLotties()
+        ghostCarController(loggedUserId!!.toInt())
     }
 
     fun handleViewOptions(){
@@ -157,6 +158,21 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
         }
     }
 
+    fun ghostCarController(id: Int){
+        val topThree = viewModel.userRaceDatas
+
+        val existingUser = topThree.find { it.userId == id }
+
+        if (existingUser != null){
+            Log.e("GhostController","ilk 3'te hocam")
+            viewModel.ghostCarVisibility(false, id)
+        }else{
+            viewModel.ghostCarVisibility(true, id)
+            Log.e("GhostController","ilk 3'te değil hocam")
+            //playCarVideo(4)
+        }
+    }
+
     fun calculateLocation(){
         val cards = listOf(binding.user1, binding.user2, binding.user3,binding.user4)
         val cars = mutableListOf(0,1,2,3)
@@ -175,41 +191,43 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
                 }
                 currentCars.add(topThree[i].carId)
 
-                playCarVideo(cardId, topThree[i].userId)
+                //playCarVideo(cardId)
             }
             // Yarışa 4. girdiği zaman önceki ilk 3'ten düşeni çıkarır
             for (i in 0 until cars.size){
                 if (!currentCars.contains(cars[i])){
                     val card = cards[cars[i]]
-                    animateUserPosition(card, card.x, -190f)
+                    animateUserPosition(card, card.x, -250f)
                 }
             }
             Log.e("userPercent","-----------------------------------")
         }
     }
 
-    private fun playCarVideo(carId: Int, uId: Int) {
-        Log.e("playCarVideo","id: $uId, carıd: $carId")
+    /*private fun playCarVideo(carId: Int) {
 
         val carIdToVideoMapping = mapOf(
             0 to "green_car",
             1 to "red_car",
             2 to "yellow_car",
-            3 to "black_car"
+            3 to "black_car",
+            4 to "yellow_car"
         )
 
         val videoFile = carIdToVideoMapping[carId]
         if (videoFile != null) {
             val videoResourceID = resources.getIdentifier(videoFile, "raw", requireContext().packageName)
             val videoUri = Uri.parse("android.resource://${requireContext().packageName}/$videoResourceID")
+            Log.e("kontrollll","$videoUri, file : $videoFile")
             when (carId) {
                 0 -> playVideo(binding.video, videoUri)
                 1 -> playVideo(binding.video2, videoUri)
                 2 -> playVideo(binding.video3, videoUri)
                 3 -> playVideo(binding.video4, videoUri)
+                4 -> playVideo(binding.video5, videoUri)
             }
         }
-    }
+    }*/
 
     private fun animateUserPosition(userImageView: CardView, initialX: Float, targetX: Float) {
         val animator = ValueAnimator.ofFloat(initialX, targetX)
@@ -243,11 +261,19 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
         val cards = listOf(binding.user1, binding.user2, binding.user3, binding.user4) // Geçici Çözüm
         for (i in 0 until cards.size) {
             val card = cards[i]
-            card.x = -190f
+            card.x = -250f
         }
     }
+    fun playLotties(){
+        binding.road.setImageAssetsFolder("images/")
+        binding.car1.setImageAssetsFolder("images/")
+        binding.car2.setImageAssetsFolder("images/")
+        binding.car3.setImageAssetsFolder("images/")
+        binding.car4.setImageAssetsFolder("images/")
+        binding.car5.setImageAssetsFolder("images/")
+    }
 
-    fun roadVideo(){
+    /*fun roadVideo(){
         val videoResourceID = resources.getIdentifier("road", "raw", requireContext().packageName)
         val videoUri = Uri.parse("android.resource://${requireContext().packageName}/$videoResourceID")
 
@@ -255,7 +281,7 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
         binding.road.requestFocus()
         binding.road.start()
         binding.road.setOnPreparedListener { it.isLooping = true }
-    }
+    }*/
 
     private fun initResultsItemsRecyclerView() {
         with(binding.recyclerView) {

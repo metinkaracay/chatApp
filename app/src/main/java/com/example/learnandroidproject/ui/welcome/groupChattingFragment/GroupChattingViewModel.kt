@@ -64,11 +64,11 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
 
     // Yarışta sıralama hesaplamak ve animasyonu oynatabilmek için gerken değerler
     var userImageViews: List<CardView> = arrayListOf() // Eski sil
-    var frameLayoutWidth = 0
-    private var userPoints: MutableMap<Int, Int> = mutableMapOf() // TODO eski
     val userRaceDatas: MutableList<UserRaceDatas> = mutableListOf()
     var users: List<Int> = mutableListOf(0,0,0)
-    var userPositionPercentages = mutableListOf<Float>()
+    var userPhotoList = mutableListOf("","","","")
+    val userPointList = mutableListOf("","","","","")
+    var ghostItemCount = 0
 
     // sayaç
     private var countdownJob: Job? = null
@@ -87,6 +87,7 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
                     members = it.userList
                     raceDatas = it.raceState
                     val raceRemainingTime = it.remainingTime
+                    ghostItemCount = it.ghostItemCount
 
                     for (i in 0 until members.size){
                         if (members[i].uRole == "Admin"){
@@ -237,7 +238,6 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
         viewModelScope.launch(Dispatchers.Main){
             _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(isRaceStart = isRaceStart)
         }
-        setupUsers()
     }
 
     fun setTimerPopUp(state: Boolean){
@@ -245,17 +245,7 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
         _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(popUpVisibility = state)
     }
 
-    fun setupUsers() {
-        userPoints.clear()
-        members.filter { it.uRole == "User" }.forEachIndexed { index, user ->
-            userPoints[user.uId] = 0
-        }
-        Log.e("race_users","$userPoints") // TODO burayı dene
-    }
     fun setupUsersForSpectator(dataset: List<RaceData>) {
-        userPoints.clear()
-        userPoints.values.clear()
-
         Log.e("gelen_dataset","${dataset[0].userId}")
 
         for(i in 0 until dataset.size ){
@@ -275,7 +265,6 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
     fun updateUserPoints(args: List<RaceData>) {
         // Admin koptu yarışı bitir
         if(args[0].userId == -1 && args[0].point == -1){
-            userPositionPercentages.clear()
             cancelCountdown()
         }else if (args[0].userId == 0){
             setRaceState(true)
@@ -327,10 +316,6 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
     }
 
     private fun updateUsersPosition() {
-        userPositionPercentages.clear()
-        var userPhotoList = mutableListOf("","","","")
-        val userPointList = mutableListOf("","","","")
-
         // Yarışçının fotoğrafını ve puanını ekler
         for (userId in 0 until userRaceDatas.size) {
             val user = members.find { it.uId == userRaceDatas[userId].userId }
@@ -380,12 +365,9 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
     }
     fun cancelCountdown() {
         // Yarış bittiğinde eldeki verileri sıfırlar
-        userPoints.clear()
-        userPoints.values.clear()
-        userPositionPercentages.clear()
         userRaceDatas.clear()
         for (card in userImageViews){
-            card.x = -190f // Userların cardlarını en başa çeker
+            card.x = -250f // Userların cardlarını en başa çeker
         }
         countdownJob?.cancel()
         viewModelScope.launch(Dispatchers.Main){
@@ -402,5 +384,19 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
             return false
         }
         return true
+    }
+
+    fun ghostCarVisibility(state: Boolean,id: Int){
+        Log.e("gelen_iitemCount","$ghostItemCount")
+        Log.e("gelen_iitemCount","$isAdmin")
+        // Ghostun fotoğrafını ve puanını ekler
+        val user = members.find { it.uId == id}
+        val photoUrl = user?.uPhoto ?: "null"
+        //val point = userRaceDatas[userId].point.toString()
+        userPhotoList[3] = photoUrl
+        userPointList[4] = ghostItemCount.toString()
+        viewModelScope.launch(Dispatchers.Main){
+            _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(inTopThree = state, userPhoto = userPhotoList)
+        }
     }
 }
