@@ -34,11 +34,14 @@ interface DatingApiService {
     suspend fun getMessagesFromPage(@Path("id") id: String,
                                     @Query("page") page: Int ) : List<MessageItem>
     @GET("chats/group/{id}")
-    suspend fun getGroupMessagesFromPage(@Path("id") id: String, @Query("page") page: Int) : BaseGroupResponse// List<MessageItem>
+    suspend fun getGroupMessagesFromPage(@Path("id") id: String, @Query("page") page: Int) : BaseGroupResponse
     @GET("auth/profile/{id}")
     suspend fun getUserProfile(@Path("id") id: String): User
     @GET("chats/{id}/seen")
     suspend fun updateSeenInfoForUser(@Path("id") id: String): ResponseBody
+    @Multipart
+    @POST("chats/group/{id}/photo")
+    suspend fun groupChatSendPhoto(@Path("id") id: String,@Part image: MultipartBody.Part): ResponseBody
     @PATCH("chats/group/{id}/seen")
     suspend fun updateSeenInfoForGroup(@Path("id") id: String): ResponseBody
     @Multipart

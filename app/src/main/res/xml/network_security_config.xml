@@ -3,7 +3,7 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">fun2lite-staging-api.eu-central-1.elasticbeanstalk.com</domain>
         <domain includeSubdomains="true">fun2lite-staging-ws.eu-central-1.elasticbeanstalk.com</domain>
-        <domain includeSubdomains="true">10.82.0.82</domain>
+        <domain includeSubdomains="true">10.82.0.102</domain>
         <domain includeSubdomains="true">ec2-18-196-242-245.eu-central-1.compute.amazonaws.com</domain>
     </domain-config>
 </network-security-config>

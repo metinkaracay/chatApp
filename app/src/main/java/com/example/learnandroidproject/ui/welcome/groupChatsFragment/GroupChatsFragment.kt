@@ -2,8 +2,13 @@ package com.example.learnandroidproject.ui.welcome.groupChatsFragment
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.learnandroidproject.R
@@ -61,6 +66,21 @@ class GroupChatsFragment : BaseFragment<FragmentGroupChatsBinding>() {
         }
         adapterListener()
 
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        ProcessLifecycleOwner.get().lifecycle.addObserver(object : LifecycleObserver {
+            @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+            fun onBackground() {
+            }
+
+            @OnLifecycleEvent(Lifecycle.Event.ON_START)
+            fun onForeground() {
+                viewModel.getAllGroups()
+                Toast.makeText(requireContext(),"İstek atıldı", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     fun handleViewOptions(){

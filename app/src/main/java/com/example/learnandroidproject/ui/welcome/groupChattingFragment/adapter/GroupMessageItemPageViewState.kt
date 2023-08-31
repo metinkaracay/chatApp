@@ -22,8 +22,8 @@ class GroupMessageItemPageViewState(
 
     fun senderNameGravity() = if (message.senderUser.toInt() == loggedUserId) Gravity.END else Gravity.START
 
-    fun textBubbleVisibility() = View.VISIBLE
-
+    fun textBubbleVisibility() = if (message.messageType == "text") View.VISIBLE else View.GONE
+    fun imageBubbleVisibility() = if (message.messageType == "text") View.GONE else View.VISIBLE
     fun messageBackground(context: Context) : Drawable? = if(message.senderUser.toInt() == loggedUserId) {
         ContextCompat.getDrawable(context, R.drawable.message_outgoing)
     }else{
@@ -31,6 +31,7 @@ class GroupMessageItemPageViewState(
     }
 
     fun getText() = message.message
+    fun getImage() = message.message
 
     fun textColor(context: Context) : Int = if (message.senderUser.toInt() == loggedUserId) ContextCompat.getColor(context, R.color.white) else ContextCompat.getColor(context, R.color.black)
 

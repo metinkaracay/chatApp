@@ -3,7 +3,9 @@ package com.example.learnandroidproject.ui.welcome.groupChattingFragment
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -30,6 +32,7 @@ import com.example.learnandroidproject.ui.base.BaseFragment
 import com.example.learnandroidproject.ui.welcome.WelcomeViewModel
 import com.example.learnandroidproject.ui.welcome.chattingFragment.SocketHandler
 import com.example.learnandroidproject.ui.welcome.groupChattingFragment.adapter.GroupChattingMessagesAdapter
+import com.github.dhaval2404.imagepicker.ImagePicker
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -82,14 +85,16 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
             positionPercentsCalculatedLiveData.observeNonNull(viewLifecycleOwner){
                 if (it){
                     calculateLocation()
-                    ghostCarController(loggedUserId!!.toInt())
+                    if (!viewModel.isAdmin){
+                        ghostCarController(loggedUserId!!.toInt())
+                    }
                 }
             }
         }
         with(welcomeViewModel){
             raceDataLiveEvent.observeNonNull(viewLifecycleOwner){
                 // Socketten gelen yarışma verileri
-                if (viewModel.group.groupId == it[0].groupId && !isFirstData){
+                if (viewModel.group.groupId == it[0].groupId /*&& !isFirstData*/){
                     viewModel.updateUserPoints(it)
                 }else{
                     isFirstData = false // Grupta değilken mesajları biriktiriyor ve girdiğimde hem get'ten çekiyor hemde sockettekini işliyor. Verilerin hatalı olmasına sebep oluyordu
@@ -112,9 +117,12 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
             welcomeViewModel.exitToChatRoomFillData(true)
             welcomeViewModel.navigateUp()
         }
+        binding.galleryButton.setOnClickListener {
+            chooseImage()
+        }
         binding.sendButton.setOnClickListener {
             val message = binding.editText.text.toString()
-            viewModel.sendMessage(SocketHandler,requireContext(),message)
+            viewModel.sendMessage(message,"text")
             binding.editText.text.clear()
 
             welcomeViewModel.fillTestSingleEvent(message)
@@ -166,7 +174,7 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
         if (existingUser != null){
             Log.e("GhostController","ilk 3'te hocam")
             viewModel.ghostCarVisibility(false, id)
-        }else{
+        }else if (!viewModel.isAdmin){
             viewModel.ghostCarVisibility(true, id)
             Log.e("GhostController","ilk 3'te değil hocam")
             //playCarVideo(4)
@@ -290,6 +298,27 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
                 stackFromEnd= true
             }
             adapter = recyclerAdapter
+        }
+    }
+
+    private fun chooseImage(){
+        ImagePicker.with(this)
+            .crop()
+            .compress(1024)
+            .maxResultSize(1080, 1080)
+            .start()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK){
+            val uri: Uri = data?.data!!
+            Log.e("fotoUri","$uri")
+            viewModel.sendPhoto(uri,requireContext())
+        } else if (resultCode == ImagePicker.RESULT_ERROR) {
+            Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(requireContext(), "Task Cancelled", Toast.LENGTH_SHORT).show()
         }
     }
 }

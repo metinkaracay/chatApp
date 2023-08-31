@@ -84,8 +84,8 @@ class BaseChatRoomsFragment : BaseFragment<FragmentBaseChatRoomsBinding>() {
 
     fun handleViewOption(){
         binding.profile.setOnClickListener {
-            //welcomeViewModel.goToProfilePage()
-            welcomeViewModel.goToRaceFragment()
+            welcomeViewModel.goToProfilePage()
+            //welcomeViewModel.goToRaceFragment()
             //welcomeViewModel.goToVideoFragment()
         }
         binding.exitButton.setOnClickListener {

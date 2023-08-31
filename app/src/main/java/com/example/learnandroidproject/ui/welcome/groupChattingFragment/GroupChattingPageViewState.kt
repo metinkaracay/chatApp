@@ -21,7 +21,7 @@ data class GroupChattingPageViewState(
     var isLoaded: Boolean = false,
     var userPhoto: List<String> = arrayListOf(),
     var userPoints: List<String> = arrayListOf(),
-    var inTopThree: Boolean = true,
+    var inTopThree: Boolean = false,
     var loggedUserRank: Int = 4, // TODO rank sistemi kalkacak büyük ihtimalle viewModeldan sildim ama kontrol et
     var membersNameList: MutableMap<Int,String>
 ) {
@@ -39,6 +39,7 @@ data class GroupChattingPageViewState(
     fun groupVisibility() = if (isRaceStart) View.GONE else View.VISIBLE
     fun sendButtonBackground(context: Context): Int = ContextCompat.getColor(context, R.color.send_message_color)
     fun sendIcon(context: Context): Drawable? = ContextCompat.getDrawable(context, R.drawable.send_icon)
+    fun galleryIcon(context: Context): Drawable? = ContextCompat.getDrawable(context, R.drawable.gallery_icon)
     fun adminButtonVisibility(): Int {
         return if (isAdmin && !isRaceStart) View.VISIBLE else View.GONE
     }

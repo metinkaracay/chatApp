@@ -84,7 +84,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
 
         if (user.uId == args.senderId.toInt() && fetchSocketData){
 
-            val newMessage = MessageItem(args.message,args.senderId,args.receiverId,currentTime)
+            val newMessage = MessageItem(args.message,args.messageType,args.senderId,args.receiverId,currentTime)
 
             viewModelScope.launch(Dispatchers.Main) {
                 _newMessageOnTheChatLiveData.postValue(true)
@@ -95,7 +95,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
         fetchSocketData = true // Chatte değilken gelen mesajları biriktirdiği için fazladan mesaj yazdırıyordu. Bu durumu engellemek için kontrol
         _newMessageOnTheChatLiveData.postValue(false)
     }
-    fun sendMessage(Socket: SocketHandler,context: Context,message: String){
+    fun sendMessage(Socket: SocketHandler,context: Context,message: String, messageType: String){
         val sharedPreferences = context.getSharedPreferences("LoggedUserID",Context.MODE_PRIVATE)
         val loggedUserId = sharedPreferences.getString("LoggedUserId","")
 
@@ -110,6 +110,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
             val messageJson = JSONObject()
             messageJson.put("receiverId", user.uId)
             messageJson.put("message", message)
+            messageJson.put("type", messageType)
 
             mSocket.emit("message",messageJson.toString(), Ack{ args ->
 
@@ -119,7 +120,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
                 val ackReceiver = json.get("receiverId")
                 val ackMessageTime = json.get("payloadDate")
 
-                var model = Args(message,loggedUserId.toString(),ackReceiver.toString(),ackMessageTime.toString(),true)
+                var model = Args(message,loggedUserId.toString(),ackReceiver.toString(),ackMessageTime.toString(),messageType,true)
 
                 // SendingMessage daha önce oluşmamışsa oluştur
                 val messageListModel = sendingMessage.getOrPut(ackReceiver.toString()) { mutableListOf() }
@@ -130,7 +131,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
                 _newMessageOnTheChatLiveData.postValue(true)
 
             })
-            val newMessage = MessageItem(message,loggedUserId.toString(),user.uId.toString(),currentTime.toString())
+            val newMessage = MessageItem(message,messageType,loggedUserId.toString(),user.uId.toString(),currentTime.toString())
             messageList = messageList + newMessage
             sendMessagesToPageViewState(messageList)
             _newMessageOnTheChatLiveData.postValue(false)

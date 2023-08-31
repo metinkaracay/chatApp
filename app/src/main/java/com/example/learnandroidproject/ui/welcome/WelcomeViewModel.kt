@@ -39,7 +39,8 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     private val _isGroupListRecording: MutableLiveData<MutableMap<String, MutableList<Args>>> = MutableLiveData()
     private val _isMessageSended: MutableLiveData<Any> = MutableLiveData()
     private val _isNewGroupCreated: SingleLiveEvent<Boolean> = SingleLiveEvent()
-    private val _raceDataLiveEvent: MutableLiveData<List<RaceData>> = MutableLiveData()
+    private val _raceDataLiveEvent: MutableLiveData<List<RaceData>> = MutableLiveData() // Son datayı yazdırma sorunu
+    //private val _raceDataLiveEvent: SingleLiveEvent<List<RaceData>> = SingleLiveEvent()
     private val _groupEventRecording: MutableLiveData<MutableMap<Int, Int>> = MutableLiveData()
 
     private val _testSingleLiveEvent: SingleLiveEvent<String> = SingleLiveEvent()
@@ -55,6 +56,7 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     val isMessageSended: MutableLiveData<Any> = _isMessageSended
     val isNewGroupCreated: SingleLiveEvent<Boolean> = _isNewGroupCreated
     val raceDataLiveEvent: MutableLiveData<List<RaceData>> = _raceDataLiveEvent
+    //val raceDataLiveEvent: SingleLiveEvent<List<RaceData>> = _raceDataLiveEvent
     val groupEventRecording: MutableLiveData<MutableMap<Int, Int>> = _groupEventRecording
 
     val testSingleLiveEvent: LiveData<String> = _testSingleLiveEvent
@@ -201,10 +203,11 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
                 val message = json.getString("message")
                 val messageDate = json.getString("sendTime")
                 val receiverIdFromServer = json.getInt("receiverId")
+                val messageType = json.getString("type")
                 val isSeen = json.getBoolean("isSeen")
 
 
-                val argsModel = Args(message, senderIdFromServer.toString(), receiverIdFromServer.toString(), messageDate ,isSeen.equals(Boolean))
+                val argsModel = Args(message, senderIdFromServer.toString(), receiverIdFromServer.toString(), messageDate ,messageType,isSeen.equals(Boolean))
 
                 //userMessages daha önce oluşmamışsa oluştur
                 if(userMessages.isEmpty()){
@@ -232,11 +235,12 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
 
                 val senderIdFromServer = json.getInt("senderId")
                 val message = json.getString("message")
+                val messageType = json.getString("type")
                 val messageDate = json.getString("sendTime")
                 val receiverIdFromServer = json.getInt("receiverId")
                 val isSeen = json.getBoolean("isSeen")
 
-                val argsModel = Args(message, senderIdFromServer.toString(), receiverIdFromServer.toString(), messageDate ,isSeen.equals(Boolean))
+                val argsModel = Args(message, senderIdFromServer.toString(), receiverIdFromServer.toString(), messageDate ,messageType,isSeen.equals(Boolean))
 
                 if (groupMessages.containsKey(receiverIdFromServer.toString())) {
                     Log.e("socketListener","ifedüştü")

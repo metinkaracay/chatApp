@@ -40,6 +40,8 @@ class DatingApiRepositoryImpl @Inject constructor(
 
     override suspend fun updateSeenInfoForUser(id: String): GenericResult<ResponseBody> = handleDatingRequest { datingApiService.updateSeenInfoForUser(id) }
 
+    override suspend fun groupChatSendPhoto(id: String, image: MultipartBody.Part): GenericResult<ResponseBody> = handleDatingRequest { datingApiService.groupChatSendPhoto(id,image) }
+
     override suspend fun updateSeenInfoForGroup(id: String): GenericResult<ResponseBody> = handleDatingRequest { datingApiService.updateSeenInfoForGroup(id) }
 
     override suspend fun saveProfilePhoto(image: MultipartBody.Part): GenericResult<ResponseBody> = handleDatingRequest { datingApiService.saveProfilePhoto(image) }

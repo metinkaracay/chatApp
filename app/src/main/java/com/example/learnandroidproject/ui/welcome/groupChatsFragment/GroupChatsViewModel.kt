@@ -80,7 +80,11 @@ class GroupChatsViewModel@Inject constructor(private val datingApiRepository: Da
                     if (counter == listSize - 1) {
                         Log.e("Messagefriends", "Sender: ${message.senderId}, Receiver: ${message.receiverId}, Content: ${message.message}, Date: ${message.messageTime}, Seen: ${message.seen}")
                         if (groupList[i].groupId.toString() == message.receiverId) {
-                            groupList[i].lastMessage = message.message
+                            if (message.messageType == "text"){
+                                groupList[i].lastMessage = message.message
+                            }else{
+                                groupList[i].lastMessage = "Fotoğraf paylaşıldı"
+                            }
                             groupList[i].messageTime = message.messageTime
                             if (loggedUserId == message.senderId){
                                 groupList[i].isSeen == true

@@ -5,6 +5,7 @@ data class Args(
     var senderId: String,
     var receiverId: String,
     var messageTime: String,
+    var messageType: String,
     var seen: Boolean
 ) {
 }

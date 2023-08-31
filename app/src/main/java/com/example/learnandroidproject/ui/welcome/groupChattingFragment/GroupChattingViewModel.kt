@@ -1,12 +1,14 @@
 package com.example.learnandroidproject.ui.welcome.groupChattingFragment
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.learnandroidproject.common.SingleLiveEvent
+import com.example.learnandroidproject.common.isSuccess
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.Args
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.RaceData
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.UserRaceDatas
@@ -21,6 +23,10 @@ import com.google.android.material.card.MaterialCardView
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.socket.client.Ack
 import kotlinx.coroutines.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONException
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
@@ -79,6 +85,7 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
     fun fetchMessages(context: Context){
         val sharedPreferences = context.getSharedPreferences("LoggedUserID", Context.MODE_PRIVATE)
         val loggedUserId = sharedPreferences.getString("LoggedUserId","")
+        loggedUserid = loggedUserId!!.toInt()
 
         viewModelScope.launch(Dispatchers.IO){
             datingApiRepository.getGroupMessagesFromPage(group.groupId.toString(),pageId).get()?.let {
@@ -147,7 +154,7 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
         if (group.groupId == args.receiverId.toInt() && fetchSocketData){
 
 
-            val newMessage = MessageItem(args.message,args.senderId,args.receiverId,currentTime)
+            val newMessage = MessageItem(args.message,args.messageType,args.senderId,args.receiverId,currentTime)
 
             viewModelScope.launch(Dispatchers.Main) {
 
@@ -160,12 +167,9 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
         _newMessageOnTheChatLiveData.postValue(false)
     }
 
-    fun sendMessage(Socket: SocketHandler, context: Context, message: String){
-        val sharedPreferences = context.getSharedPreferences("LoggedUserID", Context.MODE_PRIVATE)
-        val loggedUserId = sharedPreferences.getString("LoggedUserId","")
-        loggedUserid = loggedUserId!!.toInt()
-
-        val mSocket = Socket.getSocket()
+    fun sendMessage(message: String, messageType: String){
+        val socket = SocketHandler
+        val mSocket = socket.getSocket()
 
         if (message.isNotEmpty() && message.isNotBlank()){
 
@@ -173,6 +177,7 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
             Log.e("receiverId","${group.groupId}")
             messageJson.put("receiverId", group.groupId)
             messageJson.put("message", message)
+            messageJson.put("type", messageType)
 
             mSocket.emit("message:group",messageJson.toString(), Ack{ args ->
 
@@ -185,7 +190,7 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
 
                 Log.e("gelenack","$ackUserItemCount")
 
-                val model = Args(message,loggedUserId.toString(),ackReceiver.toString(),ackMessageTime.toString(),true)
+                val model = Args(message,loggedUserid.toString(),ackReceiver.toString(),ackMessageTime.toString(),messageType,true)
 
                 // SendingMessage daha önce oluşmamışsa oluştur
                 val messageListModel = sendingMessage.getOrPut(ackReceiver.toString()) { mutableListOf() }
@@ -200,6 +205,40 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
             _newMessageOnTheChatLiveData.postValue(false)
         }else{
             _errorMessageLiveData.postValue("Lütfen Bir Mesaj Girin")
+        }
+    }
+
+    fun sendPhoto(selectedImage: Uri, context: Context){
+        val uuid = UUID.randomUUID()
+
+        viewModelScope.launch(Dispatchers.IO) {
+            selectedImage?.let { imageUri ->
+                val imageStream = context.contentResolver.openInputStream(imageUri)
+                imageStream?.use {
+                    val byteArray = it.readBytes()
+                    val imageBody = byteArray.toRequestBody("image/*".toMediaTypeOrNull())
+                    val imagePart = MultipartBody.Part.createFormData("image", "${uuid}.jpg", imageBody)
+
+                    // Yükleme işlemini gerçekleştir
+                    val uploadResult = datingApiRepository.groupChatSendPhoto(group.groupId.toString(),imagePart)
+
+                    if (uploadResult.isSuccess()) {
+                        val responseString = uploadResult.component1()?.string() ?: ""
+                        Log.e("responseString", responseString)
+                        try {
+                            val jsonObject = JSONObject(responseString)
+                            val url = jsonObject.optString("url", "")
+                            Log.e("imageURL", url)
+                            // Chatte gözükmesi için backend'ten alınan urli sockete emitler
+                            sendMessage(url,"image")
+                        } catch (e: JSONException) {
+                            Log.e("JSONParsingError", "Error parsing response JSON")
+                        }
+                    } else {
+                        Log.e("yükleme durumu", "başarısız")
+                    }
+                }
+            }
         }
     }
 
@@ -269,50 +308,52 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
         }else if (args[0].userId == 0){
             setRaceState(true)
             startCountdown(args[0].point.toString())
-        }else{
-            Log.e("testArgs_sil","${args}")
-            for (i in 0 until args.size){
-                val userId = args[i].userId
-                val point = args[i].point
-                if (!userRaceDatas.isNullOrEmpty()){
-                    Log.e("userRaceDataKontrol","${userRaceDatas[0].userId}")
-                }
-                // Gelen datadaki kişi ilk üçte var mı kontrol et
-                val existingUser = userRaceDatas.find { it.userId == userId }
+        }//else{
 
-                if (existingUser != null) { // Varsa çalışır
-                    Log.e("userRaceDataKontr","if çalıştı $userId")
-                    existingUser.point = point
-                    existingUser.carId = args[i].carId
-                } else { // Yoksa çalışır
-                    Log.e("userRaceKontr","else çalıştı $userId")
-                    val newUser = UserRaceDatas(userId, point, args[i].carId, 0.0f)
-                    userRaceDatas.add(newUser)
-                }
+        //}
+        Log.e("testArgs_sil","${args}")
+        for (i in 0 until args.size){
+            val userId = args[i].userId
+            val point = args[i].point
+            if (!userRaceDatas.isNullOrEmpty()){
+                Log.e("userRaceDataKontrol","${userRaceDatas[0].userId}")
             }
+            // Gelen datadaki kişi ilk üçte var mı kontrol et
+            val existingUser = userRaceDatas.find { it.userId == userId }
 
-            // ilk mesaj atıldığında 1 veri geliyor. Bize 3 kişi lazım olduğu için 2 tane boş hesap ekler
-            if (userRaceDatas.size < 3){
-                for (i in 0 until 3 - userRaceDatas.size){
-                    val emptyUser = UserRaceDatas(0,0,0, 0.0f)// Todo Boş user oluştururken verdiğim datalar patlatabilir
-                    userRaceDatas.add(emptyUser)
-
-                    Log.e("userRaceDataForsayaç","${i+1}")
-                }
-            }else if (userRaceDatas.size > 3){
-                val lowestPoint = userRaceDatas.minByOrNull { it.point }
-                Log.e("userRaceDataForelse","silindi : ${lowestPoint?.userId}")
-
-                if (lowestPoint != null){
-                    userRaceDatas.remove(lowestPoint)
-                    for (i in 0 until userRaceDatas.size){ // TODO top 3teki kişileri yazdırır işin bitince sil algoritmayı etkilemiyor
-                        Log.e("userRaceDatakişiler","${userRaceDatas[i].userId}")
-                    }
-                }
+            if (existingUser != null) { // Varsa çalışır
+                Log.e("userRaceDataKontr","if çalıştı $userId")
+                existingUser.point = point
+                existingUser.carId = args[i].carId
+            } else { // Yoksa çalışır
+                Log.e("userRaceKontr","else çalıştı $userId")
+                val newUser = UserRaceDatas(userId, point, args[i].carId, 0.0f)
+                userRaceDatas.add(newUser)
             }
-            Log.e("userRaceDATAAAASock","${userRaceDatas.size}")
-            updateUsersPosition()
         }
+
+        // ilk mesaj atıldığında 1 veri geliyor. Bize 3 kişi lazım olduğu için 2 tane boş hesap ekler
+        if (userRaceDatas.size < 3){
+            for (i in 0 until 3 - userRaceDatas.size){
+                val emptyUser = UserRaceDatas(0,0,0, 0.0f)// Todo Boş user oluştururken verdiğim datalar patlatabilir
+                userRaceDatas.add(emptyUser)
+
+                Log.e("userRaceDataForsayaç","${i+1}")
+            }
+        }else if (userRaceDatas.size > 3){
+            val lowestPoint = userRaceDatas.minByOrNull { it.point }
+            Log.e("userRaceDataForelse","silindi : ${lowestPoint?.userId}")
+
+            if (lowestPoint != null){
+                userRaceDatas.remove(lowestPoint)
+                for (i in 0 until userRaceDatas.size){ // TODO top 3teki kişileri yazdırır işin bitince sil algoritmayı etkilemiyor
+                    Log.e("userRaceDatakişiler","${userRaceDatas[i].userId}")
+                }
+            }
+        }
+        Log.e("userRaceDATAAAASock","${userRaceDatas.size}")
+        updateUsersPosition()
+
     }
 
     private fun updateUsersPosition() {
