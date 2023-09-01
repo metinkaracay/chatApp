@@ -15,6 +15,7 @@ import com.example.learnandroidproject.data.local.model.dating.db.request.chatAp
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.GroupInfo
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.GroupMember
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
+import com.example.learnandroidproject.di.ChatDatabase
 import com.example.learnandroidproject.domain.remote.dating.DatingApiRepository
 import com.example.learnandroidproject.ui.base.BaseViewModel
 import com.example.learnandroidproject.ui.welcome.chattingFragment.SocketHandler
@@ -136,17 +137,19 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
 
     fun setMembersNameById(){
         senderUserName.clear()
+        Log.e("memebrssss","$members")
 
         for (member in members) {
             senderUserName[member.uId] = member.uName ?: ""
         }
+        Log.e("memebrssss","$senderUserName")
     }
 
     fun sendMessagesToPageViewState(list: List<MessageItem>){
         _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(messages = list)
     }
 
-    fun fetchMessagesOnSocket(args: Args){
+    fun fetchMessagesOnSocket(args: Args,context: Context){
         val dateNow = Date()
         val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
         val currentTime = timeFormat.format(dateNow)
@@ -167,7 +170,7 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
         _newMessageOnTheChatLiveData.postValue(false)
     }
 
-    fun sendMessage(message: String, messageType: String){
+    fun sendMessage(message: String, messageType: String,context: Context){
         val socket = SocketHandler
         val mSocket = socket.getSocket()
 
@@ -191,6 +194,7 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
                 Log.e("gelenack","$ackUserItemCount")
 
                 val model = Args(message,loggedUserid.toString(),ackReceiver.toString(),ackMessageTime.toString(),messageType,true)
+                val messageItem = MessageItem(message,messageType,loggedUserid.toString(),ackReceiver.toString(),ackMessageTime.toString())
 
                 // SendingMessage daha önce oluşmamışsa oluştur
                 val messageListModel = sendingMessage.getOrPut(ackReceiver.toString()) { mutableListOf() }
@@ -230,7 +234,7 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
                             val url = jsonObject.optString("url", "")
                             Log.e("imageURL", url)
                             // Chatte gözükmesi için backend'ten alınan urli sockete emitler
-                            sendMessage(url,"image")
+                            sendMessage(url,"image",context)
                         } catch (e: JSONException) {
                             Log.e("JSONParsingError", "Error parsing response JSON")
                         }

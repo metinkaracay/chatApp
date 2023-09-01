@@ -54,7 +54,7 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
         val sharedPreferences = requireContext().getSharedPreferences("LoggedUserID",Context.MODE_PRIVATE)
         val loggedUserId = sharedPreferences.getString("LoggedUserId","")
         welcomeViewModel.groupMessageSingleLiveEvent.observe(viewLifecycleOwner){
-            viewModel.fetchMessagesOnSocket(it)
+            viewModel.fetchMessagesOnSocket(it,requireContext())
         }
         val group = welcomeViewModel.getGroupInfo()
         viewModel.group = group // Tıklanan grup bilgilerini çeker
@@ -122,7 +122,7 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
         }
         binding.sendButton.setOnClickListener {
             val message = binding.editText.text.toString()
-            viewModel.sendMessage(message,"text")
+            viewModel.sendMessage(message,"text",requireContext())
             binding.editText.text.clear()
 
             welcomeViewModel.fillTestSingleEvent(message)
@@ -300,7 +300,6 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
             adapter = recyclerAdapter
         }
     }
-
     private fun chooseImage(){
         ImagePicker.with(this)
             .crop()

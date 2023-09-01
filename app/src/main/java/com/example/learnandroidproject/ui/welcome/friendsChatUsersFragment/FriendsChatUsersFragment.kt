@@ -35,6 +35,7 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.getAllUsers(requireContext())
         val clickedUser = welcomeViewModel.getUserInfo() // Son tıklanan kişi
         val messageArray = welcomeViewModel.getLastSentMessage() // Bizim gönderdiğimiz mesajlar
         viewModel.sendingMessage = messageArray!!
@@ -65,6 +66,7 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
                     if (user != null){
                         Log.e("bildirimdeki user","Id: ${user.uId}, Name: ${user.uName}")
                         welcomeViewModel.fillUserInfoData(user.uId,user.uName,user.uStatu,user.uPhoto)
+                        //welcomeViewModel.fillUserRoomData(user.roomId,user.uId,user.uName,user.uStatu,user.uPhoto!!)
                         welcomeViewModel.goToChattingPage()
                         viewModel.fixObserver()
                     }else{
@@ -100,6 +102,7 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
         with(recyclerAdapter){
             setItemClickListener{
                 welcomeViewModel.fillUserInfoData(it.uId,it.uName,it.uStatu,it.uPhoto)
+                //welcomeViewModel.fillUserRoomData(it.roomId,it.uId,it.uName,it.uStatu,it.uPhoto!!)
                 //viewModel.updateSeenInfo(it.uId) gerek yok gibi
                 welcomeViewModel.goToChattingPage()
             }
@@ -118,7 +121,7 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
 
             @OnLifecycleEvent(Lifecycle.Event.ON_START)
             fun onForeground() {
-                viewModel.getAllUsers()
+                viewModel.getAllUsers(requireContext())
                 Toast.makeText(requireContext(),"İstek atıldı",Toast.LENGTH_SHORT).show()
             }
         })

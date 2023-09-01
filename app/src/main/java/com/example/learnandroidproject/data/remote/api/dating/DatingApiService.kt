@@ -33,6 +33,9 @@ interface DatingApiService {
     @GET("chats/{id}")
     suspend fun getMessagesFromPage(@Path("id") id: String,
                                     @Query("page") page: Int ) : List<MessageItem>
+    @Multipart
+    @POST("chats/{id}/photo")
+    suspend fun friendChatSendPhoto(@Path("id") id: String,@Part image: MultipartBody.Part): ResponseBody
     @GET("chats/group/{id}")
     suspend fun getGroupMessagesFromPage(@Path("id") id: String, @Query("page") page: Int) : BaseGroupResponse
     @GET("auth/profile/{id}")

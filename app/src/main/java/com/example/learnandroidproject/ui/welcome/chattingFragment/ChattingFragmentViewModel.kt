@@ -1,14 +1,17 @@
 package com.example.learnandroidproject.ui.welcome.chattingFragment
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.learnandroidproject.common.isSuccess
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.Args
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.GroupInfo
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
+import com.example.learnandroidproject.di.ChatDatabase
 import com.example.learnandroidproject.domain.remote.dating.DatingApiRepository
 import com.example.learnandroidproject.ui.base.BaseViewModel
 import com.example.learnandroidproject.ui.welcome.groupChattingFragment.GroupChattingPageViewState
@@ -18,6 +21,10 @@ import io.socket.client.Ack
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONException
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
@@ -47,11 +54,13 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
     var sendingMessage: MutableMap<String, MutableList<Args>> = mutableMapOf()
     var fetchSocketData = false
     var messageList: List<MessageItem> = arrayListOf()
-    fun getUserInfo(){
+    fun getRoomInfo(){
         _userLiveData.value = userLiveData.value?.copy(userInfo = user)
     }
     fun sendMessagesToPageViewState(list: List<MessageItem>){
-        _chattingPageViewStateLiveData.value = ChattingFragmentPageViewState(user,list)
+        viewModelScope.launch(Dispatchers.Main){
+            _chattingPageViewStateLiveData.value = ChattingFragmentPageViewState(user,list)
+        }
         if (!list.isNullOrEmpty()){
             isNewChat = false
         }
@@ -77,7 +86,15 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
         }
     }
 
-    fun fetchMessagesOnSocket(args: Args){
+    fun getLastMessageFromRoom(context: Context){
+        viewModelScope.launch(Dispatchers.IO){
+            val dao = ChatDatabase.getInstance(context).MessageDao()
+            val lastMessage  = dao.filterMessages(user.uId.toString())
+            Log.e("lasssssst","$lastMessage")
+        }
+    }
+
+    fun fetchMessagesOnSocket(args: Args,context: Context){
         val dateNow = Date()
         val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
         val currentTime = timeFormat.format(dateNow)
@@ -85,6 +102,9 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
         if (user.uId == args.senderId.toInt() && fetchSocketData){
 
             val newMessage = MessageItem(args.message,args.messageType,args.senderId,args.receiverId,currentTime)
+            var newMessageForRoom = newMessage
+            newMessageForRoom.messageTime = args.messageTime
+            insertMessageToRoom(context,newMessageForRoom)
 
             viewModelScope.launch(Dispatchers.Main) {
                 _newMessageOnTheChatLiveData.postValue(true)
@@ -95,7 +115,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
         fetchSocketData = true // Chatte değilken gelen mesajları biriktirdiği için fazladan mesaj yazdırıyordu. Bu durumu engellemek için kontrol
         _newMessageOnTheChatLiveData.postValue(false)
     }
-    fun sendMessage(Socket: SocketHandler,context: Context,message: String, messageType: String){
+    fun sendMessage(context: Context,message: String, messageType: String){
         val sharedPreferences = context.getSharedPreferences("LoggedUserID",Context.MODE_PRIVATE)
         val loggedUserId = sharedPreferences.getString("LoggedUserId","")
 
@@ -103,7 +123,8 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
         val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
         val currentTime = timeFormat.format(dateNow)
 
-        val mSocket = Socket.getSocket()
+        val socket = SocketHandler
+        val mSocket = socket.getSocket()
 
         if (message.isNotEmpty() && message.isNotBlank()){
 
@@ -117,16 +138,18 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
                 val ackReceiverId = args.getOrNull(0)
                 val json = JSONObject(ackReceiverId.toString())
 
-                val ackReceiver = json.get("receiverId")
-                val ackMessageTime = json.get("payloadDate")
+                val ackReceiver = json.get("receiverId").toString()
+                val ackMessageTime = json.get("payloadDate").toString()
 
-                var model = Args(message,loggedUserId.toString(),ackReceiver.toString(),ackMessageTime.toString(),messageType,true)
+                var model = Args(message,loggedUserId.toString(),ackReceiver,ackMessageTime,messageType,true)
+                val messageItem = MessageItem(message,messageType,loggedUserId.toString(),ackReceiver,ackMessageTime)
 
                 // SendingMessage daha önce oluşmamışsa oluştur
                 val messageListModel = sendingMessage.getOrPut(ackReceiver.toString()) { mutableListOf() }
 
                 // Modeli liste içine ekle
                 messageListModel.add(model)
+                insertMessageToRoom(context,messageItem)
                 Log.e("gönderilen model","$sendingMessage")
                 _newMessageOnTheChatLiveData.postValue(true)
 
@@ -137,6 +160,45 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
             _newMessageOnTheChatLiveData.postValue(false)
         }else{
             _errorMessageLiveData.postValue("Lütfen Bir Mesaj Girin")
+        }
+    }
+    fun sendPhoto(selectedImage: Uri, context: Context){
+        val uuid = UUID.randomUUID()
+
+        viewModelScope.launch(Dispatchers.IO) {
+            selectedImage?.let { imageUri ->
+                val imageStream = context.contentResolver.openInputStream(imageUri)
+                imageStream?.use {
+                    val byteArray = it.readBytes()
+                    val imageBody = byteArray.toRequestBody("image/*".toMediaTypeOrNull())
+                    val imagePart = MultipartBody.Part.createFormData("image", "${uuid}.jpg", imageBody)
+
+                    // Yükleme işlemini gerçekleştir
+                    val uploadResult = datingApiRepository.friendChatSendPhoto(user.uId.toString(),imagePart)
+
+                    if (uploadResult.isSuccess()) {
+                        val responseString = uploadResult.component1()?.string() ?: ""
+                        Log.e("responseString", responseString)
+                        try {
+                            val jsonObject = JSONObject(responseString)
+                            val url = jsonObject.optString("url", "")
+                            Log.e("imageURL", url)
+                            // Chatte gözükmesi için backend'ten alınan urli sockete emitler
+                            sendMessage(context,url,"image")
+                        } catch (e: JSONException) {
+                            Log.e("JSONParsingError", "Error parsing response JSON")
+                        }
+                    } else {
+                        Log.e("yükleme durumu", "başarısız")
+                    }
+                }
+            }
+        }
+    }
+    fun insertMessageToRoom(context: Context, message: MessageItem){
+        viewModelScope.launch(Dispatchers.IO) {
+            val messageDao = ChatDatabase.getInstance(context).MessageDao()
+            messageDao.insertMessage(message)
         }
     }
 }

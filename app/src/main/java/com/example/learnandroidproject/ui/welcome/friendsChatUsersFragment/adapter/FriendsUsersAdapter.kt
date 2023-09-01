@@ -119,7 +119,7 @@ class FriendsUsersAdapter : RecyclerView.Adapter<FriendsUsersAdapter.UsersItemVi
                 itemClickListener?.invoke(user)
             }
             binding.userPhoto.setOnClickListener {
-                photoIemClickListener?.invoke(list[position].uPhoto)
+                photoIemClickListener?.invoke(list[position].uPhoto!!)
             }
         }
     }

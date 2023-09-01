@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.Args
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
+import com.example.learnandroidproject.di.ChatDatabase
 import com.example.learnandroidproject.domain.remote.dating.DatingApiRepository
 import com.example.learnandroidproject.ui.base.BaseViewModel
 import com.github.michaelbull.result.get
@@ -35,16 +36,10 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
     var newUserInfo = UserInfo(0,"","","","","",true)
     var sendingMessage: MutableMap<String, MutableList<Args>> = mutableMapOf()
 
-    init {
-        getAllUsers()
-    }
-
-    fun getAllUsers(){
-
+    fun getAllUsers(context: Context){
         viewModelScope.launch(Dispatchers.IO){
             datingApiRepository.fetchFriendsUsers().get()?.let {
                 withContext(Dispatchers.Main){
-                    Log.e("fetchGelen","${it}")
                     friendList.clear()
                     friendList.addAll(it)
                     _friendsChatUsersPageViewStateLiveData.value = FriendsChatUsersPageViewState(it)
@@ -52,7 +47,6 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
             }
         }
     }
-
     fun findUserForNotification(id: String){
         viewModelScope.launch(Dispatchers.IO){
             delay(300L)
@@ -96,7 +90,11 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
                         Log.e("Messagefriends", "Sender1: ${message.senderId}, Receiver: ${message.receiverId}, Content: ${message.message}, Date: ${message.messageTime}, Seen: ${message.seen}")
 
                         if (friendList[i].uId.toString() == message.receiverId) {
-                            friendList[i].lastMessage = message.message
+                            if (message.messageType == "text"){
+                                friendList[i].lastMessage = message.message
+                            }else{
+                                friendList[i].lastMessage = "Fotoğraf"
+                            }
                             friendList[i].elapsedTime = message.messageTime
                             friendList[i].seen = true
                             userMessages1.clear()
@@ -140,7 +138,11 @@ class FriendsChatUsersViewModel@Inject constructor(private val datingApiReposito
                     if (counter == listSize - 1) {
                         Log.e("Messagefriends", "Sender: ${message.senderId}, Receiver: ${message.receiverId}, Content: ${message.message}, Date: ${message.messageTime}, Seen: ${message.seen}")
                         if (friendList[i].uId.toString() == message.senderId) {
-                            friendList[i].lastMessage = message.message
+                            if (message.messageType == "text"){
+                                friendList[i].lastMessage = message.message
+                            }else{
+                                friendList[i].lastMessage = "Fotoğraf"
+                            }
                             friendList[i].elapsedTime = message.messageTime//currentTime
                             friendList[i].seen = message.seen
                             userMessages2.clear()

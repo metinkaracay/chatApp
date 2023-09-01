@@ -29,7 +29,9 @@ interface DatingApiRepository {
 
     suspend fun getMessagesFromPage(id:String, page: Int): GenericResult<List<MessageItem>>
 
-    suspend fun getGroupMessagesFromPage(id: String, page: Int): GenericResult<BaseGroupResponse>//<List<MessageItem>>
+    suspend fun friendChatSendPhoto(id:String, image: MultipartBody.Part): GenericResult<ResponseBody>
+
+    suspend fun getGroupMessagesFromPage(id: String, page: Int): GenericResult<BaseGroupResponse>
 
     suspend fun getUserProfile(id: String): GenericResult<User>
 

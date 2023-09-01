@@ -17,6 +17,7 @@ data class MessageItemPageViewState(
     fun layoutGravity() = if (messages.senderUser.toInt() == loggedUserId) Gravity.END else Gravity.START
 
     fun textBubbleVisibility() = if (messages.messageType == "text") View.VISIBLE else View.GONE
+    fun imageBubbleVisibility() = if (messages.messageType == "image") View.VISIBLE else View.GONE
 
     fun messageBackground(context: Context) : Drawable? = if(messages.senderUser.toInt() == loggedUserId) {
         ContextCompat.getDrawable(context, R.drawable.message_outgoing)

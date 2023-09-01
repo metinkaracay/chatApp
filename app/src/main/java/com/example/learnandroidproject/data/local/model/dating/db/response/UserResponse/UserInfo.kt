@@ -1,9 +1,8 @@
 package com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse
 
 import com.google.gson.annotations.SerializedName
-
 data class UserInfo(
-    @SerializedName("id") var uId: Int,
+    @SerializedName("userId") var uId: Int,
     @SerializedName("username") var uName: String,
     @SerializedName("status") var uStatu: String,
     @SerializedName("url") var uPhoto: String,

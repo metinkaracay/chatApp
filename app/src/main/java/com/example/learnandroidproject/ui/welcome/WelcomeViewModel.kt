@@ -167,7 +167,6 @@ class WelcomeViewModel @Inject constructor() : ViewModel() {
     fun getUserInfo(): UserInfo {
         return userInfo
     }
-
     fun fillGroupInfoData(id: Int,gName: String, photo: String, event: Boolean) {
         if (!clickedUsers.contains(id)){
             clickedUsers.add(id)

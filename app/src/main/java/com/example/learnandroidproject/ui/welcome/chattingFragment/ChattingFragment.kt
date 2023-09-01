@@ -1,6 +1,9 @@
 package com.example.learnandroidproject.ui.welcome.chattingFragment
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -16,6 +19,7 @@ import com.example.learnandroidproject.databinding.FragmentChattingBinding
 import com.example.learnandroidproject.ui.base.BaseFragment
 import com.example.learnandroidproject.ui.welcome.WelcomeViewModel
 import com.example.learnandroidproject.ui.welcome.chattingFragment.adapter.ChattingMessagesAdapter
+import com.github.dhaval2404.imagepicker.ImagePicker
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -34,11 +38,12 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
         val sharedPreferences = requireContext().getSharedPreferences("LoggedUserID", Context.MODE_PRIVATE)
         val loggedUserId = sharedPreferences.getString("LoggedUserId","")
         welcomeViewModel.messageSingleLiveEvent.observe(viewLifecycleOwner){
-            viewModel.fetchMessagesOnSocket(it)
+            viewModel.fetchMessagesOnSocket(it,requireContext())
         }
         val user = welcomeViewModel.getUserInfo()
         viewModel.user = user
-        viewModel.getUserInfo()
+        viewModel.getRoomInfo()
+        viewModel.getLastMessageFromRoom(requireContext())
         val senderUserMessage = welcomeViewModel.getLastSentMessage()
         viewModel.sendingMessage = senderUserMessage!! // TODO burada grupla alakalı bir fark var
         handleViewOption()
@@ -78,9 +83,12 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
             welcomeViewModel.exitToChatRoomFillData(true)
             welcomeViewModel.navigateUp()
         }
+        binding.galleryButton.setOnClickListener {
+            chooseImage()
+        }
         binding.sendButton.setOnClickListener {
             val message = binding.editText.text.toString()
-            viewModel.sendMessage(SocketHandler,requireContext(),message,"text")
+            viewModel.sendMessage(requireContext(),message,"text")
             binding.editText.text.clear()
 
             welcomeViewModel.fillTestSingleEvent(message)
@@ -110,6 +118,26 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
                 stackFromEnd= true
             }
             adapter = chattingMessagesAdapter
+        }
+    }
+    private fun chooseImage(){
+        ImagePicker.with(this)
+            .crop()
+            .compress(1024)
+            .maxResultSize(1080, 1080)
+            .start()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK){
+            val uri: Uri = data?.data!!
+            Log.e("fotoUri","$uri")
+            viewModel.sendPhoto(uri,requireContext())
+        } else if (resultCode == ImagePicker.RESULT_ERROR) {
+            Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(requireContext(), "Task Cancelled", Toast.LENGTH_SHORT).show()
         }
     }
 }
