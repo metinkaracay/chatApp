@@ -41,14 +41,10 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
         welcomeViewModel.messageSingleLiveEvent.observe(viewLifecycleOwner){
             if (viewModel.lastMessageTime != 0L){ // Önceden gelen mesaj burada kaldığı için çift yazdırma sorunu oluyordu onu çözmek için viewmodeldaki değişkenin dolmasını bekler
                 viewModel.fetchMessagesOnSocket(it,requireContext())
-                Log.e("testtttttttttttttttt","ifff")
-            }else{
-                Log.e("testtttttttttttttttt","else")
             }
         }
         val user = welcomeViewModel.getUserInfo()
         viewModel.user = user
-        //viewModel.getRoomInfo()
         viewModel.getLastMessageFromRoom(requireContext())
         val senderUserMessage = welcomeViewModel.getLastSentMessage()
         viewModel.sendingMessage = senderUserMessage!! // TODO burada grupla alakalı bir fark var

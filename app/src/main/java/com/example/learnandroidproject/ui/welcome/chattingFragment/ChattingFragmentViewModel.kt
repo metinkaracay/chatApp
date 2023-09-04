@@ -10,17 +10,14 @@ import com.example.learnandroidproject.common.isSuccess
 import com.example.learnandroidproject.common.util.DispatchGroup
 import com.example.learnandroidproject.data.local.model.dating.db.request.chatApp.Args
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
-import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.GroupInfo
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
 import com.example.learnandroidproject.di.ChatDatabase
 import com.example.learnandroidproject.domain.remote.dating.DatingApiRepository
 import com.example.learnandroidproject.ui.base.BaseViewModel
-import com.example.learnandroidproject.ui.welcome.groupChattingFragment.GroupChattingPageViewState
 import com.github.michaelbull.result.get
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.socket.client.Ack
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -28,7 +25,6 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONException
 import org.json.JSONObject
-import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 @HiltViewModel
@@ -36,9 +32,6 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
 
     private val _chattingPageViewStateLiveData: MutableLiveData<ChattingFragmentPageViewState> = MutableLiveData()
     val chattingPageViewStateLiveData: LiveData<ChattingFragmentPageViewState> = _chattingPageViewStateLiveData
-
-    private val _userLiveData: MutableLiveData<ChattingFragmentPageViewState> = MutableLiveData()
-    val userLiveData: LiveData<ChattingFragmentPageViewState> = _userLiveData
 
     private val _errorMessageLiveData: MutableLiveData<String> = MutableLiveData()
     val errorMessageLiveData: LiveData<String> = _errorMessageLiveData
@@ -54,15 +47,11 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
     var isNewChat = true
     var isMessageOver = false
     var sendingMessage: MutableMap<String, MutableList<Args>> = mutableMapOf()
-    var fetchSocketData = false
     var messageList: List<MessageItem> = arrayListOf()
     var loggedUserId: String = "0"
     var lastMessageTime = 0L
 
     val dispatchGroup = DispatchGroup()
-    /*fun getRoomInfo(){
-        _userLiveData.value = userLiveData.value?.copy(userInfo = user)
-    }*/
     fun sendMessagesToPageViewState(list: List<MessageItem>){
         viewModelScope.launch(Dispatchers.Main){
             _chattingPageViewStateLiveData.value = ChattingFragmentPageViewState(user,list)
@@ -85,14 +74,9 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
                     }else{
                         Log.e("backend_response","room'da olmayan mesajlar var")
                         dispatchGroup.enter()
-                        insertMessageToRoom(context,it)
-                        /*for (i in 0 until it.size){
-                            dispatchGroup.enter()
-                            Log.e("backendden_gelen_mesaj","${it[i].message}")
-                            insertMessageToRoom2(context,it[i])
-                        }*/
-                        dispatchGroup.notify {
-                            Log.e("backendden_gelen_mesaj1","tamamlandı")
+                        insertMessageToRoom(context,it,null)
+
+                        dispatchGroup.notify { // Toplu kaydetme sırasında kaydetme işlemi tamamlandığında çalışır
                             getMessagesFromRoom(context)
                             // Her seferinde 10 tane mesaj geldiği için room ile backend'i eşitleyene kadar sürekli istek atıyoruz
                             getMessagesFromPage(it[it.size-1].messageTime.toLong(),context)
@@ -141,33 +125,11 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
         }
     }
     fun fetchMessagesOnSocket(args: Args,context: Context){
-        //var result = lastMessageOnSocketControl(args)
-
-        /*if (result){
-            if (user.uId == args.senderId.toInt()){// && fetchSocketData
-
-                val newMessage = MessageItem(args.message,args.messageType,args.senderId,args.receiverId,args.messageTime)
-                var newMessageForRoom = newMessage
-                newMessageForRoom.messageTime = args.messageTime
-                insertMessageToRoom2(context,newMessageForRoom)
-
-                viewModelScope.launch(Dispatchers.Main) {
-                    _newMessageOnTheChatLiveData.postValue(true)
-                    messageList = messageList + newMessage
-                    sendMessagesToPageViewState(messageList)
-                }
-            }
-            fetchSocketData = true // Chatte değilken gelen mesajları biriktirdiği için fazladan mesaj yazdırıyordu. Bu durumu engellemek için kontrol
-            _newMessageOnTheChatLiveData.postValue(false)
-        }else{
-            Log.e("gelen_mesajj2","olan mesaj geldi")
-        }*/
-        if (user.uId == args.senderId.toInt()){// && fetchSocketData
-
+        if (user.uId == args.senderId.toInt()){
             val newMessage = MessageItem(args.message,args.messageType,args.senderId,args.receiverId,args.messageTime)
             var newMessageForRoom = newMessage
             newMessageForRoom.messageTime = args.messageTime
-            insertMessageToRoom2(context,newMessageForRoom)
+            insertMessageToRoom(context,null,newMessageForRoom)
 
             viewModelScope.launch(Dispatchers.Main) {
                 _newMessageOnTheChatLiveData.postValue(true)
@@ -175,7 +137,6 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
                 sendMessagesToPageViewState(messageList)
             }
         }
-        fetchSocketData = true // Chatte değilken gelen mesajları biriktirdiği için fazladan mesaj yazdırıyordu. Bu durumu engellemek için kontrol
         _newMessageOnTheChatLiveData.postValue(false)
     }
     fun sendMessage(context: Context,message: String, messageType: String){
@@ -211,7 +172,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
 
                 // Modeli liste içine ekle
                 messageListModel.add(model)
-                insertMessageToRoom2(context,messageItem)
+                insertMessageToRoom(context,null,messageItem)
                 Log.e("gönderilen model","$sendingMessage")
                 _newMessageOnTheChatLiveData.postValue(true)
 
@@ -258,26 +219,15 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
             }
         }
     }
-    fun insertMessageToRoom(context: Context, messages: List<MessageItem>){
+    fun insertMessageToRoom(context: Context, messages: List<MessageItem>?, message: MessageItem?){
         viewModelScope.launch(Dispatchers.IO) {
             val messageDao = ChatDatabase.getInstance(context).MessageDao()
-            //messageDao.insertMessage(message)
-            messageDao.insertAllMessages(messages)
-            dispatchGroup.leave()
+            if (message == null && messages != null){
+                messageDao.insertAllMessages(messages)
+                dispatchGroup.leave()
+            }else if (messages == null && message != null){
+                messageDao.insertMessage(message)
+            }
         }
     }
-    fun insertMessageToRoom2(context: Context, message: MessageItem){
-        viewModelScope.launch(Dispatchers.IO) {
-            val messageDao = ChatDatabase.getInstance(context).MessageDao()
-            messageDao.insertMessage(message)
-            //dispatchGroup.leave()
-        }
-    }
-    /*fun lastMessageOnSocketControl(message: Args): Boolean{
-        if (lastMessageTime == message.messageTime.toLong()){
-            return false
-        }else{
-            return true
-        }
-    }*/
 }

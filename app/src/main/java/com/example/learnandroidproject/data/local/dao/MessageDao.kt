@@ -14,7 +14,7 @@ interface MessageDao {
     @Insert
     suspend fun insertMessage(messages: MessageItem)
 
-    @Query("SELECT * FROM messages WHERE (senderId = :loggedId AND receiverId = :receiverId) OR (senderId = :receiverId AND receiverId = :loggedId)")  //@Query("SELECT * FROM messages ORDER BY sendTime DESC")
+    @Query("SELECT * FROM messages WHERE (senderId = :loggedId AND receiverId = :receiverId) OR (senderId = :receiverId AND receiverId = :loggedId)")
     suspend fun getAllMessages(loggedId: Int, receiverId: Int): List<MessageItem>
 
     @Query("SELECT * FROM messages WHERE messages.sendTime = (SELECT MAX(sendTime) FROM messages) ")

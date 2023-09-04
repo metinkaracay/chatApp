@@ -18,6 +18,7 @@ class FriendsUsersAdapter : RecyclerView.Adapter<FriendsUsersAdapter.UsersItemVi
 
     private var itemClickListener: ((UserInfo) -> Unit)? = null
     private var photoIemClickListener: ((String) -> Unit)? = null
+    private var elapsedTime = "0"
 
     fun setItemClickListener(listener: (UserInfo) -> Unit) {
         itemClickListener = listener
@@ -29,7 +30,16 @@ class FriendsUsersAdapter : RecyclerView.Adapter<FriendsUsersAdapter.UsersItemVi
         list = page
         notifyDataSetChanged()
     }
-    fun formattedDate(date: String): String{
+    fun formattedDate(timeStamp: String): String{
+        var date = timeStamp
+        if (isTimestampFormat(timeStamp)){
+            val newdate = Date(timeStamp.toLong())
+            val timeFormat = SimpleDateFormat("dd/MM/yyyy, HH:mm:ss", Locale.getDefault())
+            val formattedTime = timeFormat.format(newdate)
+
+            date = formattedTime
+        }
+
         val dateFormat = SimpleDateFormat("dd/MM/yyyy, HH:mm:ss", Locale.getDefault())
         val dateNow = Date()
 
@@ -104,6 +114,9 @@ class FriendsUsersAdapter : RecyclerView.Adapter<FriendsUsersAdapter.UsersItemVi
         val elapsedTime = formattedDate(list[position].elapsedTime.toString())
         holder.bind(user,elapsedTime)
         holder.itemSelect(position)
+    }
+    fun isTimestampFormat(input: String): Boolean {
+        return input.matches(Regex("\\d{13}"))
     }
 
     inner class UsersItemViewHolder(private var binding: FriendsUsersItemBinding) : RecyclerView.ViewHolder(binding.root){
