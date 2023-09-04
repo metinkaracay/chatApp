@@ -25,8 +25,8 @@ data class MessageItemPageViewState(
         ContextCompat.getDrawable(context, R.drawable.message_incoming)
     }
 
-    fun getText() = messages.message
-    fun getImage() = messages.message
+    fun getText() = if (messages.messageType == "text") messages.message else "null"
+    fun getImage() = if (messages.messageType == "image") messages.message else "null"
 
     fun textColor(context: Context) : Int = if (messages.senderUser.toInt() == loggedUserId) ContextCompat.getColor(context, R.color.white) else ContextCompat.getColor(context, R.color.black)
 

@@ -1,5 +1,6 @@
 package com.example.learnandroidproject.ui.welcome.chattingFragment.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -14,25 +15,36 @@ class ChattingMessagesAdapter : RecyclerView.Adapter<ChattingMessagesAdapter.Mes
 
     private var list: List<MessageItem> = emptyList()
     private var uId: Int? = null
+    private var messageTime = ""
     fun setItems(page: List<MessageItem>,loggedUserId: Int) {
         uId = loggedUserId
         list = page
-        notifyItemRangeInserted(list.size,10)
+        //notifyItemRangeInserted(list.size,10) // TODO düzelt
+        notifyDataSetChanged()
     }
 
-    fun formattedDate(date: String): String{
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy, HH:mm:ss", Locale.getDefault())
+    fun formattedDate(timestamp: Long): String{
+        val date = Date(timestamp)
+        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+        val formattedTime = timeFormat.format(date)
+        // TODO hata çıkmazsa sil
+        /*val dateFormat = SimpleDateFormat("dd/MM/yyyy, HH:mm:ss", Locale.getDefault())
+        val format = dateFormat.format(date)
+        Log.e("işlenenDateee","$format")
 
-        if (date.matches(Regex("\\d{2}:\\d{2}"))) {
-            return date
+        if (format.matches(Regex("\\d{2}:\\d{2}"))) {
+            return format
         }
 
-        if (date != "null"){
+        if (timestamp != null){
             try {
-                val messageTime = dateFormat.parse(date)
+                //val messageTime = dateFormat.parse(format)
 
+                Log.e("işlenenDateeeif","$format")
                 val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-                val currentTime = timeFormat.format(messageTime)
+                val currentTime = timeFormat.format(format)
+
+                Log.e("işlenenDateeeif2","$currentTime")
 
                 return currentTime
             } catch (e: Exception) {
@@ -41,7 +53,8 @@ class ChattingMessagesAdapter : RecyclerView.Adapter<ChattingMessagesAdapter.Mes
             }
         }else{
             return "mesaj yok"
-        }
+        }*/
+        return formattedTime
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChattingMessagesAdapter.MessageItemViewHolder{
         val binding: MessageItemBinding = DataBindingUtil.inflate(
@@ -58,9 +71,14 @@ class ChattingMessagesAdapter : RecyclerView.Adapter<ChattingMessagesAdapter.Mes
 
     override fun onBindViewHolder(holder: ChattingMessagesAdapter.MessageItemViewHolder, position: Int) {
         val message = list[position]
-        val messageTime = formattedDate(list[position].messageTime)
+        if (isTimestampFormat(list[position].messageTime)) { //Veriyi görüntüde değiştirip backend'e gönderirken sıkıntı olmasın diye sadece görüntüde düzeltmek için kontrol
+            messageTime = formattedDate(list[position].messageTime.toLong())
+        }
         list[position].messageTime = messageTime
         holder.bind(message)
+    }
+    fun isTimestampFormat(input: String): Boolean {
+        return input.matches(Regex("\\d{13}"))
     }
 
     inner class MessageItemViewHolder(private var binding: MessageItemBinding) : RecyclerView.ViewHolder(binding.root){

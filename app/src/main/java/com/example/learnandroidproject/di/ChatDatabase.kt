@@ -8,7 +8,7 @@ import com.example.learnandroidproject.data.local.dao.MessageDao
 import com.example.learnandroidproject.data.local.model.dating.db.response.UserResponse.UserInfo
 import com.example.learnandroidproject.data.local.model.dating.db.response.chatApp.MessageItem
 
-@Database(entities = [MessageItem::class], version = 7)
+@Database(entities = [MessageItem::class], version = 13)
 abstract class ChatDatabase : RoomDatabase() {
 
     abstract fun MessageDao() : MessageDao

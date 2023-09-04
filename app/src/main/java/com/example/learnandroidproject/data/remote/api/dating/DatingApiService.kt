@@ -32,7 +32,7 @@ interface DatingApiService {
     suspend fun fetchAllUsers(): List<UserInfo>
     @GET("chats/{id}")
     suspend fun getMessagesFromPage(@Path("id") id: String,
-                                    @Query("page") page: Int ) : List<MessageItem>
+                                    @Query("page") page: Int, @Query("lastMsgTime") sendTime: Long ) : List<MessageItem>
     @Multipart
     @POST("chats/{id}/photo")
     suspend fun friendChatSendPhoto(@Path("id") id: String,@Part image: MultipartBody.Part): ResponseBody
@@ -40,7 +40,7 @@ interface DatingApiService {
     suspend fun getGroupMessagesFromPage(@Path("id") id: String, @Query("page") page: Int) : BaseGroupResponse
     @GET("auth/profile/{id}")
     suspend fun getUserProfile(@Path("id") id: String): User
-    @GET("chats/{id}/seen")
+    @PATCH("chats/{id}/seen")
     suspend fun updateSeenInfoForUser(@Path("id") id: String): ResponseBody
     @Multipart
     @POST("chats/group/{id}/photo")

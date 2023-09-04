@@ -36,13 +36,19 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val sharedPreferences = requireContext().getSharedPreferences("LoggedUserID", Context.MODE_PRIVATE)
-        val loggedUserId = sharedPreferences.getString("LoggedUserId","")
+        val loggedUserID = sharedPreferences.getString("LoggedUserId","")
+        viewModel.loggedUserId = loggedUserID!!
         welcomeViewModel.messageSingleLiveEvent.observe(viewLifecycleOwner){
-            viewModel.fetchMessagesOnSocket(it,requireContext())
+            if (viewModel.lastMessageTime != 0L){ // Önceden gelen mesaj burada kaldığı için çift yazdırma sorunu oluyordu onu çözmek için viewmodeldaki değişkenin dolmasını bekler
+                viewModel.fetchMessagesOnSocket(it,requireContext())
+                Log.e("testtttttttttttttttt","ifff")
+            }else{
+                Log.e("testtttttttttttttttt","else")
+            }
         }
         val user = welcomeViewModel.getUserInfo()
         viewModel.user = user
-        viewModel.getRoomInfo()
+        //viewModel.getRoomInfo()
         viewModel.getLastMessageFromRoom(requireContext())
         val senderUserMessage = welcomeViewModel.getLastSentMessage()
         viewModel.sendingMessage = senderUserMessage!! // TODO burada grupla alakalı bir fark var
@@ -96,7 +102,8 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
         viewModel.messageFetchRequestLiveData.observe(viewLifecycleOwner){
             if (it){
                 binding.swipeRefreshLayout.setOnRefreshListener {
-                    viewModel.getMessagesFromPage()
+                    //viewModel.getMessagesFromPage()
+                    viewModel.getLastMessageFromRoom(requireContext())
                     binding.swipeRefreshLayout.isRefreshing = false
                 }
             }else{
