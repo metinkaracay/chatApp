@@ -1,6 +1,8 @@
 package com.example.learnandroidproject.ui.welcome.chattingFragment.adapter
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.Gravity
@@ -24,7 +26,6 @@ data class MessageItemPageViewState(
     }else{
         ContextCompat.getDrawable(context, R.drawable.message_incoming)
     }
-
     fun getText() = if (messages.messageType == "text") messages.message else "null"
     fun getImage() = if (messages.messageType == "image") messages.message else "null"
 

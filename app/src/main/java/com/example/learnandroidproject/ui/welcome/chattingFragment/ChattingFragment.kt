@@ -79,7 +79,6 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
 
     fun handleViewOption(){
         binding.backArrow.setOnClickListener {
-            Log.e("çıkıştaki model","${viewModel.sendingMessage}")
             var messageData = viewModel.sendingMessage // Chat boyunca attığımız mesajları toplayıp chatten çıkıldığı anda topluca gönderiyoruz
             welcomeViewModel.fillLastSentMessage(messageData)
             welcomeViewModel.exitToChatRoomFillData(true)
@@ -90,23 +89,19 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
         }
         binding.sendButton.setOnClickListener {
             val message = binding.editText.text.toString()
-            viewModel.sendMessage(requireContext(),message,"text")
+            viewModel.sendMessage(requireContext(),message,"text",null)
             binding.editText.text.clear()
 
             welcomeViewModel.fillTestSingleEvent(message)
         }
         viewModel.messageFetchRequestLiveData.observe(viewLifecycleOwner){
-            if (it){
-                binding.swipeRefreshLayout.setOnRefreshListener {
-                    //viewModel.getMessagesFromPage()
-                    viewModel.getLastMessageFromRoom(requireContext())
-                    binding.swipeRefreshLayout.isRefreshing = false
-                }
-            }else{
-                if (!viewModel.isNewChat){
-                    binding.swipeRefreshLayout.isEnabled = false
-                    Toast.makeText(requireContext(),"Tüm Mesajlar Yüklendi",Toast.LENGTH_SHORT).show()
-                }
+            binding.swipeRefreshLayout.setOnRefreshListener {
+                viewModel.getMessagesFromRoom(requireContext()) //TODO aç
+                binding.swipeRefreshLayout.isRefreshing = false
+            }
+            if (!viewModel.isNewChat){
+                binding.swipeRefreshLayout.isEnabled = false
+                Toast.makeText(requireContext(),"Tüm Mesajlar Yüklendi", Toast.LENGTH_SHORT).show()
             }
         }
         binding.editText.setOnClickListener {
@@ -118,7 +113,7 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
         with(binding.recyclerView) {
             layoutManager = LinearLayoutManager(requireContext()).apply {
                 orientation = RecyclerView.VERTICAL
-                stackFromEnd= true
+                stackFromEnd = true
             }
             adapter = chattingMessagesAdapter
         }
@@ -135,7 +130,7 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK){
             val uri: Uri = data?.data!!
-            Log.e("fotoUri","$uri")
+            Log.e("fotoUri","$uri, data $data")
             viewModel.sendPhoto(uri,requireContext())
         } else if (resultCode == ImagePicker.RESULT_ERROR) {
             Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show()

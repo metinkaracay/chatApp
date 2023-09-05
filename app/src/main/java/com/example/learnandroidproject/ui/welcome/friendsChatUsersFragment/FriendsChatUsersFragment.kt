@@ -35,7 +35,6 @@ class FriendsChatUsersFragment : BaseFragment<FragmentFriendsChatUsersBinding>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.getAllUsers(requireContext())
         val clickedUser = welcomeViewModel.getUserInfo() // Son tıklanan kişi
         val messageArray = welcomeViewModel.getLastSentMessage() // Bizim gönderdiğimiz mesajlar
         viewModel.sendingMessage = messageArray!!

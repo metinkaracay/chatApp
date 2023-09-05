@@ -28,7 +28,7 @@ class FriendsUsersAdapter : RecyclerView.Adapter<FriendsUsersAdapter.UsersItemVi
     }
     fun setItems(page: List<UserInfo>) {
         list = page
-        notifyDataSetChanged()
+        notifyItemRangeChanged(0,list.size)
     }
     fun formattedDate(timeStamp: String): String{
         var date = timeStamp

@@ -5,5 +5,6 @@
         <domain includeSubdomains="true">fun2lite-staging-ws.eu-central-1.elasticbeanstalk.com</domain>
         <domain includeSubdomains="true">10.82.0.57</domain>
         <domain includeSubdomains="true">ec2-18-196-242-245.eu-central-1.compute.amazonaws.com</domain>
+        <domain includeSubdomains="true">chat-app-env.eba-ev2ugfcu.eu-central-1.elasticbeanstalk.com</domain>
     </domain-config>
 </network-security-config>

@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName
 @Entity(tableName = "messages")
 data class MessageItem(
     @ColumnInfo(name = "message")
-    @SerializedName("message") val message: String,
+    @SerializedName("message") var message: String,
     @ColumnInfo(name = "messageType")
     @SerializedName("type") val messageType: String,
     @ColumnInfo(name = "senderId")

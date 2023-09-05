@@ -1,8 +1,18 @@
 package com.example.learnandroidproject.ui.welcome.chattingFragment
 
 import android.content.Context
+import android.content.ContextWrapper
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
+import android.media.Image
 import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.provider.ContactsContract.CommonDataKinds.Website.URL
+import android.provider.MediaStore
 import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -25,6 +35,12 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import androidx.core.content.FileProvider
+import java.io.IOException
+import java.net.URL
 import java.util.*
 import javax.inject.Inject
 @HiltViewModel
@@ -66,21 +82,18 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
             datingApiRepository.getMessagesFromPage(user.uId.toString(),pageId,sendTime).get()?.let {
                 withContext(Dispatchers.Main){
                     if (it.isEmpty()){
-                        Log.e("response","boşşşgeldi")
                         getMessagesFromRoom(context)
 
                         _messageFetchRequestLiveData.postValue(false)
                         isMessageOver = true
                     }else{
-                        Log.e("backend_response","room'da olmayan mesajlar var")
                         dispatchGroup.enter()
                         insertMessageToRoom(context,it,null)
 
                         dispatchGroup.notify { // Toplu kaydetme sırasında kaydetme işlemi tamamlandığında çalışır
-                            getMessagesFromRoom(context)
                             // Her seferinde 10 tane mesaj geldiği için room ile backend'i eşitleyene kadar sürekli istek atıyoruz
                             getMessagesFromPage(it[it.size-1].messageTime.toLong(),context)
-                            pageId++
+
                         }
                     }
                 }
@@ -109,28 +122,61 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
         }
         viewModelScope.launch(Dispatchers.Main){
             _chattingPageViewStateLiveData.value = ChattingFragmentPageViewState(user, arrayListOf())
-            _messageFetchRequestLiveData.postValue(true)
         }
     }
     fun getMessagesFromRoom(context: Context){
         viewModelScope.launch(Dispatchers.IO) {
             val dao = ChatDatabase.getInstance(context).MessageDao()
-            val newMessageList = dao.getAllMessages(loggedUserId.toInt(),user.uId)
+            val newMessageList = dao.getAllMessages(loggedUserId.toInt(),user.uId,(pageId-1)*10)
             if (!newMessageList.isEmpty()){
-                messageList = messageList + newMessageList
+                messageList = newMessageList.reversed() + messageList
                 sendMessagesToPageViewState(messageList)
             }else{
                 _errorMessageLiveData.postValue("Daha eski mesaj bulunmamakta")
             }
+            pageId++
         }
+    }
+    fun downloadImageAndConvertToUri(imageUrl: String, context: Context): Uri? {
+        try {
+            val inputStream = URL(imageUrl).openStream()
+            val imageBitmap = BitmapFactory.decodeStream(inputStream)
+            inputStream.close()
+
+            val uri = getImageUriFromBitmap(context, imageBitmap)
+            return uri
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return null
+    }
+    fun getImageUriFromBitmap(context: Context, bitmap: Bitmap): Uri {
+        val bytes = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+        val path = MediaStore.Images.Media.insertImage(context.contentResolver, bitmap, "Title", null)
+        return Uri.parse(path)
     }
     fun fetchMessagesOnSocket(args: Args,context: Context){
         if (user.uId == args.senderId.toInt()){
+            Log.e("gelenARgs","${args.messageType}")
             val newMessage = MessageItem(args.message,args.messageType,args.senderId,args.receiverId,args.messageTime)
             var newMessageForRoom = newMessage
             newMessageForRoom.messageTime = args.messageTime
-            insertMessageToRoom(context,null,newMessageForRoom)
 
+            if (args.messageType == "image"){
+                viewModelScope.launch(Dispatchers.IO){
+                    val imageUri = downloadImageAndConvertToUri(args.message,context)
+                    if (imageUri != null){
+                        Log.e("imageURIII", "$imageUri")
+                        newMessageForRoom.message = imageUri.toString()
+                        insertMessageToRoom(context,null,newMessageForRoom)
+                    }else{
+                        Log.e("imageURIII","else girdi")
+                    }
+                }
+            }else{
+                insertMessageToRoom(context,null,newMessageForRoom)
+            }
             viewModelScope.launch(Dispatchers.Main) {
                 _newMessageOnTheChatLiveData.postValue(true)
                 messageList = messageList + newMessage
@@ -139,7 +185,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
         }
         _newMessageOnTheChatLiveData.postValue(false)
     }
-    fun sendMessage(context: Context,message: String, messageType: String){
+    fun sendMessage(context: Context,message: String, messageType: String,imageUri: Uri?){
         val sharedPreferences = context.getSharedPreferences("LoggedUserID",Context.MODE_PRIVATE)
         val loggedUserId = sharedPreferences.getString("LoggedUserId","")
 
@@ -167,12 +213,21 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
                 var model = Args(message,loggedUserId.toString(),ackReceiver,ackMessageTime,messageType,true)
                 val messageItem = MessageItem(message,messageType,loggedUserId.toString(),ackReceiver,ackMessageTime)
 
+                if (messageType == "image"){
+                    Log.e("imageeee","$imageUri")
+                    var newImageMessage = messageItem
+                    newImageMessage.message = imageUri.toString()
+                    insertMessageToRoom(context,null,newImageMessage)
+                }else{
+                    insertMessageToRoom(context,null,messageItem)
+                }
+
                 // SendingMessage daha önce oluşmamışsa oluştur
                 val messageListModel = sendingMessage.getOrPut(ackReceiver.toString()) { mutableListOf() }
 
                 // Modeli liste içine ekle
                 messageListModel.add(model)
-                insertMessageToRoom(context,null,messageItem)
+
                 Log.e("gönderilen model","$sendingMessage")
                 _newMessageOnTheChatLiveData.postValue(true)
 
@@ -206,9 +261,20 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
                         try {
                             val jsonObject = JSONObject(responseString)
                             val url = jsonObject.optString("url", "")
-                            Log.e("imageURL", url)
+                            Log.e("imageURL", "$imageStream")
+
+                            /*// Fotoğrafı özel dizine kaydet ve URI'sini al
+                            val savedImageUri = saveImageToPrivateDirectory(BitmapFactory.decodeStream(imageStream), "${uuid}.jpg", context)
+
+                            if (savedImageUri != null) {
+                                // Fotoğrafı özel dizine kaydettikten sonra gönder
+                                sendMessage(context, url, "image", savedImageUri)
+                            } else {
+                                Log.e("ImageSaveError", "Fotoğraf özel dizine kaydedilemedi")
+                            }*/
+
                             // Chatte gözükmesi için backend'ten alınan urli sockete emitler
-                            sendMessage(context,url,"image")
+                            sendMessage(context,url,"image",selectedImage)
                         } catch (e: JSONException) {
                             Log.e("JSONParsingError", "Error parsing response JSON")
                         }
@@ -223,6 +289,15 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
         viewModelScope.launch(Dispatchers.IO) {
             val messageDao = ChatDatabase.getInstance(context).MessageDao()
             if (message == null && messages != null){
+                // Chatte değilken gelen mesajları backendden alırken liste halinde geldiği için tüm mesajlara bakıp image olanları telefona indirip uri'ını room'a kaydediyoruz
+                for (i in 0 until messages.size){
+                    if (messages[i].messageType == "image"){
+                        val imageUri = downloadImageAndConvertToUri(messages[i].message,context)
+                        if (imageUri != null){
+                            messages[i].message = imageUri.toString()
+                        }
+                    }
+                }
                 messageDao.insertAllMessages(messages)
                 dispatchGroup.leave()
             }else if (messages == null && message != null){
