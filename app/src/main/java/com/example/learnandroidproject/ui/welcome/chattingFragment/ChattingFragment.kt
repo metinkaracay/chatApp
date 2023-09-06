@@ -59,9 +59,8 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
                 chattingMessagesAdapter.setItems(it.messages,loggedUserId!!.toInt())
             }
             newMessageOnTheChatLiveData.observeNonNull(viewLifecycleOwner){
-                if (it){
-                    binding.recyclerView.scrollToPosition(this.messageList.size - 1)
-                }
+                chattingMessagesAdapter.notifyToItems("newMessage")
+                binding.recyclerView.scrollToPosition(this.messageList.size - 1)
             }
         }
         viewModel.errorMessageLiveData.observe(viewLifecycleOwner){
@@ -95,14 +94,25 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
             welcomeViewModel.fillTestSingleEvent(message)
         }
         viewModel.messageFetchRequestLiveData.observe(viewLifecycleOwner){
-            binding.swipeRefreshLayout.setOnRefreshListener {
-                viewModel.getMessagesFromRoom(requireContext()) //TODO aç
-                binding.swipeRefreshLayout.isRefreshing = false
-            }
-            if (!viewModel.isNewChat){
+            if (it){
+                binding.swipeRefreshLayout.setOnRefreshListener {
+                    viewModel.getMessagesFromRoom(requireContext())
+                    binding.swipeRefreshLayout.isRefreshing = false
+                    chattingMessagesAdapter.notifyToItems("refresh")
+                }
+            }else if (!it){ // !viewModel.isNewChat
                 binding.swipeRefreshLayout.isEnabled = false
                 Toast.makeText(requireContext(),"Tüm Mesajlar Yüklendi", Toast.LENGTH_SHORT).show()
             }
+            /*binding.swipeRefreshLayout.setOnRefreshListener {
+                viewModel.getMessagesFromRoom(requireContext())
+                binding.swipeRefreshLayout.isRefreshing = false
+                chattingMessagesAdapter.notifyToItems("refresh")
+            }
+            if (!it){ // !viewModel.isNewChat
+                binding.swipeRefreshLayout.isEnabled = false
+                Toast.makeText(requireContext(),"Tüm Mesajlar Yüklendi", Toast.LENGTH_SHORT).show()
+            }*/
         }
         binding.editText.setOnClickListener {
             binding.recyclerView.scrollToPosition(viewModel.messageList.size - 1 )

@@ -19,7 +19,16 @@ class ChattingMessagesAdapter : RecyclerView.Adapter<ChattingMessagesAdapter.Mes
     fun setItems(page: List<MessageItem>,loggedUserId: Int) {
         uId = loggedUserId
         list = page
-        notifyItemRangeInserted(list.size,10)
+        if (list.size <= 10){ //Chat ilk yüklendiğinde çalışır
+            notifyItemRangeInserted(list.size,10)
+        }
+    }
+    fun notifyToItems(type: String){
+        if (type == "newMessage"){
+            notifyItemRangeChanged(list.size-1,1)
+        }else if (type == "refresh"){
+            notifyItemRangeInserted(0,10)
+        }
     }
 
     fun formattedDate(timestamp: Long): String{

@@ -61,7 +61,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
     var user: UserInfo = UserInfo(0,"","","null",null,null,true) // Userchat ise buası dolar
     var pageId = 1
     var isNewChat = true
-    var isMessageOver = false
+    //var isMessageOver = false // TODO bir yer patlamazsa sil boşa çıktı
     var sendingMessage: MutableMap<String, MutableList<Args>> = mutableMapOf()
     var messageList: List<MessageItem> = arrayListOf()
     var loggedUserId: String = "0"
@@ -70,7 +70,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
     val dispatchGroup = DispatchGroup()
     fun sendMessagesToPageViewState(list: List<MessageItem>){
         viewModelScope.launch(Dispatchers.Main){
-            _chattingPageViewStateLiveData.value = ChattingFragmentPageViewState(user,list)
+            _chattingPageViewStateLiveData.value = chattingPageViewStateLiveData.value?.copy(messages = list)
         }
         if (!list.isNullOrEmpty()){
             isNewChat = false
@@ -84,8 +84,8 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
                     if (it.isEmpty()){
                         getMessagesFromRoom(context)
 
-                        _messageFetchRequestLiveData.postValue(false)
-                        isMessageOver = true
+                        //isMessageOver = true
+                        _chattingPageViewStateLiveData.value = _chattingPageViewStateLiveData.value?.copy(isLoaded = true)
                     }else{
                         dispatchGroup.enter()
                         insertMessageToRoom(context,it,null)
@@ -100,7 +100,6 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
             }
         }
     }
-
     fun getLastMessageFromRoom(context: Context){
         viewModelScope.launch(Dispatchers.IO){
             val dao = ChatDatabase.getInstance(context).MessageDao()
@@ -110,9 +109,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
                 if (lastMessage.messageTime.isNullOrEmpty()) {
                     Log.e("getLastMessageFromRoom", "lastMessage boş")
                 } else {
-                    Log.e("getLastMessageFromRoom", "lastMessage dolu, text : ${lastMessage.message} , messageTime: ${lastMessage.messageTime}")
                     lastMessageTime = lastMessage.messageTime.toLong()
-                    Log.e("gelen_mesajj0","son mesaj zamanı $lastMessageTime")
                     getMessagesFromPage(lastMessage.messageTime.toLong(), context)
                 }
             } else {
@@ -121,7 +118,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
             }
         }
         viewModelScope.launch(Dispatchers.Main){
-            _chattingPageViewStateLiveData.value = ChattingFragmentPageViewState(user, arrayListOf())
+            _chattingPageViewStateLiveData.value = chattingPageViewStateLiveData.value?.copy(user, arrayListOf()) ?: ChattingFragmentPageViewState(user, arrayListOf())
         }
     }
     fun getMessagesFromRoom(context: Context){
@@ -129,10 +126,13 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
             val dao = ChatDatabase.getInstance(context).MessageDao()
             val newMessageList = dao.getAllMessages(loggedUserId.toInt(),user.uId,(pageId-1)*10)
             if (!newMessageList.isEmpty()){
+                Log.e("getLastMessageFromRoom","mesajlar çekildi")
                 messageList = newMessageList.reversed() + messageList
                 sendMessagesToPageViewState(messageList)
+                _messageFetchRequestLiveData.postValue(true)
             }else{
-                _errorMessageLiveData.postValue("Daha eski mesaj bulunmamakta")
+                _messageFetchRequestLiveData.postValue(false)
+                isNewChat = false
             }
             pageId++
         }
@@ -143,6 +143,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
             val imageBitmap = BitmapFactory.decodeStream(inputStream)
             inputStream.close()
 
+            Log.e("gelennnnnnnnn","$imageBitmap , $imageUrl")
             val uri = getImageUriFromBitmap(context, imageBitmap)
             return uri
         } catch (e: IOException) {
@@ -151,31 +152,47 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
         return null
     }
     fun getImageUriFromBitmap(context: Context, bitmap: Bitmap): Uri {
-        val bytes = ByteArrayOutputStream()
+        /*val bytes = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+        Log.e("gelennnnnnnnn1","$bitmap")
         val path = MediaStore.Images.Media.insertImage(context.contentResolver, bitmap, "Title", null)
-        return Uri.parse(path)
+        Log.e("gelennnnnnnnn2","$path")
+        return Uri.parse(path)*/
+        val uuid = UUID.randomUUID()
+
+        val imageDir = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "chatApp")
+        if (!imageDir.exists()) {
+            imageDir.mkdirs()
+        }
+        val imageFile = File(imageDir, "$uuid.jpg")
+
+        val outputStream = FileOutputStream(imageFile)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+        outputStream.close()
+
+        // Uri'yi FileProvider ile oluştur
+        return FileProvider.getUriForFile(context, context.packageName + ".provider", imageFile)
+
     }
     fun fetchMessagesOnSocket(args: Args,context: Context){
         if (user.uId == args.senderId.toInt()){
-            Log.e("gelenARgs","${args.messageType}")
             val newMessage = MessageItem(args.message,args.messageType,args.senderId,args.receiverId,args.messageTime)
-            var newMessageForRoom = newMessage
-            newMessageForRoom.messageTime = args.messageTime
-
-            if (args.messageType == "image"){
-                viewModelScope.launch(Dispatchers.IO){
-                    val imageUri = downloadImageAndConvertToUri(args.message,context)
-                    if (imageUri != null){
-                        Log.e("imageURIII", "$imageUri")
-                        newMessageForRoom.message = imageUri.toString()
-                        insertMessageToRoom(context,null,newMessageForRoom)
-                    }else{
-                        Log.e("imageURIII","else girdi")
+            viewModelScope.launch(Dispatchers.IO){
+                if (args.messageType == "image"){
+                    viewModelScope.launch(Dispatchers.IO){
+                        val imageUri = downloadImageAndConvertToUri(args.message,context)
+                        newMessage.messageTime = args.messageTime // Bu satır olmayınca sebepsiz bir şekilde messageTime değişiyor. 11:51 gibi bir saate dönüşüyor. Bunu fixlemek için
+                        if (imageUri != null){
+                            newMessage.message = imageUri.toString()
+                            insertMessageToRoom(context,null,newMessage)
+                        }else {
+                            _errorMessageLiveData.postValue("Resim Yüklenemedi Daha Sonra Tekrar Deneyin")
+                            Log.e("ImageUriError", "Resim Uri'si null")
+                        }
                     }
+                }else{
+                    insertMessageToRoom(context,null,newMessage)
                 }
-            }else{
-                insertMessageToRoom(context,null,newMessageForRoom)
             }
             viewModelScope.launch(Dispatchers.Main) {
                 _newMessageOnTheChatLiveData.postValue(true)
@@ -183,14 +200,13 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
                 sendMessagesToPageViewState(messageList)
             }
         }
-        _newMessageOnTheChatLiveData.postValue(false)
     }
     fun sendMessage(context: Context,message: String, messageType: String,imageUri: Uri?){
         val sharedPreferences = context.getSharedPreferences("LoggedUserID",Context.MODE_PRIVATE)
         val loggedUserId = sharedPreferences.getString("LoggedUserId","")
 
         val dateNow = Date()
-        val unixTimestamp = dateNow.time // Zaman Unix olarak alınır
+        var unixTimestamp = dateNow.time // Zaman Unix olarak alınır
 
         val socket = SocketHandler
         val mSocket = socket.getSocket()
@@ -228,15 +244,12 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
                 // Modeli liste içine ekle
                 messageListModel.add(model)
 
-                Log.e("gönderilen model","$sendingMessage")
-                _newMessageOnTheChatLiveData.postValue(true)
-
             })
             Log.e("gönderilenDateeee","$unixTimestamp")
             val newMessage = MessageItem(message,messageType,loggedUserId.toString(),user.uId.toString(),unixTimestamp.toString())
             messageList = messageList + newMessage
             sendMessagesToPageViewState(messageList)
-            _newMessageOnTheChatLiveData.postValue(false)
+            _newMessageOnTheChatLiveData.postValue(false) // TODO trueydu
         }else{
             _errorMessageLiveData.postValue("Lütfen Bir Mesaj Girin")
         }
@@ -292,6 +305,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
                 // Chatte değilken gelen mesajları backendden alırken liste halinde geldiği için tüm mesajlara bakıp image olanları telefona indirip uri'ını room'a kaydediyoruz
                 for (i in 0 until messages.size){
                     if (messages[i].messageType == "image"){
+                        Log.e("insertMEssage2","${messages[i].message}")
                         val imageUri = downloadImageAndConvertToUri(messages[i].message,context)
                         if (imageUri != null){
                             messages[i].message = imageUri.toString()
@@ -301,6 +315,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
                 messageDao.insertAllMessages(messages)
                 dispatchGroup.leave()
             }else if (messages == null && message != null){
+                Log.e("insertMEssage3","${message}")
                 messageDao.insertMessage(message)
             }
         }

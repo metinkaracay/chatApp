@@ -20,7 +20,7 @@ object SocketHandler {
             var name = arrayOf("websocket")
             opts.transports = name
             //mSocket = IO.socket("http://10.82.0.57:3000/?token=${token}", opts)
-            //mSocket = IO.socket("http://ec2-18-196-242-245.eu-central-1.compute.amazonaws.com:3000/?token=${token}", opts)
+            //mSocket = IO.socket("http://ec2-3-66-189-165.eu-central-1.compute.amazonaws.com:3000/?token=${token}", opts)
             mSocket = IO.socket("http://chat-app-env.eba-ev2ugfcu.eu-central-1.elasticbeanstalk.com/?token=${token}", opts)
         } catch (e: URISyntaxException){
             Log.e("Socket Hatası","$e")
