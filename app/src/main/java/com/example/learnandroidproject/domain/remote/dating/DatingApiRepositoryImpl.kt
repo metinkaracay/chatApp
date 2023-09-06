@@ -32,7 +32,7 @@ class DatingApiRepositoryImpl @Inject constructor(
 
     override suspend fun fetchAllUsers(): GenericResult<List<UserInfo>> = handleDatingRequest { datingApiService.fetchAllUsers() }
 
-    override suspend fun getMessagesFromPage(id: String, page: Int, sendTime: Long): GenericResult<List<MessageItem>> = handleDatingRequest{ datingApiService.getMessagesFromPage(id,page,sendTime)}
+    override suspend fun getMessagesFromPage(id: String, page: Int, sendTime: Long?, fMTime: Long?): GenericResult<List<MessageItem>> = handleDatingRequest{ datingApiService.getMessagesFromPage(id,page,sendTime,fMTime)}
 
     override suspend fun friendChatSendPhoto(id: String,image: MultipartBody.Part): GenericResult<ResponseBody> = handleDatingRequest { datingApiService.friendChatSendPhoto(id,image) }
 

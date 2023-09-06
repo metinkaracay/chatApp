@@ -23,9 +23,4 @@ data class ChattingFragmentPageViewState(
     fun editTextHint() = "Mesaj"
     fun sendButtonBackground(context: Context): Int = ContextCompat.getColor(context,R.color.send_message_color)
     fun sendIcon(context: Context): Drawable? = ContextCompat.getDrawable(context,R.drawable.send_icon)
-
-    init {
-        Log.e("pageViewStatteif","$isLoaded")
-        Log.e("pageViewStatteif2","$messages")
-    }
 }

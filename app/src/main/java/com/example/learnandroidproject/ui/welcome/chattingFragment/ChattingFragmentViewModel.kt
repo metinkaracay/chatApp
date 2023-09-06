@@ -39,6 +39,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import androidx.core.content.FileProvider
+import kotlinx.coroutines.delay
 import java.io.IOException
 import java.net.URL
 import java.util.*
@@ -66,8 +67,9 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
     var messageList: List<MessageItem> = arrayListOf()
     var loggedUserId: String = "0"
     var lastMessageTime = 0L
+    var firstMessageTime = 0L
 
-    val dispatchGroup = DispatchGroup()
+    //val dispatchGroup = DispatchGroup()
     fun sendMessagesToPageViewState(list: List<MessageItem>){
         viewModelScope.launch(Dispatchers.Main){
             _chattingPageViewStateLiveData.value = chattingPageViewStateLiveData.value?.copy(messages = list)
@@ -77,9 +79,9 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
         }
     }
 
-    fun getMessagesFromPage(sendTime: Long, context: Context){
+    fun getMessagesFromPage(sendTime: Long?, context: Context){
         viewModelScope.launch(Dispatchers.IO){
-            datingApiRepository.getMessagesFromPage(user.uId.toString(),pageId,sendTime).get()?.let {
+            datingApiRepository.getMessagesFromPage(user.uId.toString(),pageId,sendTime,null).get()?.let {
                 withContext(Dispatchers.Main){
                     if (it.isEmpty()){
                         getMessagesFromRoom(context)
@@ -87,14 +89,17 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
                         //isMessageOver = true
                         _chattingPageViewStateLiveData.value = _chattingPageViewStateLiveData.value?.copy(isLoaded = true)
                     }else{
-                        dispatchGroup.enter()
+                        //dispatchGroup.enter()
                         insertMessageToRoom(context,it,null)
 
-                        dispatchGroup.notify { // Toplu kaydetme sırasında kaydetme işlemi tamamlandığında çalışır
+                        Log.e("tessssssssst","bura geldi")
+                        getMessagesFromPage(it[it.size-1].messageTime.toLong(),context)
+                        /*dispatchGroup.notify { // Toplu kaydetme sırasında kaydetme işlemi tamamlandığında çalışır
                             // Her seferinde 10 tane mesaj geldiği için room ile backend'i eşitleyene kadar sürekli istek atıyoruz
+                            Log.e("tessssssssst","bura geldi")
                             getMessagesFromPage(it[it.size-1].messageTime.toLong(),context)
 
-                        }
+                        }*/
                     }
                 }
             }
@@ -109,11 +114,12 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
                 if (lastMessage.messageTime.isNullOrEmpty()) {
                     Log.e("getLastMessageFromRoom", "lastMessage boş")
                 } else {
+                    Log.e("getLastMessageFromRoom", "lastMessage else")
                     lastMessageTime = lastMessage.messageTime.toLong()
                     getMessagesFromPage(lastMessage.messageTime.toLong(), context)
                 }
             } else {
-                getMessagesFromPage(0,context)
+                getMessagesFromPage(null,context)
                 Log.e("getLastMessageFromRoom", "lastMessage null")
             }
         }
@@ -124,17 +130,32 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
     fun getMessagesFromRoom(context: Context){
         viewModelScope.launch(Dispatchers.IO) {
             val dao = ChatDatabase.getInstance(context).MessageDao()
-            val newMessageList = dao.getAllMessages(loggedUserId.toInt(),user.uId,(pageId-1)*10)
-            if (!newMessageList.isEmpty()){
+            val roomMessageList = dao.getAllMessages(loggedUserId.toInt(),user.uId,(pageId-1)*10)//
+            if (roomMessageList.isNotEmpty()){
                 Log.e("getLastMessageFromRoom","mesajlar çekildi")
-                messageList = newMessageList.reversed() + messageList
+                val newMessageList = roomMessageList.reversed()
+                messageList = roomMessageList.reversed() + messageList
+                Log.e("messageTime","${newMessageList[0].messageTime}")
+                firstMessageTime = newMessageList[0].messageTime.toLong()
                 sendMessagesToPageViewState(messageList)
                 _messageFetchRequestLiveData.postValue(true)
+                pageId++
             }else{
-                _messageFetchRequestLiveData.postValue(false)
-                isNewChat = false
+                Log.e("getLastMessageFromRoom","Room'da mesaj kalmadı")
+                Log.e("messageTime2","${firstMessageTime}")
+                datingApiRepository.getMessagesFromPage(user.uId.toString(),pageId,null,firstMessageTime).get()?.let {
+                    if (it.isNotEmpty()){
+                        messageList = it + messageList
+                        insertMessageToRoom(context,it,null)
+                        sendMessagesToPageViewState(messageList)
+                        //delay(1000L) TODO burada kaldık
+                        //getMessagesFromRoom(context)
+                    }else{
+                        _messageFetchRequestLiveData.postValue(false)
+                        isNewChat = false
+                    }
+                }
             }
-            pageId++
         }
     }
     fun downloadImageAndConvertToUri(imageUrl: String, context: Context): Uri? {
@@ -143,7 +164,6 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
             val imageBitmap = BitmapFactory.decodeStream(inputStream)
             inputStream.close()
 
-            Log.e("gelennnnnnnnn","$imageBitmap , $imageUrl")
             val uri = getImageUriFromBitmap(context, imageBitmap)
             return uri
         } catch (e: IOException) {
@@ -313,7 +333,7 @@ class ChattingFragmentViewModel @Inject constructor(private val datingApiReposit
                     }
                 }
                 messageDao.insertAllMessages(messages)
-                dispatchGroup.leave()
+                //dispatchGroup.leave()
             }else if (messages == null && message != null){
                 Log.e("insertMEssage3","${message}")
                 messageDao.insertMessage(message)

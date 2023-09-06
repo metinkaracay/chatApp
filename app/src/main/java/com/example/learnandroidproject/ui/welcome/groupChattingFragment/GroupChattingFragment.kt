@@ -55,6 +55,7 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
         val loggedUserId = sharedPreferences.getString("LoggedUserId","")
         welcomeViewModel.groupMessageSingleLiveEvent.observe(viewLifecycleOwner){
             viewModel.fetchMessagesOnSocket(it,requireContext())
+
         }
         val group = welcomeViewModel.getGroupInfo()
         viewModel.group = group // Tıklanan grup bilgilerini çeker
@@ -94,9 +95,13 @@ class GroupChattingFragment : BaseFragment<FragmentGroupChattingBinding>() {
         with(welcomeViewModel){
             raceDataLiveEvent.observeNonNull(viewLifecycleOwner){
                 // Socketten gelen yarışma verileri
-                if (viewModel.group.groupId == it[0].groupId /*&& !isFirstData*/){
+                // Son verinin tekrar gelmesi sorununu çözmek için mesaj listesini kontrol ediyor
+                // Ekran ilk açıldığında hep mesaj listesi 0 geliyor. Burası da ekran açılır açılmaz çalıştığı için bu şekilde ilk veriyi çöpe yolluyoruz
+                if (viewModel.group.groupId == it[0].groupId && viewModel.messageList.size != 0){
                     viewModel.updateUserPoints(it)
+                    Log.e("argsDerdi","ife girdi")
                 }else{
+                    Log.e("argsDerdi","dert çözüldü")
                     isFirstData = false // Grupta değilken mesajları biriktiriyor ve girdiğimde hem get'ten çekiyor hemde sockettekini işliyor. Verilerin hatalı olmasına sebep oluyordu
                 }
             }

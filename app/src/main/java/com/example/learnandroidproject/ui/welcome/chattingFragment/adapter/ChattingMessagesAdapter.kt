@@ -27,7 +27,8 @@ class ChattingMessagesAdapter : RecyclerView.Adapter<ChattingMessagesAdapter.Mes
         if (type == "newMessage"){
             notifyItemRangeChanged(list.size-1,1)
         }else if (type == "refresh"){
-            notifyItemRangeInserted(0,10)
+            //notifyItemRangeInserted(0,8)
+            notifyDataSetChanged()
         }
     }
 

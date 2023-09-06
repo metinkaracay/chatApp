@@ -83,6 +83,10 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
     // Yarış sırasında odada olmayan biri daha sonradan odaya girdiğinde yarışı görebilmesi için gereken veriler
     var raceDatas: List<RaceData> = arrayListOf()
 
+    init {
+        Log.e("messageList","${messageList.size}")
+    }
+
     fun fetchMessages(context: Context){
         val sharedPreferences = context.getSharedPreferences("LoggedUserID", Context.MODE_PRIVATE)
         val loggedUserId = sharedPreferences.getString("LoggedUserId","")
@@ -122,6 +126,7 @@ class GroupChattingViewModel @Inject constructor(private val datingApiRepository
                     _messageFetchRequestLiveData.postValue(true)
                     if (pageId == 1){
                         setMembersNameById()
+                        Log.e("messageListfetch","${messageList.size}")
                         _groupChattingPageViewStateLiveData.value = GroupChattingPageViewState(group,messages,isAdmin,isRaceStart, isLoaded = true,membersNameList = senderUserName)
                     }else{
                         _groupChattingPageViewStateLiveData.value = groupChattingPageViewStateLiveData.value?.copy(messages = messageList)
